@@ -8,12 +8,12 @@ const Navbar = () => {
         <li className="mr-5">
           <Link href="/">Home</Link>
         </li>
-        {/* <li className="mr-5">
-          <Link href="/products">Products</Link>
+        <li className="mr-5">
+          <Link href="/AllStudyPlans">AllStudyPlans</Link>
         </li>
         <li className="mr-5">
-          <Link href="/about">About Us</Link>
-        </li> */}
+          <Link href="/StudyPlan">My Study Plan</Link>
+        </li>
         <li className="mr-5">
           <Link href="/login">Login</Link>
         </li>
