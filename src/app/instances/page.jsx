@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Clock, CheckCircle2, ArrowRight, Trash2, Loader2 } from 'lucide-react';
+import { BookOpen, Clock, CheckCircle2, ArrowRight, Trash2, Loader2, Edit } from 'lucide-react';
 import { getInstances, deleteInstance, formatTime } from '@/lib/api';
 import useAuth from '@/hooks/useAuth';
 import toast from 'react-hot-toast';
+import EditInstanceModal from '@/components/EditInstanceModal';
 
 export default function MyInstancesPage() {
   const router = useRouter();
@@ -14,6 +15,8 @@ export default function MyInstancesPage() {
   const [instances, setInstances] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [editingInstance, setEditingInstance] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -52,6 +55,17 @@ export default function MyInstancesPage() {
     } finally {
       setDeletingId(null);
     }
+  };
+
+  const handleEdit = (instance) => {
+    setEditingInstance(instance);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdate = (updatedInstance) => {
+    setInstances(prev => prev.map(inst =>
+      inst._id === updatedInstance._id ? { ...inst, ...updatedInstance } : inst
+    ));
   };
 
   if (!user) {
@@ -124,20 +138,31 @@ export default function MyInstancesPage() {
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-primary/10 text-primary">
                         {instance.studyPlanId?.courseCode || 'N/A'}
                       </span>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleDelete(instance._id);
-                        }}
-                        className="text-muted-foreground hover:text-destructive transition-colors"
-                        disabled={deletingId === instance._id}
-                      >
-                        {deletingId === instance._id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </button>
+                      <div className="flex items-center">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleEdit(instance);
+                          }}
+                          className="text-muted-foreground hover:text-foreground transition-colors mr-2"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleDelete(instance._id);
+                          }}
+                          className="text-muted-foreground hover:text-destructive transition-colors"
+                          disabled={deletingId === instance._id}
+                        >
+                          {deletingId === instance._id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
                     </div>
 
                     <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
@@ -219,31 +244,15 @@ export default function MyInstancesPage() {
             })}
           </div>
         )}
-
-        {/* Quick Stats */}
-        {instances.length > 0 && (
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-2xl font-bold text-foreground mb-1">
-                {instances.length}
-              </div>
-              <div className="text-sm text-muted-foreground">Active Instances</div>
-            </div>
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-2xl font-bold text-foreground mb-1">
-                {Math.round(instances.reduce((sum, inst) => sum + (inst.resourcePercent || 0), 0) / instances.length)}%
-              </div>
-              <div className="text-sm text-muted-foreground">Average Progress</div>
-            </div>
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="text-2xl font-bold text-foreground mb-1">
-                {formatTime(instances.reduce((sum, inst) => sum + (inst.remainingTime || 0), 0))}
-              </div>
-              <div className="text-sm text-muted-foreground">Total Time Remaining</div>
-            </div>
-          </div>
-        )}
       </div>
+
+      <EditInstanceModal
+        instance={editingInstance}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onUpdate={handleUpdate}
+        token={token}
+      />
     </div>
   );
 }

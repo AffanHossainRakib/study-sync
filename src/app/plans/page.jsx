@@ -13,34 +13,46 @@ export default function AllPlansPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [courseFilter, setCourseFilter] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
 
+  // Debounce search
   useEffect(() => {
-    fetchPlans();
-  }, [sortBy]);
+    const timer = setTimeout(() => {
+      setPage(1); // Reset to page 1 on filter change
+      fetchPlans(1);
+    }, 500);
 
-  const fetchPlans = async () => {
+    return () => clearTimeout(timer);
+  }, [searchTerm, courseFilter, sortBy]);
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    fetchPlans(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const fetchPlans = async (pageNum = page) => {
     try {
       setLoading(true);
       const params = {
         view: 'public',
-        sort: sortBy
+        sort: sortBy,
+        page: pageNum,
+        limit: 9,
+        search: searchTerm,
+        courseCode: courseFilter
       };
       const data = await getStudyPlans(params, token);
-      setPlans(data);
+      setPlans(data.plans || []);
+      setPagination(data.pagination);
     } catch (error) {
       console.error('Error fetching plans:', error);
     } finally {
       setLoading(false);
     }
   };
-
-  // Filter plans based on search and course filter
-  const filteredPlans = plans.filter(plan => {
-    const matchesSearch = plan.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      plan.shortDescription.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCourse = !courseFilter || plan.courseCode.toLowerCase().includes(courseFilter.toLowerCase());
-    return matchesSearch && matchesCourse;
-  });
 
   return (
     <div className="min-h-screen bg-background py-12">
@@ -93,9 +105,11 @@ export default function AllPlansPage() {
           </div>
 
           {/* Results Count */}
-          <div className="mt-4 text-sm text-muted-foreground">
-            Showing {filteredPlans.length} of {plans.length} study plans
-          </div>
+          {!loading && pagination && (
+            <div className="mt-4 text-sm text-muted-foreground">
+              Showing {plans.length} of {pagination.totalPlans} study plans
+            </div>
+          )}
         </div>
 
         {/* Loading State */}
@@ -114,7 +128,7 @@ export default function AllPlansPage() {
               </div>
             ))}
           </div>
-        ) : filteredPlans.length === 0 ? (
+        ) : plans.length === 0 ? (
           /* Empty State */
           <div className="text-center py-16">
             <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
@@ -133,64 +147,89 @@ export default function AllPlansPage() {
             </Link>
           </div>
         ) : (
-          /* Plans Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPlans.map((plan) => (
-              <div
-                key={plan._id}
-                className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-xl hover:border-primary/50 transition-all"
-              >
-                {/* Header */}
-                <div className="p-6 pb-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-primary/10 text-primary">
-                      {plan.courseCode}
-                    </span>
-                    <div className="flex items-center text-xs text-muted-foreground">
-                      <Users className="h-3 w-3 mr-1" />
-                      {plan.instanceCount || 0} instances
+          <>
+            /* Plans Grid */
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {plans.map((plan) => (
+                <div
+                  key={plan._id}
+                  className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-xl hover:border-primary/50 transition-all"
+                >
+                  {/* Header */}
+                  <div className="p-6 pb-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-primary/10 text-primary">
+                        {plan.courseCode}
+                      </span>
+                      <div className="flex items-center text-xs text-muted-foreground">
+                        <Users className="h-3 w-3 mr-1" />
+                        {plan.instanceCount || 0} instances
+                      </div>
+                    </div>
+
+                    <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
+                      {plan.title}
+                    </h3>
+
+                    <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+                      {plan.shortDescription}
+                    </p>
+
+                    {/* Meta Info */}
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                      <div className="flex items-center">
+                        <FileText className="h-4 w-4 mr-1" />
+                        {plan.resourceCount || 0} resources
+                      </div>
+                      <div className="flex items-center">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {formatTime(plan.totalTime)}
+                      </div>
+                    </div>
+
+                    {/* Creator Info */}
+                    <div className="text-xs text-muted-foreground">
+                      By {plan.createdBy?.displayName || plan.createdBy?.email?.split('@')[0] || 'Anonymous'}
                     </div>
                   </div>
 
-                  <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
-                    {plan.title}
-                  </h3>
-
-                  <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
-                    {plan.shortDescription}
-                  </p>
-
-                  {/* Meta Info */}
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                    <div className="flex items-center">
-                      <FileText className="h-4 w-4 mr-1" />
-                      {plan.resourceCount || 0} resources
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-1" />
-                      {formatTime(plan.totalTime)}
-                    </div>
-                  </div>
-
-                  {/* Creator Info */}
-                  <div className="text-xs text-muted-foreground">
-                    By {plan.createdBy?.displayName || plan.createdBy?.email?.split('@')[0] || 'Anonymous'}
+                  {/* Footer */}
+                  <div className="px-6 py-4 bg-muted/30 border-t border-border">
+                    <Link
+                      href={`/plans/${plan._id}`}
+                      className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                    >
+                      View Details
+                      <ArrowRight className="ml-1 h-4 w-4" />
+                    </Link>
                   </div>
                 </div>
+              ))}
+            </div>
 
-                {/* Footer */}
-                <div className="px-6 py-4 bg-muted/30 border-t border-border">
-                  <Link
-                    href={`/plans/${plan._id}`}
-                    className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-                  >
-                    View Details
-                    <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </div>
+            {/* Pagination Controls */}
+            {pagination && pagination.totalPages > 1 && (
+              <div className="flex justify-center items-center gap-4 mt-8">
+                <button
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={!pagination.hasPrevPage}
+                  className="px-4 py-2 border border-input bg-background rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent hover:text-accent-foreground transition-colors"
+                >
+                  Previous
+                </button>
+                <span className="text-sm text-muted-foreground">
+                  Page {pagination.currentPage} of {pagination.totalPages}
+                </span>
+                <button
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={!pagination.hasNextPage}
+                  className="px-4 py-2 border border-input bg-background rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent hover:text-accent-foreground transition-colors"
+                >
+                  Next
+                </button>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>

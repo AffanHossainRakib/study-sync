@@ -10,24 +10,53 @@ import toast from 'react-hot-toast';
 
 export default function MyStudyPlansPage() {
   const router = useRouter();
-  const { user, token } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [courseFilter, setCourseFilter] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
 
   useEffect(() => {
-    if (!user) {
+    if (!authLoading && !user) {
       router.push('/login');
-      return;
     }
-    fetchMyPlans();
-  }, [user, token]);
+  }, [user, authLoading]);
 
-  const fetchMyPlans = async () => {
+  // Debounce search
+  useEffect(() => {
+    if (user) {
+      const timer = setTimeout(() => {
+        setPage(1);
+        fetchMyPlans(1);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [searchTerm, courseFilter, sortBy, user]);
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    fetchMyPlans(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const fetchMyPlans = async (pageNum = page) => {
     try {
       setLoading(true);
-      const data = await getStudyPlans({ view: 'my' }, token);
-      setPlans(data);
+      const params = {
+        view: 'my',
+        sort: sortBy,
+        page: pageNum,
+        limit: 9,
+        search: searchTerm,
+        courseCode: courseFilter
+      };
+      const data = await getStudyPlans(params, token);
+      setPlans(data.plans || []);
+      setPagination(data.pagination);
     } catch (error) {
       console.error('Error fetching plans:', error);
       toast.error('Failed to load study plans');
@@ -45,7 +74,8 @@ export default function MyStudyPlansPage() {
       setDeletingId(id);
       await deleteStudyPlan(id, token);
       toast.success('Study plan deleted successfully');
-      setPlans(prev => prev.filter(plan => plan._id !== id));
+      // Refresh to respect pagination
+      fetchMyPlans(page);
     } catch (error) {
       console.error('Error deleting plan:', error);
       toast.error('Failed to delete study plan');
@@ -78,6 +108,57 @@ export default function MyStudyPlansPage() {
           </Link>
         </div>
 
+        {/* Filters */}
+        <div className="bg-card border border-border rounded-lg p-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Search */}
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+              </div>
+              <input
+                type="text"
+                placeholder="Search by title..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+              />
+            </div>
+
+            {/* Course Code Filter */}
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+              </div>
+              <input
+                type="text"
+                placeholder="Filter by course code..."
+                value={courseFilter}
+                onChange={(e) => setCourseFilter(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+              />
+            </div>
+
+            {/* Sort */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+            >
+              <option value="newest">Newest First</option>
+              <option value="popular">Most Popular</option>
+              <option value="shortest">Shortest Duration</option>
+            </select>
+          </div>
+
+          {/* Results Count */}
+          {!loading && pagination && (
+            <div className="mt-4 text-sm text-muted-foreground">
+              Showing {plans.length} of {pagination.totalPlans} study plans
+            </div>
+          )}
+        </div>
+
         {/* Loading State */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -98,9 +179,11 @@ export default function MyStudyPlansPage() {
           /* Empty State */
           <div className="text-center py-16">
             <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">No study plans yet</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">No study plans found</h3>
             <p className="text-muted-foreground mb-6">
-              Create your first study plan to get started organizing your learning
+              {searchTerm || courseFilter
+                ? 'Try adjusting your filters'
+                : 'Create your first study plan to get started'}
             </p>
             <Link
               href="/create-plan"
@@ -111,106 +194,134 @@ export default function MyStudyPlansPage() {
             </Link>
           </div>
         ) : (
-          /* Plans Grid */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {plans.map((plan) => {
-              const isCreator = plan.createdBy?._id === user.uid || plan.createdBy?._id === user._id;
-              const isShared = !isCreator;
+          <>
+            {/* Plans Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {plans.map((plan) => {
+                const creatorId = typeof plan.createdBy === 'object' ? plan.createdBy._id : plan.createdBy;
+                const creatorFirebaseUid = typeof plan.createdBy === 'object' ? plan.createdBy.firebaseUid : null;
+                const isCreator = (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
+                  (creatorId && user._id && creatorId.toString() === user._id.toString());
+                const isShared = !isCreator;
 
-              return (
-                <div
-                  key={plan._id}
-                  className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-xl hover:border-primary/50 transition-all"
-                >
-                  {/* Header */}
-                  <div className="p-6 pb-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-primary/10 text-primary">
-                          {plan.courseCode}
-                        </span>
-                        {isShared && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
-                            Shared
+                return (
+                  <div
+                    key={plan._id}
+                    className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-xl hover:border-primary/50 transition-all"
+                  >
+                    {/* Header */}
+                    <div className="p-6 pb-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-primary/10 text-primary">
+                            {plan.courseCode}
                           </span>
-                        )}
-                        {plan.isPublic && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400">
-                            Public
-                          </span>
+                          {isShared && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
+                              Shared
+                            </span>
+                          )}
+                          {plan.isPublic && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400">
+                              Public
+                            </span>
+                          )}
+                        </div>
+                        {isCreator && (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDelete(plan._id);
+                            }}
+                            className="text-muted-foreground hover:text-destructive transition-colors"
+                            disabled={deletingId === plan._id}
+                          >
+                            {deletingId === plan._id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </button>
                         )}
                       </div>
-                      {isCreator && (
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleDelete(plan._id);
-                          }}
-                          className="text-muted-foreground hover:text-destructive transition-colors"
-                          disabled={deletingId === plan._id}
-                        >
-                          {deletingId === plan._id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-4 w-4" />
-                          )}
-                        </button>
+
+                      <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
+                        {plan.title}
+                      </h3>
+
+                      <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                        {plan.shortDescription}
+                      </p>
+
+                      {/* Meta Info */}
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                        <div className="flex items-center">
+                          <FileText className="h-4 w-4 mr-1" />
+                          {plan.resourceCount || 0}
+                        </div>
+                        <div className="flex items-center">
+                          <Clock className="h-4 w-4 mr-1" />
+                          {formatTime(plan.totalTime)}
+                        </div>
+                        <div className="flex items-center">
+                          <Users className="h-4 w-4 mr-1" />
+                          {plan.instanceCount || 0}
+                        </div>
+                      </div>
+
+                      {isShared && (
+                        <div className="text-xs text-muted-foreground">
+                          Created by {plan.createdBy?.displayName || plan.createdBy?.email?.split('@')[0]}
+                        </div>
                       )}
                     </div>
 
-                    <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
-                      {plan.title}
-                    </h3>
-
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                      {plan.shortDescription}
-                    </p>
-
-                    {/* Meta Info */}
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                      <div className="flex items-center">
-                        <FileText className="h-4 w-4 mr-1" />
-                        {plan.resourceCount || 0}
-                      </div>
-                      <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {formatTime(plan.totalTime)}
-                      </div>
-                      <div className="flex items-center">
-                        <Users className="h-4 w-4 mr-1" />
-                        {plan.instanceCount || 0}
-                      </div>
-                    </div>
-
-                    {isShared && (
-                      <div className="text-xs text-muted-foreground">
-                        Created by {plan.createdBy?.displayName || plan.createdBy?.email?.split('@')[0]}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Footer Actions */}
-                  <div className="px-6 py-4 bg-muted/30 border-t border-border flex items-center justify-between">
-                    <Link
-                      href={`/plans/${plan._id}`}
-                      className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-                    >
-                      View Details
-                      <ArrowRight className="ml-1 h-4 w-4" />
-                    </Link>
-                    {(isCreator || plan.canEdit) && (
+                    {/* Footer Actions */}
+                    <div className="px-6 py-4 bg-muted/30 border-t border-border flex items-center justify-between">
                       <Link
-                        href={`/plans/${plan._id}/edit`}
-                        className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                        href={`/plans/${plan._id}`}
+                        className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                       >
-                        <Edit className="h-4 w-4" />
+                        View Details
+                        <ArrowRight className="ml-1 h-4 w-4" />
                       </Link>
-                    )}
+                      {(isCreator || plan.canEdit) && (
+                        <Link
+                          href={`/plans/${plan._id}/edit`}
+                          className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+
+            {/* Pagination Controls */}
+            {pagination && pagination.totalPages > 1 && (
+              <div className="flex justify-center items-center gap-4 mt-8">
+                <button
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={!pagination.hasPrevPage}
+                  className="px-4 py-2 border border-input bg-background rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent hover:text-accent-foreground transition-colors"
+                >
+                  Previous
+                </button>
+                <span className="text-sm text-muted-foreground">
+                  Page {pagination.currentPage} of {pagination.totalPages}
+                </span>
+                <button
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={!pagination.hasNextPage}
+                  className="px-4 py-2 border border-input bg-background rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent hover:text-accent-foreground transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         {/* Quick Stats */}
@@ -224,13 +335,24 @@ export default function MyStudyPlansPage() {
             </div>
             <div className="bg-card border border-border rounded-lg p-6">
               <div className="text-2xl font-bold text-foreground mb-1">
-                {plans.filter(p => p.createdBy?._id === user.uid || p.createdBy?._id === user._id).length}
+                {plans.filter(p => {
+                  const creatorId = typeof p.createdBy === 'object' ? p.createdBy._id : p.createdBy;
+                  const creatorFirebaseUid = typeof p.createdBy === 'object' ? p.createdBy.firebaseUid : null;
+                  return (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
+                    (creatorId && user._id && creatorId.toString() === user._id.toString());
+                }).length}
               </div>
               <div className="text-sm text-muted-foreground">Created by You</div>
             </div>
             <div className="bg-card border border-border rounded-lg p-6">
               <div className="text-2xl font-bold text-foreground mb-1">
-                {plans.filter(p => p.createdBy?._id !== user.uid && p.createdBy?._id !== user._id).length}
+                {plans.filter(p => {
+                  const creatorId = typeof p.createdBy === 'object' ? p.createdBy._id : p.createdBy;
+                  const creatorFirebaseUid = typeof p.createdBy === 'object' ? p.createdBy.firebaseUid : null;
+                  const isCreator = (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
+                    (creatorId && user._id && creatorId.toString() === user._id.toString());
+                  return !isCreator;
+                }).length}
               </div>
               <div className="text-sm text-muted-foreground">Shared with You</div>
             </div>

@@ -53,7 +53,7 @@ export const getStudyPlans = async (params = {}, token = null) => {
   const queryString = new URLSearchParams(params).toString();
   const endpoint = `/api/study-plans${queryString ? `?${queryString}` : ''}`;
   const data = await apiRequest(endpoint, 'GET', token);
-  return data.plans || data;
+  return data;
 };
 
 export const getStudyPlanById = async (id, token = null) => {
@@ -74,6 +74,10 @@ export const deleteStudyPlan = async (id, token) => {
 
 export const shareStudyPlan = async (id, email, token) => {
   return apiRequest(`/api/study-plans/${id}/share`, 'POST', token, { email });
+};
+
+export const removeCollaborator = async (id, userId, token) => {
+  return apiRequest(`/api/study-plans/${id}/collaborators/${userId}`, 'DELETE', token);
 };
 
 // ==================== Resources ====================

@@ -21,7 +21,21 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import Link from 'next/link';
 import useAuth from '@/hooks/useAuth';
-import { getStudyPlanById, updateStudyPlan, createOrGetResource, shareStudyPlan } from '@/lib/api';
+import { getStudyPlanById, updateStudyPlan, createOrGetResource, shareStudyPlan, removeCollaborator } from '@/lib/api';
+
+// ... (inside component)
+
+const handleRemoveCollaborator = async (userId) => {
+  try {
+    await removeCollaborator(params.id, userId, token);
+
+    toast.success('Collaborator removed');
+    await fetchPlanData();
+  } catch (error) {
+    console.error('Error removing collaborator:', error);
+    toast.error('Failed to remove collaborator');
+  }
+};
 import toast from 'react-hot-toast';
 
 function SortableResourceItem({ resource, index, onRemove }) {
@@ -31,7 +45,7 @@ function SortableResourceItem({ resource, index, onRemove }) {
     setNodeRef,
     transform,
     transition,
-  } = useSortable({ id: resource._id });
+  } = useSortable({ id: resource.localId });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -90,7 +104,7 @@ function SortableResourceItem({ resource, index, onRemove }) {
 export default function EditStudyPlanPage() {
   const params = useParams();
   const router = useRouter();
-  const { user, token } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
 
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -127,14 +141,14 @@ export default function EditStudyPlanPage() {
   );
 
   useEffect(() => {
-    if (!user && !loading) {
+    if (!authLoading && !user) {
       router.push('/login');
       return;
     }
     if (params.id && token) {
       fetchPlanData();
     }
-  }, [params.id, user, token]);
+  }, [params.id, user, token, authLoading]);
 
   const fetchPlanData = async () => {
     try {
@@ -142,9 +156,21 @@ export default function EditStudyPlanPage() {
       const data = await getStudyPlanById(params.id, token);
 
       // Check if user has edit access
-      const isCreator = data.createdBy?._id === user.uid || data.createdBy?._id === user._id;
+      const creatorId = data.createdBy?._id;
+      const creatorFirebaseUid = data.createdBy?.firebaseUid;
+
+      const isCreator = (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
+        (creatorId && user._id && creatorId === user._id);
+
       const hasEditAccess = isCreator || data.sharedWith?.some(
-        share => (share.userId?._id === user.uid || share.userId?._id === user._id) && share.role === 'editor'
+        share => {
+          // Check shared user ID (could be populated object or string ID)
+          const shareUserId = share.userId?._id || share.userId;
+          // We might need to check against email if user._id isn't available on frontend user object
+          // But for now, let's assume if it's shared, we trust the backend's canEdit check if we had one
+          // Or better, check if the current user's email matches the shared email
+          return share.userId?.email === user.email && share.role === 'editor';
+        }
       );
 
       if (!hasEditAccess) {
@@ -161,7 +187,7 @@ export default function EditStudyPlanPage() {
         courseCode: data.courseCode || '',
         isPublic: data.isPublic || false
       });
-      setResources(data.resources || []);
+      setResources(data.resources?.map(r => ({ ...r, localId: Math.random().toString(36).substr(2, 9) })) || []);
     } catch (error) {
       console.error('Error fetching plan:', error);
       toast.error('Failed to load study plan');
@@ -228,10 +254,12 @@ export default function EditStudyPlanPage() {
       const result = await createOrGetResource(resourceData, token);
 
       if (resourceForm.type === 'youtube-playlist' && result.resources) {
-        setResources(prev => [...prev, ...result.resources]);
+        const newResources = result.resources.map(r => ({ ...r, localId: Math.random().toString(36).substr(2, 9) }));
+        setResources(prev => [...prev, ...newResources]);
         toast.success(`Added ${result.resources.length} videos from playlist`);
       } else if (result.resource) {
-        setResources(prev => [...prev, result.resource]);
+        const newResource = { ...result.resource, localId: Math.random().toString(36).substr(2, 9) };
+        setResources(prev => [...prev, newResource]);
         toast.success(result.isNew ? 'Resource added' : 'Existing resource added');
       }
 
@@ -262,8 +290,8 @@ export default function EditStudyPlanPage() {
 
     if (active.id !== over.id) {
       setResources((items) => {
-        const oldIndex = items.findIndex((item) => item._id === active.id);
-        const newIndex = items.findIndex((item) => item._id === over.id);
+        const oldIndex = items.findIndex((item) => item.localId === active.id);
+        const newIndex = items.findIndex((item) => item.localId === over.id);
         return arrayMove(items, oldIndex, newIndex);
       });
     }
@@ -359,7 +387,10 @@ export default function EditStudyPlanPage() {
     return null;
   }
 
-  const isCreator = plan.createdBy?._id === user.uid || plan.createdBy?._id === user._id;
+  const creatorId = plan.createdBy?._id;
+  const creatorFirebaseUid = plan.createdBy?.firebaseUid;
+  const isCreator = (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
+    (creatorId && user._id && creatorId === user._id);
 
   return (
     <div className="min-h-screen bg-background py-12">
@@ -688,12 +719,12 @@ export default function EditStudyPlanPage() {
                   onDragEnd={handleDragEnd}
                 >
                   <SortableContext
-                    items={resources.map(r => r._id)}
+                    items={resources.map(r => r.localId)}
                     strategy={verticalListSortingStrategy}
                   >
                     {resources.map((resource, index) => (
                       <SortableResourceItem
-                        key={resource._id}
+                        key={resource.localId}
                         resource={resource}
                         index={index}
                         onRemove={() => handleRemoveResource(index)}

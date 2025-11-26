@@ -18,7 +18,7 @@ const PopularPlans = () => {
       // Fetch public plans sorted by newest (for MVP)
       const data = await getStudyPlans({ view: 'public', sort: 'newest' });
       // Show only first 3 plans
-      setPlans(data.slice(0, 3));
+      setPlans((data.plans || []).slice(0, 3));
     } catch (error) {
       console.error('Error fetching popular plans:', error);
     } finally {

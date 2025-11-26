@@ -21,6 +21,7 @@ import {
 } from '@/lib/api';
 import useAuth from '@/hooks/useAuth';
 import toast from 'react-hot-toast';
+import EditInstanceModal from '@/components/EditInstanceModal';
 
 export default function InstanceDetailsPage() {
   const params = useParams();
@@ -30,6 +31,7 @@ export default function InstanceDetailsPage() {
   const [instance, setInstance] = useState(null);
   const [loading, setLoading] = useState(true);
   const [togglingResource, setTogglingResource] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -69,6 +71,10 @@ export default function InstanceDetailsPage() {
     } finally {
       setTogglingResource(null);
     }
+  };
+
+  const handleUpdate = (updatedInstance) => {
+    setInstance(prev => ({ ...prev, ...updatedInstance }));
   };
 
   if (loading) {
@@ -118,12 +124,21 @@ export default function InstanceDetailsPage() {
                 <p className="text-muted-foreground">{instance.notes}</p>
               )}
             </div>
-            <Link
-              href={`/plans/${instance.studyPlanId?._id}`}
-              className="text-sm text-primary hover:text-primary/80 transition-colors"
-            >
-              View Original Plan
-            </Link>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsEditModalOpen(true)}
+                className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-all"
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </button>
+              <Link
+                href={`/plans/${instance.studyPlanId?._id}`}
+                className="text-sm text-primary hover:text-primary/80 transition-colors"
+              >
+                View Original Plan
+              </Link>
+            </div>
           </div>
 
           {/* Progress Bars */}
@@ -198,8 +213,8 @@ export default function InstanceDetailsPage() {
                   <div
                     key={resource._id}
                     className={`flex items-start gap-4 p-4 rounded-lg transition-all ${isCompleted
-                        ? 'bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-900/30'
-                        : 'bg-muted/30 hover:bg-muted/50 border border-transparent'
+                      ? 'bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-900/30'
+                      : 'bg-muted/30 hover:bg-muted/50 border border-transparent'
                       }`}
                   >
                     {/* Checkbox */}
@@ -218,12 +233,12 @@ export default function InstanceDetailsPage() {
                     {/* Icon */}
                     <div className="flex-shrink-0">
                       <div className={`p-2 rounded-md ${resource.type === 'youtube-video' ? 'bg-red-100 dark:bg-red-900/20' :
-                          resource.type === 'pdf' ? 'bg-blue-100 dark:bg-blue-900/20' :
-                            'bg-green-100 dark:bg-green-900/20'
+                        resource.type === 'pdf' ? 'bg-blue-100 dark:bg-blue-900/20' :
+                          'bg-green-100 dark:bg-green-900/20'
                         }`}>
                         <Icon className={`h-5 w-5 ${resource.type === 'youtube-video' ? 'text-red-600 dark:text-red-400' :
-                            resource.type === 'pdf' ? 'text-blue-600 dark:text-blue-400' :
-                              'text-green-600 dark:text-green-400'
+                          resource.type === 'pdf' ? 'text-blue-600 dark:text-blue-400' :
+                            'text-green-600 dark:text-green-400'
                           }`} />
                       </div>
                     </div>
@@ -285,6 +300,14 @@ export default function InstanceDetailsPage() {
           </div>
         )}
       </div>
-    </div>
+
+      <EditInstanceModal
+        instance={instance}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onUpdate={handleUpdate}
+        token={token}
+      />
+    </div >
   );
 }
