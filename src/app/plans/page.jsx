@@ -1,18 +1,26 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Search, Filter, Clock, FileText, Users, ArrowRight, BookOpen } from 'lucide-react';
-import { getStudyPlans, formatTime } from '@/lib/api';
-import useAuth from '@/hooks/useAuth';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import {
+  Search,
+  Filter,
+  Clock,
+  FileText,
+  Users,
+  ArrowRight,
+  BookOpen,
+} from "lucide-react";
+import { getStudyPlans, formatTime } from "@/lib/api";
+import useAuth from "@/hooks/useAuth";
 
 export default function AllPlansPage() {
   const { token } = useAuth();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [courseFilter, setCourseFilter] = useState('');
-  const [sortBy, setSortBy] = useState('newest');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [courseFilter, setCourseFilter] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState(null);
 
@@ -30,25 +38,25 @@ export default function AllPlansPage() {
   const handlePageChange = (newPage) => {
     setPage(newPage);
     fetchPlans(newPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const fetchPlans = async (pageNum = page) => {
     try {
       setLoading(true);
       const params = {
-        view: 'public',
+        view: "public",
         sort: sortBy,
         page: pageNum,
         limit: 9,
         search: searchTerm,
-        courseCode: courseFilter
+        courseCode: courseFilter,
       };
       const data = await getStudyPlans(params, token);
       setPlans(data.plans || []);
       setPagination(data.pagination);
     } catch (error) {
-      console.error('Error fetching plans:', error);
+      console.error("Error fetching plans:", error);
     } finally {
       setLoading(false);
     }
@@ -59,9 +67,12 @@ export default function AllPlansPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-4xl font-bold text-foreground mb-3">All Study Plans</h1>
+          <h1 className="text-4xl font-bold text-foreground mb-3">
+            All Study Plans
+          </h1>
           <p className="text-lg text-muted-foreground">
-            Browse public study plans created by the community. Start an instance to begin learning.
+            Browse public study plans created by the community. Start an
+            instance to begin learning.
           </p>
         </div>
 
@@ -116,7 +127,10 @@ export default function AllPlansPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-card border border-border rounded-lg p-6 animate-pulse">
+              <div
+                key={i}
+                className="bg-card border border-border rounded-lg p-6 animate-pulse"
+              >
                 <div className="h-4 bg-muted rounded w-1/4 mb-4" />
                 <div className="h-6 bg-muted rounded w-3/4 mb-3" />
                 <div className="h-4 bg-muted rounded w-full mb-2" />
@@ -132,11 +146,13 @@ export default function AllPlansPage() {
           /* Empty State */
           <div className="text-center py-16">
             <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">No study plans found</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              No study plans found
+            </h3>
             <p className="text-muted-foreground mb-6">
               {searchTerm || courseFilter
-                ? 'Try adjusting your filters'
-                : 'Be the first to create a study plan!'}
+                ? "Try adjusting your filters"
+                : "Be the first to create a study plan!"}
             </p>
             <Link
               href="/create-plan"
@@ -147,8 +163,7 @@ export default function AllPlansPage() {
             </Link>
           </div>
         ) : (
-          <>
-            /* Plans Grid */
+          <>s
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {plans.map((plan) => (
                 <div
@@ -189,7 +204,10 @@ export default function AllPlansPage() {
 
                     {/* Creator Info */}
                     <div className="text-xs text-muted-foreground">
-                      By {plan.createdBy?.displayName || plan.createdBy?.email?.split('@')[0] || 'Anonymous'}
+                      By{" "}
+                      {plan.createdBy?.displayName ||
+                        plan.createdBy?.email?.split("@")[0] ||
+                        "Anonymous"}
                     </div>
                   </div>
 
