@@ -1,12 +1,22 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Plus, Edit, Trash2, Users, Clock, FileText, ArrowRight, BookOpen, Loader2 } from 'lucide-react';
-import { getStudyPlans, deleteStudyPlan, formatTime } from '@/lib/api';
-import useAuth from '@/hooks/useAuth';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Users,
+  Clock,
+  FileText,
+  ArrowRight,
+  BookOpen,
+  Loader2,
+} from "lucide-react";
+import { getStudyPlans, deleteStudyPlan, formatTime } from "@/lib/api";
+import useAuth from "@/hooks/useAuth";
+import toast from "react-hot-toast";
 
 export default function MyStudyPlansPage() {
   const router = useRouter();
@@ -14,71 +24,93 @@ export default function MyStudyPlansPage() {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [courseFilter, setCourseFilter] = useState('');
-  const [sortBy, setSortBy] = useState('newest');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [courseFilter, setCourseFilter] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/login');
+      router.push("/login");
     }
-  }, [user, authLoading]);
+  }, [user, authLoading, router]);
 
-  // Debounce search
+  // Initial fetch when user and token are available
   useEffect(() => {
-    if (user) {
+    if (user && token) {
+      fetchMyPlans(1);
+    }
+  }, [user, token]);
+
+  // Debounce search and filters
+  useEffect(() => {
+    if (user && token) {
       const timer = setTimeout(() => {
         setPage(1);
         fetchMyPlans(1);
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [searchTerm, courseFilter, sortBy, user]);
+  }, [searchTerm, courseFilter, sortBy]);
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
     fetchMyPlans(newPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const fetchMyPlans = async (pageNum = page) => {
+    if (!token) {
+      console.log("No token available, skipping fetch");
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const params = {
-        view: 'my',
+        view: "my",
         sort: sortBy,
         page: pageNum,
         limit: 9,
         search: searchTerm,
-        courseCode: courseFilter
+        courseCode: courseFilter,
       };
+      console.log("Fetching my plans with params:", params);
+      console.log("Token present:", !!token);
+      console.log("User UID:", user?.uid);
       const data = await getStudyPlans(params, token);
+      console.log("Received data:", data);
       setPlans(data.plans || []);
       setPagination(data.pagination);
     } catch (error) {
-      console.error('Error fetching plans:', error);
-      toast.error('Failed to load study plans');
+      console.error("Error fetching plans:", error);
+      console.error("Error details:", error.message);
+      toast.error(error.message || "Failed to load study plans");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this study plan? This action cannot be undone.')) {
+    if (
+      !confirm(
+        "Are you sure you want to delete this study plan? This action cannot be undone."
+      )
+    ) {
       return;
     }
 
     try {
       setDeletingId(id);
       await deleteStudyPlan(id, token);
-      toast.success('Study plan deleted successfully');
+      toast.success("Study plan deleted successfully");
       // Refresh to respect pagination
       fetchMyPlans(page);
     } catch (error) {
-      console.error('Error deleting plan:', error);
-      toast.error('Failed to delete study plan');
+      console.error("Error deleting plan:", error);
+      toast.error("Failed to delete study plan");
     } finally {
       setDeletingId(null);
     }
@@ -94,7 +126,9 @@ export default function MyStudyPlansPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-4xl font-bold text-foreground mb-3">My Study Plans</h1>
+            <h1 className="text-4xl font-bold text-foreground mb-3">
+              My Study Plans
+            </h1>
             <p className="text-lg text-muted-foreground">
               Plans you created or have been shared with you
             </p>
@@ -114,7 +148,21 @@ export default function MyStudyPlansPage() {
             {/* Search */}
             <div className="relative">
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </svg>
               </div>
               <input
                 type="text"
@@ -128,7 +176,20 @@ export default function MyStudyPlansPage() {
             {/* Course Code Filter */}
             <div className="relative">
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4"
+                >
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                </svg>
               </div>
               <input
                 type="text"
@@ -163,7 +224,10 @@ export default function MyStudyPlansPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-card border border-border rounded-lg p-6 animate-pulse">
+              <div
+                key={i}
+                className="bg-card border border-border rounded-lg p-6 animate-pulse"
+              >
                 <div className="h-4 bg-muted rounded w-1/4 mb-4" />
                 <div className="h-6 bg-muted rounded w-3/4 mb-3" />
                 <div className="h-4 bg-muted rounded w-full mb-2" />
@@ -179,11 +243,13 @@ export default function MyStudyPlansPage() {
           /* Empty State */
           <div className="text-center py-16">
             <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">No study plans found</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              No study plans found
+            </h3>
             <p className="text-muted-foreground mb-6">
               {searchTerm || courseFilter
-                ? 'Try adjusting your filters'
-                : 'Create your first study plan to get started'}
+                ? "Try adjusting your filters"
+                : "Create your first study plan to get started"}
             </p>
             <Link
               href="/create-plan"
@@ -198,10 +264,19 @@ export default function MyStudyPlansPage() {
             {/* Plans Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {plans.map((plan) => {
-                const creatorId = typeof plan.createdBy === 'object' ? plan.createdBy._id : plan.createdBy;
-                const creatorFirebaseUid = typeof plan.createdBy === 'object' ? plan.createdBy.firebaseUid : null;
-                const isCreator = (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
-                  (creatorId && user._id && creatorId.toString() === user._id.toString());
+                const creatorId =
+                  typeof plan.createdBy === "object"
+                    ? plan.createdBy._id
+                    : plan.createdBy;
+                const creatorFirebaseUid =
+                  typeof plan.createdBy === "object"
+                    ? plan.createdBy.firebaseUid
+                    : null;
+                const isCreator =
+                  (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
+                  (creatorId &&
+                    user._id &&
+                    creatorId.toString() === user._id.toString());
                 const isShared = !isCreator;
 
                 return (
@@ -271,7 +346,9 @@ export default function MyStudyPlansPage() {
 
                       {isShared && (
                         <div className="text-xs text-muted-foreground">
-                          Created by {plan.createdBy?.displayName || plan.createdBy?.email?.split('@')[0]}
+                          Created by{" "}
+                          {plan.createdBy?.displayName ||
+                            plan.createdBy?.email?.split("@")[0]}
                         </div>
                       )}
                     </div>
@@ -331,30 +408,59 @@ export default function MyStudyPlansPage() {
               <div className="text-2xl font-bold text-foreground mb-1">
                 {plans.length}
               </div>
-              <div className="text-sm text-muted-foreground">Total Study Plans</div>
+              <div className="text-sm text-muted-foreground">
+                Total Study Plans
+              </div>
             </div>
             <div className="bg-card border border-border rounded-lg p-6">
               <div className="text-2xl font-bold text-foreground mb-1">
-                {plans.filter(p => {
-                  const creatorId = typeof p.createdBy === 'object' ? p.createdBy._id : p.createdBy;
-                  const creatorFirebaseUid = typeof p.createdBy === 'object' ? p.createdBy.firebaseUid : null;
-                  return (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
-                    (creatorId && user._id && creatorId.toString() === user._id.toString());
-                }).length}
+                {
+                  plans.filter((p) => {
+                    const creatorId =
+                      typeof p.createdBy === "object"
+                        ? p.createdBy._id
+                        : p.createdBy;
+                    const creatorFirebaseUid =
+                      typeof p.createdBy === "object"
+                        ? p.createdBy.firebaseUid
+                        : null;
+                    return (
+                      (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
+                      (creatorId &&
+                        user._id &&
+                        creatorId.toString() === user._id.toString())
+                    );
+                  }).length
+                }
               </div>
-              <div className="text-sm text-muted-foreground">Created by You</div>
+              <div className="text-sm text-muted-foreground">
+                Created by You
+              </div>
             </div>
             <div className="bg-card border border-border rounded-lg p-6">
               <div className="text-2xl font-bold text-foreground mb-1">
-                {plans.filter(p => {
-                  const creatorId = typeof p.createdBy === 'object' ? p.createdBy._id : p.createdBy;
-                  const creatorFirebaseUid = typeof p.createdBy === 'object' ? p.createdBy.firebaseUid : null;
-                  const isCreator = (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
-                    (creatorId && user._id && creatorId.toString() === user._id.toString());
-                  return !isCreator;
-                }).length}
+                {
+                  plans.filter((p) => {
+                    const creatorId =
+                      typeof p.createdBy === "object"
+                        ? p.createdBy._id
+                        : p.createdBy;
+                    const creatorFirebaseUid =
+                      typeof p.createdBy === "object"
+                        ? p.createdBy.firebaseUid
+                        : null;
+                    const isCreator =
+                      (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
+                      (creatorId &&
+                        user._id &&
+                        creatorId.toString() === user._id.toString());
+                    return !isCreator;
+                  }).length
+                }
               </div>
-              <div className="text-sm text-muted-foreground">Shared with You</div>
+              <div className="text-sm text-muted-foreground">
+                Shared with You
+              </div>
             </div>
           </div>
         )}
