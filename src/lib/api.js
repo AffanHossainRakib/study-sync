@@ -3,7 +3,7 @@
  * Helper functions for making authenticated API calls to the backend
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
 /**
  * Make an authenticated API request
@@ -13,22 +13,22 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
  * @param {object} body - Request body (for POST/PUT)
  * @returns {Promise<object>} Response data
  */
-async function apiRequest(endpoint, method = 'GET', token = null, body = null) {
+async function apiRequest(endpoint, method = "GET", token = null, body = null) {
   const headers = {
-    'Content-Type': 'application/json'
+    "Content-Type": "application/json",
   };
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers["Authorization"] = `Bearer ${token}`;
     // console.log('Sending token:', token ? 'Yes' : 'No');
   }
 
   const options = {
     method,
-    headers
+    headers,
   };
 
-  if (body && (method === 'POST' || method === 'PUT')) {
+  if (body && (method === "POST" || method === "PUT")) {
     options.body = JSON.stringify(body);
   }
 
@@ -37,7 +37,7 @@ async function apiRequest(endpoint, method = 'GET', token = null, body = null) {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || error.error || 'API request failed');
+      throw new Error(error.message || error.error || "API request failed");
     }
 
     return await response.json();
@@ -51,89 +51,109 @@ async function apiRequest(endpoint, method = 'GET', token = null, body = null) {
 
 export const getStudyPlans = async (params = {}, token = null) => {
   const queryString = new URLSearchParams(params).toString();
-  const endpoint = `/api/study-plans${queryString ? `?${queryString}` : ''}`;
-  const data = await apiRequest(endpoint, 'GET', token);
+  const endpoint = `/api/study-plans${queryString ? `?${queryString}` : ""}`;
+  const data = await apiRequest(endpoint, "GET", token);
   return data;
 };
 
 export const getStudyPlanById = async (id, token = null) => {
-  return apiRequest(`/api/study-plans/${id}`, 'GET', token);
+  return apiRequest(`/api/study-plans/${id}`, "GET", token);
 };
 
 export const createStudyPlan = async (data, token) => {
-  return apiRequest('/api/study-plans', 'POST', token, data);
+  return apiRequest("/api/study-plans", "POST", token, data);
 };
 
 export const updateStudyPlan = async (id, data, token) => {
-  return apiRequest(`/api/study-plans/${id}`, 'PUT', token, data);
+  return apiRequest(`/api/study-plans/${id}`, "PUT", token, data);
 };
 
 export const deleteStudyPlan = async (id, token) => {
-  return apiRequest(`/api/study-plans/${id}`, 'DELETE', token);
+  return apiRequest(`/api/study-plans/${id}`, "DELETE", token);
 };
 
 export const shareStudyPlan = async (id, email, token) => {
-  return apiRequest(`/api/study-plans/${id}/share`, 'POST', token, { email });
+  return apiRequest(`/api/study-plans/${id}/share`, "POST", token, { email });
 };
 
 export const removeCollaborator = async (id, userId, token) => {
-  return apiRequest(`/api/study-plans/${id}/collaborators/${userId}`, 'DELETE', token);
+  return apiRequest(
+    `/api/study-plans/${id}/collaborators/${userId}`,
+    "DELETE",
+    token
+  );
 };
 
 // ==================== Resources ====================
 
 export const createOrGetResource = async (data, token) => {
-  return apiRequest('/api/resources', 'POST', token, data);
+  return apiRequest("/api/resources", "POST", token, data);
 };
 
 export const getResourceById = async (id) => {
-  return apiRequest(`/api/resources/${id}`, 'GET');
+  return apiRequest(`/api/resources/${id}`, "GET");
 };
 
 export const getResourcesByIds = async (ids) => {
-  const idsParam = Array.isArray(ids) ? ids.join(',') : ids;
-  return apiRequest(`/api/resources/bulk?ids=${idsParam}`, 'GET');
+  const idsParam = Array.isArray(ids) ? ids.join(",") : ids;
+  return apiRequest(`/api/resources/bulk?ids=${idsParam}`, "GET");
 };
 
 // ==================== Instances ====================
 
 export const getInstances = async (token) => {
-  return apiRequest('/api/instances', 'GET', token);
+  return apiRequest("/api/instances", "GET", token);
 };
 
 export const getInstanceById = async (id, token) => {
-  return apiRequest(`/api/instances/${id}`, 'GET', token);
+  return apiRequest(`/api/instances/${id}`, "GET", token);
 };
 
 export const createInstance = async (data, token) => {
-  return apiRequest('/api/instances', 'POST', token, data);
+  return apiRequest("/api/instances", "POST", token, data);
 };
 
 export const updateInstance = async (id, data, token) => {
-  return apiRequest(`/api/instances/${id}`, 'PUT', token, data);
+  return apiRequest(`/api/instances/${id}`, "PUT", token, data);
 };
 
 export const deleteInstance = async (id, token) => {
-  return apiRequest(`/api/instances/${id}`, 'DELETE', token);
+  return apiRequest(`/api/instances/${id}`, "DELETE", token);
 };
 
 // ==================== User Progress ====================
 
 export const getUserProgress = async (token) => {
-  return apiRequest('/api/user-progress', 'GET', token);
+  return apiRequest("/api/user-progress", "GET", token);
 };
 
-export const toggleResourceCompletion = async (resourceId, completed, token) => {
-  return apiRequest('/api/user-progress', 'POST', token, { resourceId, completed });
+export const toggleResourceCompletion = async (
+  resourceId,
+  completed,
+  token
+) => {
+  return apiRequest("/api/user-progress", "POST", token, {
+    resourceId,
+    completed,
+  });
 };
 
 export const bulkToggleCompletion = async (resourceIds, completed, token) => {
-  return apiRequest('/api/user-progress/bulk', 'POST', token, { resourceIds, completed });
+  return apiRequest("/api/user-progress/bulk", "POST", token, {
+    resourceIds,
+    completed,
+  });
 };
 
 export const checkResourcesCompletion = async (resourceIds, token) => {
-  const idsParam = Array.isArray(resourceIds) ? resourceIds.join(',') : resourceIds;
-  return apiRequest(`/api/user-progress/check?resourceIds=${idsParam}`, 'GET', token);
+  const idsParam = Array.isArray(resourceIds)
+    ? resourceIds.join(",")
+    : resourceIds;
+  return apiRequest(
+    `/api/user-progress/check?resourceIds=${idsParam}`,
+    "GET",
+    token
+  );
 };
 
 // ==================== Helper Functions ====================
@@ -144,7 +164,7 @@ export const checkResourcesCompletion = async (resourceIds, token) => {
  * @returns {string} Formatted time (e.g., "2h 30m", "45m")
  */
 export function formatTime(minutes) {
-  if (!minutes || minutes === 0) return '0m';
+  if (!minutes || minutes === 0) return "0m";
 
   const hours = Math.floor(minutes / 60);
   const mins = Math.round(minutes % 60);
@@ -165,14 +185,14 @@ export function formatTime(minutes) {
  */
 export function getResourceTypeInfo(type) {
   switch (type) {
-    case 'youtube-video':
-      return { icon: 'Youtube', label: 'Video', color: 'text-red-600' };
-    case 'pdf':
-      return { icon: 'FileText', label: 'PDF', color: 'text-blue-600' };
-    case 'article':
-      return { icon: 'FileText', label: 'Article', color: 'text-green-600' };
+    case "youtube-video":
+      return { icon: "Youtube", label: "Video", color: "text-red-600" };
+    case "pdf":
+      return { icon: "FileText", label: "PDF", color: "text-blue-600" };
+    case "article":
+      return { icon: "FileText", label: "Article", color: "text-green-600" };
     default:
-      return { icon: 'File', label: 'Resource', color: 'text-gray-600' };
+      return { icon: "File", label: "Resource", color: "text-gray-600" };
   }
 }
 
