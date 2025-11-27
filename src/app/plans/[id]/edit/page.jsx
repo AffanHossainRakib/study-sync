@@ -1,8 +1,19 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, Trash2, Youtube, FileText, Link as LinkIcon, Loader2, Share2, X, GripVertical } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import {
+  ArrowLeft,
+  Plus,
+  Trash2,
+  Youtube,
+  FileText,
+  Link as LinkIcon,
+  Loader2,
+  Share2,
+  X,
+  GripVertical,
+} from "lucide-react";
 import {
   DndContext,
   closestCenter,
@@ -10,18 +21,24 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
   useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import Link from 'next/link';
-import useAuth from '@/hooks/useAuth';
-import { getStudyPlanById, updateStudyPlan, createOrGetResource, shareStudyPlan, removeCollaborator } from '@/lib/api';
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import Link from "next/link";
+import useAuth from "@/hooks/useAuth";
+import {
+  getStudyPlanById,
+  updateStudyPlan,
+  createOrGetResource,
+  shareStudyPlan,
+  removeCollaborator,
+} from "@/lib/api";
 
 // ... (inside component)
 
@@ -29,23 +46,18 @@ const handleRemoveCollaborator = async (userId) => {
   try {
     await removeCollaborator(params.id, userId, token);
 
-    toast.success('Collaborator removed');
+    toast.success("Collaborator removed");
     await fetchPlanData();
   } catch (error) {
-    console.error('Error removing collaborator:', error);
-    toast.error('Failed to remove collaborator');
+    console.error("Error removing collaborator:", error);
+    toast.error("Failed to remove collaborator");
   }
 };
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 function SortableResourceItem({ resource, index, onRemove }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: resource.localId });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: resource.localId });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -68,13 +80,18 @@ function SortableResourceItem({ resource, index, onRemove }) {
       <div className="text-sm font-medium text-muted-foreground">
         {index + 1}
       </div>
-      <div className={`flex-shrink-0 p-2 rounded-md ${resource.type === 'youtube-video' ? 'bg-red-100 dark:bg-red-900/20' :
-        resource.type === 'pdf' ? 'bg-blue-100 dark:bg-blue-900/20' :
-          'bg-green-100 dark:bg-green-900/20'
-        }`}>
-        {resource.type === 'youtube-video' ? (
+      <div
+        className={`flex-shrink-0 p-2 rounded-md ${
+          resource.type === "youtube-video"
+            ? "bg-red-100 dark:bg-red-900/20"
+            : resource.type === "pdf"
+            ? "bg-blue-100 dark:bg-blue-900/20"
+            : "bg-green-100 dark:bg-green-900/20"
+        }`}
+      >
+        {resource.type === "youtube-video" ? (
           <Youtube className="h-4 w-4 text-red-600 dark:text-red-400" />
-        ) : resource.type === 'pdf' ? (
+        ) : resource.type === "pdf" ? (
           <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
         ) : (
           <LinkIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
@@ -85,15 +102,18 @@ function SortableResourceItem({ resource, index, onRemove }) {
           {resource.title}
         </p>
         <p className="text-xs text-muted-foreground">
-          {resource.type === 'youtube-video' && `${resource.metadata?.duration || 0} mins`}
-          {resource.type === 'pdf' && `${resource.metadata?.pages || 0} pages`}
-          {resource.type === 'article' && `${resource.metadata?.estimatedMins || 0} mins`}
+          {resource.type === "youtube-video" &&
+            `${resource.metadata?.duration || 0} mins`}
+          {resource.type === "pdf" && `${resource.metadata?.pages || 0} pages`}
+          {resource.type === "article" &&
+            `${resource.metadata?.estimatedMins || 0} mins`}
         </p>
       </div>
       <button
         type="button"
         onClick={() => onRemove()}
-        className="flex-shrink-0 p-1 text-destructive hover:text-destructive/80 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+        className="flex-shrink-0 p-2 text-destructive hover:bg-destructive/10 rounded-md transition-all"
+        title="Remove this resource"
       >
         <Trash2 className="h-4 w-4" />
       </button>
@@ -111,26 +131,26 @@ export default function EditStudyPlanPage() {
   const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState({
-    title: '',
-    shortDescription: '',
-    fullDescription: '',
-    courseCode: '',
-    isPublic: false
+    title: "",
+    shortDescription: "",
+    fullDescription: "",
+    courseCode: "",
+    isPublic: false,
   });
 
   const [resources, setResources] = useState([]);
   const [resourceForm, setResourceForm] = useState({
-    type: 'youtube-video',
-    url: '',
-    title: '',
-    pages: '',
-    minsPerPage: '3',
-    estimatedMins: ''
+    type: "youtube-video",
+    url: "",
+    title: "",
+    pages: "",
+    minsPerPage: "3",
+    estimatedMins: "",
   });
   const [addingResource, setAddingResource] = useState(false);
 
   const [showShareDialog, setShowShareDialog] = useState(false);
-  const [shareEmail, setShareEmail] = useState('');
+  const [shareEmail, setShareEmail] = useState("");
   const [sharing, setSharing] = useState(false);
 
   const sensors = useSensors(
@@ -142,7 +162,7 @@ export default function EditStudyPlanPage() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
     if (params.id && token) {
@@ -159,39 +179,49 @@ export default function EditStudyPlanPage() {
       const creatorId = data.createdBy?._id;
       const creatorFirebaseUid = data.createdBy?.firebaseUid;
 
-      const isCreator = (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
+      const isCreator =
+        (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
         (creatorId && user._id && creatorId === user._id);
 
-      const hasEditAccess = isCreator || data.sharedWith?.some(
-        share => {
+      const hasEditAccess =
+        isCreator ||
+        data.sharedWith?.some((share) => {
           // Check shared user ID (could be populated object or string ID)
           const shareUserId = share.userId?._id || share.userId;
           // We might need to check against email if user._id isn't available on frontend user object
           // But for now, let's assume if it's shared, we trust the backend's canEdit check if we had one
           // Or better, check if the current user's email matches the shared email
-          return share.userId?.email === user.email && share.role === 'editor';
-        }
-      );
+          return share.userId?.email === user.email && share.role === "editor";
+        });
 
       if (!hasEditAccess) {
-        toast.error('You do not have permission to edit this study plan');
+        toast.error("You do not have permission to edit this study plan");
         router.push(`/plans/${params.id}`);
         return;
       }
 
       setPlan(data);
       setFormData({
-        title: data.title || '',
-        shortDescription: data.shortDescription || '',
-        fullDescription: data.fullDescription || '',
-        courseCode: data.courseCode || '',
-        isPublic: data.isPublic || false
+        title: data.title || "",
+        shortDescription: data.shortDescription || "",
+        fullDescription: data.fullDescription || "",
+        courseCode: data.courseCode || "",
+        isPublic: data.isPublic || false,
       });
-      setResources(data.resources?.map(r => ({ ...r, localId: Math.random().toString(36).substr(2, 9) })) || []);
+
+      // Backend returns resourceIds (populated), not resources
+      const existingResources = data.resourceIds || data.resources || [];
+      console.log("Loaded existing resources:", existingResources.length);
+      setResources(
+        existingResources.map((r) => ({
+          ...r,
+          localId: Math.random().toString(36).substr(2, 9),
+        }))
+      );
     } catch (error) {
-      console.error('Error fetching plan:', error);
-      toast.error('Failed to load study plan');
-      router.push('/my-plans');
+      console.error("Error fetching plan:", error);
+      toast.error("Failed to load study plan");
+      router.push("/my-plans");
     } finally {
       setLoading(false);
     }
@@ -199,23 +229,23 @@ export default function EditStudyPlanPage() {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleResourceFormChange = (e) => {
     const { name, value } = e.target;
-    setResourceForm(prev => ({
+    setResourceForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleAddResource = async () => {
     if (!resourceForm.url) {
-      toast.error('Please enter a URL');
+      toast.error("Please enter a URL");
       return;
     }
 
@@ -224,65 +254,73 @@ export default function EditStudyPlanPage() {
 
       let resourceData = {
         type: resourceForm.type,
-        url: resourceForm.url
+        url: resourceForm.url,
       };
 
       // Add type-specific fields
-      if (resourceForm.type === 'pdf') {
+      if (resourceForm.type === "pdf") {
         if (!resourceForm.title || !resourceForm.pages) {
-          toast.error('Please fill in all PDF fields');
+          toast.error("Please fill in all PDF fields");
           return;
         }
         resourceData = {
           ...resourceData,
           title: resourceForm.title,
           pages: parseInt(resourceForm.pages),
-          minsPerPage: parseInt(resourceForm.minsPerPage)
+          minsPerPage: parseInt(resourceForm.minsPerPage),
         };
-      } else if (resourceForm.type === 'article') {
+      } else if (resourceForm.type === "article") {
         if (!resourceForm.title || !resourceForm.estimatedMins) {
-          toast.error('Please fill in all article fields');
+          toast.error("Please fill in all article fields");
           return;
         }
         resourceData = {
           ...resourceData,
           title: resourceForm.title,
-          estimatedMins: parseInt(resourceForm.estimatedMins)
+          estimatedMins: parseInt(resourceForm.estimatedMins),
         };
       }
 
       const result = await createOrGetResource(resourceData, token);
 
-      if (resourceForm.type === 'youtube-playlist' && result.resources) {
-        const newResources = result.resources.map(r => ({ ...r, localId: Math.random().toString(36).substr(2, 9) }));
-        setResources(prev => [...prev, ...newResources]);
+      if (resourceForm.type === "youtube-playlist" && result.resources) {
+        const newResources = result.resources.map((r) => ({
+          ...r,
+          localId: Math.random().toString(36).substr(2, 9),
+        }));
+        setResources((prev) => [...prev, ...newResources]);
         toast.success(`Added ${result.resources.length} videos from playlist`);
       } else if (result.resource) {
-        const newResource = { ...result.resource, localId: Math.random().toString(36).substr(2, 9) };
-        setResources(prev => [...prev, newResource]);
-        toast.success(result.isNew ? 'Resource added' : 'Existing resource added');
+        const newResource = {
+          ...result.resource,
+          localId: Math.random().toString(36).substr(2, 9),
+        };
+        setResources((prev) => [...prev, newResource]);
+        toast.success(
+          result.isNew ? "Resource added" : "Existing resource added"
+        );
       }
 
       // Reset form
       setResourceForm({
-        type: 'youtube-video',
-        url: '',
-        title: '',
-        pages: '',
-        minsPerPage: '3',
-        estimatedMins: ''
+        type: "youtube-video",
+        url: "",
+        title: "",
+        pages: "",
+        minsPerPage: "3",
+        estimatedMins: "",
       });
     } catch (error) {
-      console.error('Error adding resource:', error);
-      toast.error(error.message || 'Failed to add resource');
+      console.error("Error adding resource:", error);
+      toast.error(error.message || "Failed to add resource");
     } finally {
       setAddingResource(false);
     }
   };
 
   const handleRemoveResource = (index) => {
-    setResources(prev => prev.filter((_, i) => i !== index));
-    toast.success('Resource removed');
+    setResources((prev) => prev.filter((_, i) => i !== index));
+    toast.success("Resource removed");
   };
 
   const handleDragEnd = (event) => {
@@ -299,21 +337,25 @@ export default function EditStudyPlanPage() {
 
   const handleShare = async () => {
     if (!shareEmail) {
-      toast.error('Please enter an email address');
+      toast.error("Please enter an email address");
       return;
     }
 
     try {
       setSharing(true);
-      await shareStudyPlan(params.id, { email: shareEmail, role: 'editor' }, token);
+      await shareStudyPlan(
+        params.id,
+        { email: shareEmail, role: "editor" },
+        token
+      );
       toast.success(`Study plan shared with ${shareEmail}`);
-      setShareEmail('');
+      setShareEmail("");
       setShowShareDialog(false);
       // Refresh plan data to show new collaborator
       await fetchPlanData();
     } catch (error) {
-      console.error('Error sharing plan:', error);
-      toast.error(error.message || 'Failed to share study plan');
+      console.error("Error sharing plan:", error);
+      toast.error(error.message || "Failed to share study plan");
     } finally {
       setSharing(false);
     }
@@ -323,22 +365,26 @@ export default function EditStudyPlanPage() {
     try {
       // API endpoint needs to support removing collaborators
       // For now, we can filter and update the sharedWith array
-      const updatedSharedWith = plan.sharedWith.filter(share =>
-        share.userId?._id !== userId
+      const updatedSharedWith = plan.sharedWith.filter(
+        (share) => share.userId?._id !== userId
       );
 
-      await updateStudyPlan(params.id, {
-        sharedWith: updatedSharedWith.map(share => ({
-          userId: share.userId._id,
-          role: share.role
-        }))
-      }, token);
+      await updateStudyPlan(
+        params.id,
+        {
+          sharedWith: updatedSharedWith.map((share) => ({
+            userId: share.userId._id,
+            role: share.role,
+          })),
+        },
+        token
+      );
 
-      toast.success('Collaborator removed');
+      toast.success("Collaborator removed");
       await fetchPlanData();
     } catch (error) {
-      console.error('Error removing collaborator:', error);
-      toast.error('Failed to remove collaborator');
+      console.error("Error removing collaborator:", error);
+      toast.error("Failed to remove collaborator");
     }
   };
 
@@ -346,7 +392,7 @@ export default function EditStudyPlanPage() {
     e.preventDefault();
 
     if (!formData.title || !formData.shortDescription || !formData.courseCode) {
-      toast.error('Please fill in all required fields');
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -355,15 +401,15 @@ export default function EditStudyPlanPage() {
 
       const updateData = {
         ...formData,
-        resourceIds: resources.map(r => r._id)
+        resourceIds: resources.map((r) => r._id),
       };
 
       await updateStudyPlan(params.id, updateData, token);
-      toast.success('Study plan updated successfully!');
+      toast.success("Study plan updated successfully!");
       router.push(`/plans/${params.id}`);
     } catch (error) {
-      console.error('Error updating study plan:', error);
-      toast.error('Failed to update study plan');
+      console.error("Error updating study plan:", error);
+      toast.error("Failed to update study plan");
     } finally {
       setSaving(false);
     }
@@ -389,7 +435,8 @@ export default function EditStudyPlanPage() {
 
   const creatorId = plan.createdBy?._id;
   const creatorFirebaseUid = plan.createdBy?.firebaseUid;
-  const isCreator = (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
+  const isCreator =
+    (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
     (creatorId && user._id && creatorId === user._id);
 
   return (
@@ -404,7 +451,9 @@ export default function EditStudyPlanPage() {
         </Link>
 
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-foreground">Edit Study Plan</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Edit Study Plan
+          </h1>
           {isCreator && (
             <button
               type="button"
@@ -422,7 +471,9 @@ export default function EditStudyPlanPage() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-foreground">Share Study Plan</h3>
+                <h3 className="text-lg font-semibold text-foreground">
+                  Share Study Plan
+                </h3>
                 <button
                   onClick={() => setShowShareDialog(false)}
                   className="text-muted-foreground hover:text-foreground transition-colors"
@@ -456,14 +507,16 @@ export default function EditStudyPlanPage() {
                       Sharing...
                     </>
                   ) : (
-                    'Share with Editor Access'
+                    "Share with Editor Access"
                   )}
                 </button>
 
                 {/* Current Collaborators */}
                 {plan.sharedWith && plan.sharedWith.length > 0 && (
                   <div className="mt-6">
-                    <h4 className="text-sm font-medium text-foreground mb-3">Current Collaborators</h4>
+                    <h4 className="text-sm font-medium text-foreground mb-3">
+                      Current Collaborators
+                    </h4>
                     <div className="space-y-2">
                       {plan.sharedWith.map((share) => (
                         <div
@@ -472,13 +525,18 @@ export default function EditStudyPlanPage() {
                         >
                           <div>
                             <p className="text-sm font-medium text-foreground">
-                              {share.userId?.displayName || share.userId?.email?.split('@')[0]}
+                              {share.userId?.displayName ||
+                                share.userId?.email?.split("@")[0]}
                             </p>
-                            <p className="text-xs text-muted-foreground">{share.userId?.email}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {share.userId?.email}
+                            </p>
                           </div>
                           {isCreator && (
                             <button
-                              onClick={() => handleRemoveCollaborator(share.userId._id)}
+                              onClick={() =>
+                                handleRemoveCollaborator(share.userId._id)
+                              }
                               className="text-destructive hover:text-destructive/80 transition-colors"
                             >
                               <X className="h-4 w-4" />
@@ -497,10 +555,15 @@ export default function EditStudyPlanPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Info */}
           <div className="bg-card border border-border rounded-lg p-6 space-y-4">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Basic Information</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Basic Information
+            </h2>
 
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Title *
               </label>
               <input
@@ -516,7 +579,10 @@ export default function EditStudyPlanPage() {
             </div>
 
             <div>
-              <label htmlFor="courseCode" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="courseCode"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Course Code *
               </label>
               <input
@@ -532,7 +598,10 @@ export default function EditStudyPlanPage() {
             </div>
 
             <div>
-              <label htmlFor="shortDescription" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="shortDescription"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Short Description *
               </label>
               <input
@@ -552,7 +621,10 @@ export default function EditStudyPlanPage() {
             </div>
 
             <div>
-              <label htmlFor="fullDescription" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="fullDescription"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Full Description (Optional)
               </label>
               <textarea
@@ -583,7 +655,9 @@ export default function EditStudyPlanPage() {
 
           {/* Add Resources */}
           <div className="bg-card border border-border rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Manage Resources</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-4">
+              Manage Resources
+            </h2>
 
             <div className="space-y-4 mb-6">
               <div>
@@ -613,15 +687,16 @@ export default function EditStudyPlanPage() {
                   value={resourceForm.url}
                   onChange={handleResourceFormChange}
                   placeholder={
-                    resourceForm.type.includes('youtube')
-                      ? 'https://www.youtube.com/watch?v=...'
-                      : 'https://example.com/resource'
+                    resourceForm.type.includes("youtube")
+                      ? "https://www.youtube.com/watch?v=..."
+                      : "https://example.com/resource"
                   }
                   className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
                 />
               </div>
 
-              {(resourceForm.type === 'pdf' || resourceForm.type === 'article') && (
+              {(resourceForm.type === "pdf" ||
+                resourceForm.type === "article") && (
                 <>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
@@ -637,7 +712,7 @@ export default function EditStudyPlanPage() {
                     />
                   </div>
 
-                  {resourceForm.type === 'pdf' ? (
+                  {resourceForm.type === "pdf" ? (
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-foreground mb-2">
@@ -710,16 +785,21 @@ export default function EditStudyPlanPage() {
             {/* Resources List */}
             {resources.length > 0 && (
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-foreground mb-3">
-                  Resources ({resources.length})
-                </h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-medium text-foreground">
+                    Resources ({resources.length})
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Drag to reorder • Click trash to remove
+                  </p>
+                </div>
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
                   onDragEnd={handleDragEnd}
                 >
                   <SortableContext
-                    items={resources.map(r => r.localId)}
+                    items={resources.map((r) => r.localId)}
                     strategy={verticalListSortingStrategy}
                   >
                     {resources.map((resource, index) => (
@@ -732,6 +812,12 @@ export default function EditStudyPlanPage() {
                     ))}
                   </SortableContext>
                 </DndContext>
+              </div>
+            )}
+            {resources.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground">
+                <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No resources added yet</p>
               </div>
             )}
           </div>
@@ -749,7 +835,7 @@ export default function EditStudyPlanPage() {
                   Saving Changes...
                 </>
               ) : (
-                'Save Changes'
+                "Save Changes"
               )}
             </button>
             <Link
