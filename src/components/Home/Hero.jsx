@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, TrendingUp, Users, BookOpen, Target } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -155,10 +156,19 @@ const Hero = () => {
             >
               <div className="flex items-center">
                 <div className="flex -space-x-2 mr-3">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div
+                  {[
+                    "https://randomuser.me/api/portraits/women/44.jpg",
+                    "https://randomuser.me/api/portraits/men/32.jpg",
+                    "https://randomuser.me/api/portraits/women/68.jpg",
+                    "https://randomuser.me/api/portraits/men/46.jpg",
+                  ].map((avatar, i) => (
+                    <Image
                       key={i}
-                      className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-500 border-2 border-background"
+                      src={avatar}
+                      alt={`Learner ${i + 1}`}
+                      width={32}
+                      height={32}
+                      className="w-8 h-8 rounded-full border-2 border-background object-cover"
                     />
                   ))}
                 </div>

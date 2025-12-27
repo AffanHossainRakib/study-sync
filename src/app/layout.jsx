@@ -17,9 +17,68 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Study Sync",
+  title: {
+    default: "StudySync - Your Personal Learning Hub",
+    template: "%s | StudySync",
+  },
   description:
-    "Study-Sync is a personalized study management web platform designed for self-learners who rely on online resources like YouTube, PDFs, slides, and articles. It provides a unified interface to create, organize, and track study plans across multiple resources and topics.",
+    "Centralize your learning journey with StudySync. Organize YouTube playlists, PDFs, and articles in one powerful platform. Track progress, collaborate on study plans, and achieve your learning goals efficiently.",
+  keywords: [
+    "study management",
+    "learning platform",
+    "study planner",
+    "YouTube learning",
+    "PDF organizer",
+    "progress tracking",
+    "self-learning",
+    "online education",
+  ],
+  authors: [{ name: "StudySync Team" }],
+  creator: "StudySync",
+  publisher: "StudySync",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL("https://thestudysync.vercel.app"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "StudySync - Your Personal Learning Hub",
+    description:
+      "Centralize your learning journey. Organize YouTube playlists, PDFs, and articles with smart progress tracking.",
+    url: "https://thestudysync.vercel.app",
+    siteName: "StudySync",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "StudySync - Your Personal Learning Hub",
+    description:
+      "Centralize your learning journey. Organize YouTube playlists, PDFs, and articles with smart progress tracking.",
+    creator: "@studysync", // Update with your actual Twitter handle if you have one
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "32x32" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export const viewport = {
