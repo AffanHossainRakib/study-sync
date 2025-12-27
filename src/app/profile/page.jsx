@@ -23,9 +23,21 @@ import {
   FileText,
   ArrowRight,
   BookOpen,
+  Bell,
+  AlertCircle,
+  CalendarDays,
+  Check,
+  Send,
 } from "lucide-react";
 import { fadeInUp } from "@/lib/animations";
-import { getStudyPlans, getInstances, formatTime } from "@/lib/api";
+import {
+  getStudyPlans,
+  getInstances,
+  formatTime,
+  getNotificationSettings,
+  updateNotificationSettings,
+  sendTestEmail,
+} from "@/lib/api";
 
 const ProfilePage = () => {
   const { user, loading: authLoading } = useAuth();
@@ -37,6 +49,23 @@ const ProfilePage = () => {
   const [photoURL, setPhotoURL] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  // Notification Settings
+  const [notificationSettings, setNotificationSettings] = useState({
+    emailReminders: true,
+    reminderTime: "09:00",
+    reminderFrequency: "daily",
+    customDays: [],
+    deadlineWarnings: true,
+    weeklyDigest: true,
+  });
+  const [loadingSettings, setLoadingSettings] = useState(true);
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [sendingTest, setSendingTest] = useState(false);
+  const [settingsMessage, setSettingsMessage] = useState({
+    type: "",
+    text: "",
+  });
 
   // Plans and Instances data
   const [plans, setPlans] = useState([]);
@@ -52,17 +81,20 @@ const ProfilePage = () => {
       setDisplayName(user.displayName || "");
       setPhotoURL(user.photoURL || "");
       fetchUserData();
+      fetchNotificationSettings();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, authLoading, router]);
 
   const fetchUserData = async () => {
     try {
       setLoadingData(true);
+      const token = await user.getIdToken();
 
       // Fetch plans and instances in parallel
       const [plansData, instancesData] = await Promise.all([
-        getStudyPlans({ view: "my", sort: "newest" }),
-        getInstances(),
+        getStudyPlans({ view: "my", sort: "newest" }, token),
+        getInstances(token),
       ]);
 
       setPlans((plansData.plans || []).slice(0, 3)); // Show only 3 recent plans
@@ -71,6 +103,22 @@ const ProfilePage = () => {
       console.error("Error fetching user data:", err);
     } finally {
       setLoadingData(false);
+    }
+  };
+
+  const fetchNotificationSettings = async () => {
+    try {
+      setLoadingSettings(true);
+      const token = await user.getIdToken();
+      const data = await getNotificationSettings(token);
+
+      if (data.notificationSettings) {
+        setNotificationSettings(data.notificationSettings);
+      }
+    } catch (err) {
+      console.error("Error fetching notification settings:", err);
+    } finally {
+      setLoadingSettings(false);
     }
   };
 
@@ -106,6 +154,84 @@ const ProfilePage = () => {
     setPhotoURL(user?.photoURL || "");
     setIsEditing(false);
     setError("");
+  };
+
+  const handleSaveNotifications = async () => {
+    if (!user) return;
+
+    setSavingSettings(true);
+    setSettingsMessage({ type: "", text: "" });
+
+    try {
+      const token = await user.getIdToken();
+      await updateNotificationSettings(notificationSettings, token);
+
+      setSettingsMessage({
+        type: "success",
+        text: "Notification settings updated successfully!",
+      });
+
+      setTimeout(() => {
+        setSettingsMessage({ type: "", text: "" });
+      }, 3000);
+    } catch (err) {
+      console.error("Error updating notification settings:", err);
+      setSettingsMessage({
+        type: "error",
+        text: err.message || "Failed to update notification settings",
+      });
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
+  const handleSendTestEmail = async () => {
+    if (!user) return;
+
+    setSendingTest(true);
+    setSettingsMessage({ type: "", text: "" });
+
+    try {
+      const token = await user.getIdToken();
+      await sendTestEmail(token);
+
+      setSettingsMessage({
+        type: "success",
+        text: "Test email sent successfully! Check your inbox.",
+      });
+
+      setTimeout(() => {
+        setSettingsMessage({ type: "", text: "" });
+      }, 5000);
+    } catch (err) {
+      console.error("Error sending test email:", err);
+      setSettingsMessage({
+        type: "error",
+        text: err.message || "Failed to send test email",
+      });
+    } finally {
+      setSendingTest(false);
+    }
+  };
+
+  const handleNotificationChange = (field, value) => {
+    setNotificationSettings((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const toggleCustomDay = (day) => {
+    setNotificationSettings((prev) => {
+      const customDays = prev.customDays.includes(day)
+        ? prev.customDays.filter((d) => d !== day)
+        : [...prev.customDays, day].sort();
+
+      return {
+        ...prev,
+        customDays,
+      };
+    });
   };
 
   if (authLoading) {
@@ -479,11 +605,312 @@ const ProfilePage = () => {
             )}
           </motion.div>
 
-          {/* Additional Info */}
+          {/* Notification Preferences Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
+            className="mt-8"
+          >
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2 mb-4">
+              <Bell className="h-6 w-6 text-primary" />
+              Notification Preferences
+            </h2>
+
+            {loadingSettings ? (
+              <div className="bg-card border border-border rounded-xl p-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+              </div>
+            ) : (
+              <div className="bg-card border border-border rounded-xl p-6 space-y-6">
+                {/* Success/Error Message */}
+                {settingsMessage.text && (
+                  <div
+                    className={`p-4 rounded-lg flex items-start gap-3 ${
+                      settingsMessage.type === "success"
+                        ? "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900"
+                        : "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900"
+                    }`}
+                  >
+                    {settingsMessage.type === "success" ? (
+                      <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                    )}
+                    <p
+                      className={`text-sm ${
+                        settingsMessage.type === "success"
+                          ? "text-green-800 dark:text-green-200"
+                          : "text-red-800 dark:text-red-200"
+                      }`}
+                    >
+                      {settingsMessage.text}
+                    </p>
+                  </div>
+                )}
+
+                {/* Email Reminders Toggle */}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <label className="flex items-center gap-2 text-base font-semibold text-foreground mb-1">
+                      <Mail className="h-5 w-5 text-primary" />
+                      Email Reminders
+                    </label>
+                    <p className="text-sm text-muted-foreground">
+                      Receive daily reminders about your active study plans
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleNotificationChange(
+                        "emailReminders",
+                        !notificationSettings.emailReminders
+                      )
+                    }
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                      notificationSettings.emailReminders
+                        ? "bg-primary"
+                        : "bg-muted"
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        notificationSettings.emailReminders
+                          ? "translate-x-5"
+                          : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Reminder Time */}
+                {notificationSettings.emailReminders && (
+                  <>
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
+                        <Clock className="h-4 w-4 text-primary" />
+                        Reminder Time
+                      </label>
+                      <input
+                        type="time"
+                        value={notificationSettings.reminderTime}
+                        onChange={(e) =>
+                          handleNotificationChange(
+                            "reminderTime",
+                            e.target.value
+                          )
+                        }
+                        className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Choose when you want to receive daily reminders
+                      </p>
+                    </div>
+
+                    {/* Reminder Frequency */}
+                    <div>
+                      <label className="flex items-center gap-2 text-sm font-medium text-foreground mb-3">
+                        <CalendarDays className="h-4 w-4 text-primary" />
+                        Reminder Frequency
+                      </label>
+                      <div className="space-y-2">
+                        {[
+                          { value: "daily", label: "Every day" },
+                          {
+                            value: "weekdays",
+                            label: "Weekdays only (Mon-Fri)",
+                          },
+                          { value: "custom", label: "Custom days" },
+                          { value: "off", label: "Off" },
+                        ].map((option) => (
+                          <label
+                            key={option.value}
+                            className="flex items-center gap-3 cursor-pointer group"
+                          >
+                            <input
+                              type="radio"
+                              name="reminderFrequency"
+                              value={option.value}
+                              checked={
+                                notificationSettings.reminderFrequency ===
+                                option.value
+                              }
+                              onChange={(e) =>
+                                handleNotificationChange(
+                                  "reminderFrequency",
+                                  e.target.value
+                                )
+                              }
+                              className="h-4 w-4 text-primary border-border focus:ring-2 focus:ring-primary cursor-pointer"
+                            />
+                            <span className="text-sm text-foreground group-hover:text-primary transition-colors">
+                              {option.label}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Custom Days Selector */}
+                    {notificationSettings.reminderFrequency === "custom" && (
+                      <div className="pl-7">
+                        <p className="text-sm font-medium text-foreground mb-2">
+                          Select days
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {[
+                            { day: 0, label: "Sun" },
+                            { day: 1, label: "Mon" },
+                            { day: 2, label: "Tue" },
+                            { day: 3, label: "Wed" },
+                            { day: 4, label: "Thu" },
+                            { day: 5, label: "Fri" },
+                            { day: 6, label: "Sat" },
+                          ].map(({ day, label }) => (
+                            <button
+                              key={day}
+                              type="button"
+                              onClick={() => toggleCustomDay(day)}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                notificationSettings.customDays.includes(day)
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+                              }`}
+                            >
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* Deadline Warnings Toggle */}
+                <div className="flex items-start justify-between gap-4 pt-2 border-t border-border">
+                  <div className="flex-1">
+                    <label className="flex items-center gap-2 text-base font-semibold text-foreground mb-1">
+                      <AlertCircle className="h-5 w-5 text-primary" />
+                      Deadline Warnings
+                    </label>
+                    <p className="text-sm text-muted-foreground">
+                      Get notified when deadlines are approaching
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleNotificationChange(
+                        "deadlineWarnings",
+                        !notificationSettings.deadlineWarnings
+                      )
+                    }
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                      notificationSettings.deadlineWarnings
+                        ? "bg-primary"
+                        : "bg-muted"
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        notificationSettings.deadlineWarnings
+                          ? "translate-x-5"
+                          : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Weekly Digest Toggle */}
+                <div className="flex items-start justify-between gap-4 pt-2 border-t border-border">
+                  <div className="flex-1">
+                    <label className="flex items-center gap-2 text-base font-semibold text-foreground mb-1">
+                      <CalendarDays className="h-5 w-5 text-primary" />
+                      Weekly Digest
+                    </label>
+                    <p className="text-sm text-muted-foreground">
+                      Receive a weekly summary of your progress every Sunday
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleNotificationChange(
+                        "weeklyDigest",
+                        !notificationSettings.weeklyDigest
+                      )
+                    }
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                      notificationSettings.weeklyDigest
+                        ? "bg-primary"
+                        : "bg-muted"
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        notificationSettings.weeklyDigest
+                          ? "translate-x-5"
+                          : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
+                  <button
+                    onClick={handleSaveNotifications}
+                    disabled={savingSettings}
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  >
+                    {savingSettings ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-5 w-5" />
+                        Save Preferences
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={handleSendTestEmail}
+                    disabled={
+                      sendingTest || !notificationSettings.emailReminders
+                    }
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-card border-2 border-border text-foreground rounded-lg font-medium hover:bg-muted transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  >
+                    {sendingTest ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="h-5 w-5" />
+                        Send Test Email
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {!notificationSettings.emailReminders && (
+                  <p className="text-xs text-muted-foreground text-center pt-2">
+                    Enable email reminders to send a test email
+                  </p>
+                )}
+              </div>
+            )}
+          </motion.div>
+
+          {/* Additional Info */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
             className="mt-8 p-4 bg-muted/30 border border-border rounded-xl"
           >
             <p className="text-sm text-muted-foreground">

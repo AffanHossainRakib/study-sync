@@ -63,10 +63,12 @@ const Navbar = () => {
     { href: "/#features", label: "Features", requiresAuth: false },
     { href: "/#reviews", label: "Reviews", requiresAuth: false },
     { href: "/#popular-plans", label: "Popular Plans", requiresAuth: false },
+    { href: "/plans", label: "All Plans", requiresAuth: false },
   ];
 
   const userLinks = [
-    { href: "/plans", label: "All Plans", requiresAuth: false },
+    { href: "/dashboard", label: "Dashboard", requiresAuth: true },
+
     { href: "/my-plans", label: "My Plans", requiresAuth: true },
     { href: "/instances", label: "My Instances", requiresAuth: true },
   ];
@@ -198,6 +200,14 @@ const Navbar = () => {
                             </p>
                           </div>
                           <div className="py-1">
+                            <Link
+                              href="/dashboard"
+                              onClick={() => setIsDropdownOpen(false)}
+                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
+                            >
+                              <BookOpen className="h-4 w-4" />
+                              Dashboard
+                            </Link>
                             <Link
                               href="/profile"
                               onClick={() => setIsDropdownOpen(false)}

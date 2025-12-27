@@ -156,6 +156,20 @@ export const checkResourcesCompletion = async (resourceIds, token) => {
   );
 };
 
+// ==================== Notifications ====================
+
+export const getNotificationSettings = async (token) => {
+  return apiRequest("/api/notifications/settings", "GET", token);
+};
+
+export const updateNotificationSettings = async (data, token) => {
+  return apiRequest("/api/notifications/settings", "PUT", token, data);
+};
+
+export const sendTestEmail = async (token) => {
+  return apiRequest("/api/notifications/test-email", "POST", token);
+};
+
 // ==================== Helper Functions ====================
 
 /**
