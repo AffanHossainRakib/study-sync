@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import useAuth from "@/hooks/useAuth";
-import { Menu, X, ChevronDown, LogOut, User, BookOpen } from "lucide-react";
+import { Menu, X, LogOut, User, BookOpen } from "lucide-react";
 
 const Navbar = () => {
   const { user, loading, logOut } = useAuth();
@@ -12,33 +12,25 @@ const Navbar = () => {
   const pathname = usePathname();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
       await logOut();
       router.push("/");
-      setIsUserMenuOpen(false);
     } catch (error) {
       console.error("Logout error:", error);
     }
   };
 
-  // Public links (visible to everyone)
-  const publicLinks = [
-    { href: "/plans", label: "All Plans" },
-  ];
-
-  // Anchor links for landing page (only show when not logged in)
-  const landingLinks = [
-    { href: "/#about", label: "About" },
-    { href: "/#features", label: "Features" },
-  ];
-
-  // Auth user links (only visible when logged in)
-  const authLinks = [
-    { href: "/instances", label: "My Instances" },
-    { href: "/my-plans", label: "My Study Plans" },
+  // Navigation links for center section
+  const centerLinks = [
+    { href: "/plans", label: "All Plans", requiresAuth: false },
+    { href: "/#how-it-works", label: "How It Works", requiresAuth: false },
+    { href: "/#features", label: "Features", requiresAuth: false },
+    { href: "/#reviews", label: "Reviews", requiresAuth: false },
+    { href: "/#popular-plans", label: "Popular Plans", requiresAuth: false },
+    { href: "/my-plans", label: "My Plans", requiresAuth: true },
+    { href: "/instances", label: "My Instances", requiresAuth: true },
   ];
 
   // Helper to determine if link is active
@@ -48,7 +40,7 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
+          {/* Logo - Left */}
           <div className="flex-shrink-0">
             <Link
               href="/"
@@ -59,107 +51,43 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:gap-6">
-            {/* Public links - always visible */}
-            {publicLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${isActive(link.href) ? "text-primary" : "text-muted-foreground"
-                  }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            {/* Landing page anchor links - only when not logged in */}
-            {!user && landingLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            {/* Auth user links - only when logged in */}
-            {user && authLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${isActive(link.href) ? "text-primary" : "text-muted-foreground"
-                  }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          {/* Center Navigation - Desktop */}
+          <div className="hidden md:flex md:items-center md:gap-6 md:flex-1 md:justify-center">
+            {centerLinks.map((link) => {
+              // Show link if it doesn't require auth, or if user is logged in
+              if (!link.requiresAuth || user) {
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`text-sm font-medium transition-colors hover:text-primary whitespace-nowrap ${
+                      isActive(link.href)
+                        ? "text-primary"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              }
+              return null;
+            })}
           </div>
 
-          {/* Right Side - Auth Buttons */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Right Side - Auth Buttons - Desktop */}
+          <div className="hidden md:flex items-center gap-3">
             {!loading && (
               <>
                 {user ? (
-                  <div className="relative">
-                    <button
-                      onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                      className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors outline-none focus:outline-none"
-                    >
-                      <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center text-primary ring-2 ring-transparent hover:ring-primary/20 transition-all">
-                        <User className="h-4 w-4" />
-                      </div>
-                      <span className="max-w-[100px] truncate">
-                        {user.displayName || user.email?.split("@")[0]}
-                      </span>
-                      <ChevronDown
-                        className={`h-4 w-4 transition-transform duration-200 ${isUserMenuOpen ? "rotate-180" : ""
-                          }`}
-                      />
-                    </button>
-
-                    {/* Dropdown Menu */}
-                    {isUserMenuOpen && (
-                      <div className="absolute right-0 top-full mt-2 w-56 origin-top-right rounded-md border border-border bg-popover py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none animate-in fade-in zoom-in-95 duration-200">
-                        <div className="px-4 py-3 text-sm text-muted-foreground border-b border-border mb-1 bg-muted/50">
-                          <p className="text-xs font-medium text-muted-foreground mb-1">
-                            Signed in as
-                          </p>
-                          <p className="text-foreground font-semibold truncate">
-                            {user.email}
-                          </p>
-                        </div>
-                        <div className="p-1">
-                          <Link
-                            href="/create-plan"
-                            className="flex w-full items-center rounded-sm px-3 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-                            onClick={() => setIsUserMenuOpen(false)}
-                          >
-                            <BookOpen className="mr-2 h-4 w-4" />
-                            Create Study Plan
-                          </Link>
-                          <Link
-                            href="/settings"
-                            className="flex w-full items-center rounded-sm px-3 py-2 text-sm text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-                            onClick={() => setIsUserMenuOpen(false)}
-                          >
-                            <User className="mr-2 h-4 w-4" />
-                            Settings
-                          </Link>
-                          <button
-                            onClick={handleLogout}
-                            className="flex w-full items-center rounded-sm px-3 py-2 text-sm text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
-                          >
-                            <LogOut className="mr-2 h-4 w-4" />
-                            Logout
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </button>
                 ) : (
-                  <div className="flex items-center gap-2">
+                  <>
                     <Link
                       href="/login"
                       className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary px-4 py-2"
@@ -170,9 +98,9 @@ const Navbar = () => {
                       href="/register"
                       className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                     >
-                      Register
+                      Sign Up
                     </Link>
-                  </div>
+                  </>
                 )}
               </>
             )}
@@ -198,61 +126,27 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-background animate-in slide-in-from-top-5 duration-200">
           <div className="space-y-1 px-4 pb-3 pt-2">
-            {/* Public links */}
-            {publicLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`block rounded-md px-3 py-2 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${isActive(link.href)
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground"
-                  }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            {/* Landing page anchor links - only when not logged in */}
-            {!user && landingLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block rounded-md px-3 py-2 text-base font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            {/* Auth user links */}
-            {user && authLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`block rounded-md px-3 py-2 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${isActive(link.href)
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground"
-                  }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            {/* Create Study Plan link for mobile */}
-            {user && (
-              <Link
-                href="/create-plan"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`block rounded-md px-3 py-2 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${isActive("/create-plan")
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground"
-                  }`}
-              >
-                Create Study Plan
-              </Link>
-            )}
+            {/* All navigation links */}
+            {centerLinks.map((link) => {
+              // Show link if it doesn't require auth, or if user is logged in
+              if (!link.requiresAuth || user) {
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`block rounded-md px-3 py-2 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
+                      isActive(link.href)
+                        ? "bg-accent text-accent-foreground"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              }
+              return null;
+            })}
           </div>
 
           <div className="border-t border-border pb-4 pt-4 bg-muted/20">
@@ -295,7 +189,7 @@ const Navbar = () => {
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="block w-full text-center rounded-md px-3 py-2 text-base font-medium text-primary-foreground bg-primary hover:bg-primary/90 shadow-sm transition-all"
                     >
-                      Register
+                      Sign Up
                     </Link>
                   </div>
                 )}
