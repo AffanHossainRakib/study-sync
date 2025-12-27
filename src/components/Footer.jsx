@@ -1,142 +1,191 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { BookOpen, Github, Twitter, Linkedin } from "lucide-react";
+import {
+  BookOpen,
+  Mail,
+  Send,
+  Github,
+  Twitter,
+  Linkedin,
+  Youtube,
+} from "lucide-react";
 
 const Footer = () => {
-  const socialLinks = [
-    { name: "Twitter", href: "https://twitter.com", icon: Twitter },
-    { name: "GitHub", href: "https://github.com", icon: Github },
-    { name: "LinkedIn", href: "https://linkedin.com", icon: Linkedin },
-  ];
+  const [email, setEmail] = useState("");
+  const [subscribeStatus, setSubscribeStatus] = useState("");
 
-  const footerSections = [
-    {
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    // Placeholder for newsletter subscription
+    if (email) {
+      setSubscribeStatus("Thanks for subscribing!");
+      setEmail("");
+      setTimeout(() => setSubscribeStatus(""), 3000);
+    }
+  };
+
+  const footerSections = {
+    product: {
       title: "Product",
       links: [
-        { name: "All Plans", href: "/plans" },
-        { name: "My Instances", href: "/instances" },
-        { name: "My Study Plans", href: "/my-plans" },
+        { label: "Features", href: "/#features" },
+        { label: "How It Works", href: "/#how-it-works" },
+        { label: "All Plans", href: "/plans" },
+        { label: "Create Plan", href: "/create-plan" },
       ],
     },
-    {
+    resources: {
       title: "Resources",
       links: [
-        { name: "How It Works", href: "/#how-it-works" },
-        { name: "Features", href: "/#features" },
-        { name: "About", href: "/#about" },
+        { label: "Documentation", href: "#" },
+        { label: "Blog", href: "#" },
+        { label: "Help Center", href: "#" },
+        { label: "API", href: "#" },
       ],
     },
-    {
-      title: "Support",
+    community: {
+      title: "Community",
       links: [
-        { name: "Help Center", href: "#" },
-        { name: "Contact Us", href: "#" },
-        { name: "FAQs", href: "#" },
+        { label: "Discord", href: "#" },
+        { label: "Twitter", href: "#" },
+        { label: "GitHub", href: "#" },
+        { label: "Support", href: "#" },
       ],
     },
-    {
-      title: "Legal",
+    company: {
+      title: "Company",
       links: [
-        { name: "Privacy Policy", href: "#" },
-        { name: "Terms of Service", href: "#" },
-        { name: "Cookie Policy", href: "#" },
+        { label: "About", href: "#" },
+        { label: "Contact", href: "#" },
+        { label: "Privacy Policy", href: "#" },
+        { label: "Terms of Service", href: "#" },
       ],
     },
-  ];
+  };
 
-  const bottomLinks = [
-    { name: "Privacy Policy", href: "#" },
-    { name: "Terms of Service", href: "#" },
+  const socialLinks = [
+    { icon: Twitter, href: "#", label: "Twitter" },
+    { icon: Github, href: "#", label: "GitHub" },
+    { icon: Linkedin, href: "#", label: "LinkedIn" },
+    { icon: Youtube, href: "#", label: "YouTube" },
   ];
-
-  // Helper function to render a column of links
-  const renderSection = (section, index) => (
-    <div key={section.title} className={index > 0 ? "mt-12 md:mt-0" : ""}>
-      <h3 className="text-sm font-semibold text-foreground tracking-wider uppercase">
-        {section.title}
-      </h3>
-      <ul className="mt-4 space-y-4">
-        {section.links.map((link) => (
-          <li key={link.name}>
-            <Link
-              href={link.href}
-              className="text-base text-muted-foreground hover:text-primary transition-colors"
-            >
-              {link.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
 
   return (
-    <footer className="w-full border-t border-border bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div className="xl:grid xl:grid-cols-3 xl:gap-8">
+    <footer className="bg-card border-t border-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12">
           {/* Brand Column */}
-          <div className="space-y-8 xl:col-span-1">
-            <Link
-              href="/"
-              className="flex items-center gap-2 font-bold text-xl text-primary tracking-tight"
-            >
-              <BookOpen className="h-6 w-6" />
-              <span>StudySync</span>
+          <div className="lg:col-span-2">
+            <Link href="/" className="inline-flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center shadow-md">
+                <BookOpen className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-xl font-bold text-foreground">
+                StudySync
+              </span>
             </Link>
-            <p className="text-base text-muted-foreground max-w-xs">
-              Centralize your self-learning journey. Organize YouTube playlists, PDFs, and articles in one place. Track progress across multiple study plans.
+            <p className="text-sm text-muted-foreground mb-6 max-w-sm">
+              Centralize your learning journey. Organize YouTube playlists,
+              PDFs, and articles in one powerful platform with smart progress
+              tracking.
             </p>
-            <div className="flex space-x-6">
-              {socialLinks.map((item) => {
-                const Icon = item.icon;
+
+            {/* Social Links */}
+            <div className="flex items-center gap-3">
+              {socialLinks.map((social) => {
+                const Icon = social.icon;
                 return (
                   <a
-                    key={item.name}
-                    href={item.href}
-                    className="text-muted-foreground hover:text-primary transition-colors"
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-lg bg-muted hover:bg-primary hover:text-primary-foreground flex items-center justify-center transition-all duration-300 hover:scale-110"
+                    aria-label={social.label}
                   >
-                    <span className="sr-only">{item.name}</span>
-                    <Icon className="h-6 w-6" />
+                    <Icon className="h-5 w-5" />
                   </a>
                 );
               })}
             </div>
           </div>
 
-          {/* Links Grid */}
-          <div className="mt-12 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
-            {/* First Group (Product & Support) */}
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              {footerSections
-                .slice(0, 2)
-                .map((section, idx) => renderSection(section, idx))}
+          {/* Links Columns */}
+          {Object.values(footerSections).map((section) => (
+            <div key={section.title}>
+              <h3 className="text-sm font-semibold text-foreground mb-4">
+                {section.title}
+              </h3>
+              <ul className="space-y-3">
+                {section.links.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-            {/* Second Group (Company & Legal) */}
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              {footerSections
-                .slice(2, 4)
-                .map((section, idx) => renderSection(section, idx))}
-            </div>
+          ))}
+        </div>
+
+        {/* Newsletter Section */}
+        <div className="border-t border-border pt-6 sm:pt-8 mb-6 sm:mb-8">
+          <div className="max-w-md">
+            <h3 className="text-sm sm:text-base font-semibold text-foreground mb-1 sm:mb-2">
+              Subscribe to our newsletter
+            </h3>
+            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
+              Get the latest updates, study tips, and feature announcements.
+            </p>
+            <form onSubmit={handleSubscribe} className="flex gap-2">
+              <div className="relative flex-1">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 rounded-lg border border-border bg-background text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg bg-primary text-primary-foreground font-medium text-xs sm:text-sm hover:bg-primary/90 transition-all duration-300 hover:scale-105 shadow-sm"
+              >
+                <Send className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              </button>
+            </form>
+            {subscribeStatus && (
+              <p className="text-sm text-green-600 dark:text-green-400 mt-2">
+                {subscribeStatus}
+              </p>
+            )}
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-base text-muted-foreground">
-            &copy; {new Date().getFullYear()} StudySync. All rights reserved.
+        <div className="border-t border-border pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
+          <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
+            © {new Date().getFullYear()} StudySync. All rights reserved.
           </p>
-          <div className="flex gap-6">
-            {bottomLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
-                {link.name}
-              </Link>
-            ))}
+          <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
+            <Link href="#" className="hover:text-primary transition-colors">
+              Privacy
+            </Link>
+            <Link href="#" className="hover:text-primary transition-colors">
+              Terms
+            </Link>
+            <Link href="#" className="hover:text-primary transition-colors">
+              Cookies
+            </Link>
           </div>
         </div>
       </div>

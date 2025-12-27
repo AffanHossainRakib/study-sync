@@ -1,67 +1,130 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { ArrowRight, BookOpen, Youtube, FileText, Clock } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import React from "react";
+import Link from "next/link";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { ArrowRight, TrendingUp, Users, BookOpen, Target } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import CountUp from "react-countup";
+import { useInView } from "react-intersection-observer";
+import { fadeInUp, fadeInRight, staggerContainer } from "@/lib/animations";
 
 const Hero = () => {
   const { user } = useAuth();
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 300], [0, 50]);
+  const y2 = useTransform(scrollY, [0, 300], [0, -30]);
+
+  const [ref, inView] = useInView({
+    threshold: 0.3,
+    triggerOnce: true,
+  });
+
+  const stats = [
+    {
+      icon: BookOpen,
+      value: 1247,
+      label: "Study Plans",
+      suffix: "+",
+      color: "from-purple-500 to-indigo-500",
+    },
+    {
+      icon: Users,
+      value: 3580,
+      label: "Active Learners",
+      suffix: "+",
+      color: "from-blue-500 to-cyan-500",
+    },
+    {
+      icon: TrendingUp,
+      value: 15420,
+      label: "Hours Tracked",
+      suffix: "+",
+      color: "from-green-500 to-emerald-500",
+    },
+    {
+      icon: Target,
+      value: 94,
+      label: "Success Rate",
+      suffix: "%",
+      color: "from-orange-500 to-pink-500",
+    },
+  ];
 
   return (
-    <section className="relative overflow-hidden bg-background py-20 sm:py-32">
-      {/* Background decoration */}
+    <section
+      id="hero"
+      className="relative min-h-[80vh] sm:min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-background via-primary/5 to-background pt-8"
+    >
+      {/* Modern gradient mesh background */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-[max(50%,25rem)] top-0 h-[64rem] w-[90rem] -translate-x-1/2 stroke-muted-foreground/10 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]">
-          <svg className="h-full w-full" aria-hidden="true">
-            <defs>
-              <pattern
-                id="hero-pattern"
-                width="200"
-                height="200"
-                x="50%"
-                y="-1"
-                patternUnits="userSpaceOnUse"
-              >
-                <path d="M100 200V.5M.5 .5H200" fill="none" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" strokeWidth="0" fill="url(#hero-pattern)" />
-          </svg>
-        </div>
+        <motion.div
+          style={{ y: y1 }}
+          className="absolute top-0 left-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-primary/20 rounded-full blur-3xl"
+        />
+        <motion.div
+          style={{ y: y2 }}
+          className="absolute bottom-0 right-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-purple-500/10 rounded-full blur-3xl"
+        />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-center">
-          {/* Text Content */}
-          <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
-            <h1>
-              <span className="block text-sm font-semibold text-primary mb-4">
-                Welcome to StudySync
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-24">
+        <div
+          className="grid lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-16 items-center"
+          ref={ref}
+        >
+          {/* Left Content - 60% */}
+          <motion.div
+            className="lg:col-span-3 text-center lg:text-left"
+            variants={staggerContainer}
+            initial="hidden"
+            animate={inView ? "visible" : "hidden"}
+          >
+            <motion.div
+              variants={fadeInUp}
+              className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6"
+            >
+              <span className="text-sm font-semibold text-primary">
+                Welcome to the Future of Learning
               </span>
-              <span className="mt-1 block text-4xl tracking-tight font-bold sm:text-5xl xl:text-6xl">
-                <span className="block text-foreground">Centralize Your</span>
-                <span className="block text-primary mt-2">Learning Journey</span>
+            </motion.div>
+
+            <motion.h1
+              variants={fadeInUp}
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight mb-4 sm:mb-6"
+            >
+              <span className="block text-foreground">Centralize Your</span>
+              <span className="block bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent mt-2">
+                Learning Journey
               </span>
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground sm:mt-8 sm:text-xl lg:text-lg xl:text-xl">
-              Stop juggling scattered YouTube playlists, PDFs, and articles. StudySync brings all your learning resources into one organized platform with smart progress tracking.
-            </p>
+            </motion.h1>
+
+            <motion.p
+              variants={fadeInUp}
+              className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
+            >
+              Stop juggling scattered YouTube playlists, PDFs, and articles.
+              StudySync brings all your learning resources into one organized
+              platform with smart progress tracking and collaboration tools.
+            </motion.p>
 
             {/* CTA Buttons */}
-            <div className="mt-8 sm:mt-10 sm:flex sm:justify-center lg:justify-start gap-4">
+            <motion.div
+              variants={fadeInUp}
+              className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start"
+            >
               {user ? (
                 <>
                   <Link
                     href="/create-plan"
-                    className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all"
+                    className="group inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-semibold rounded-xl bg-primary text-primary-foreground shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
                   >
                     Create Study Plan
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <Link
                     href="/instances"
-                    className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-base font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-all"
+                    className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-semibold rounded-xl border-2 border-primary/20 bg-background hover:bg-accent transition-all duration-300"
                   >
                     My Instances
                   </Link>
@@ -70,93 +133,94 @@ const Hero = () => {
                 <>
                   <Link
                     href="/register"
-                    className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all"
+                    className="group inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-semibold rounded-xl bg-primary text-primary-foreground shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
                   >
                     Get Started Free
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <Link
                     href="/plans"
-                    className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-base font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-all"
+                    className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base font-semibold rounded-xl border-2 border-primary/20 bg-background hover:bg-accent transition-all duration-300"
                   >
                     Browse Study Plans
                   </Link>
                 </>
               )}
+            </motion.div>
+
+            {/* Trust indicators */}
+            <motion.div
+              variants={fadeInUp}
+              className="mt-8 sm:mt-12 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs sm:text-sm text-muted-foreground"
+            >
+              <div className="flex items-center">
+                <div className="flex -space-x-2 mr-3">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-500 border-2 border-background"
+                    />
+                  ))}
+                </div>
+                <span>Join 3,500+ learners</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-yellow-500">★★★★★</span>
+                <span className="ml-1">4.9/5 rating</span>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Right Stats Cards - 40% */}
+          <motion.div
+            className="lg:col-span-2"
+            variants={staggerContainer}
+            initial="hidden"
+            animate={inView ? "visible" : "hidden"}
+          >
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-4">
+              {stats.map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    variants={fadeInRight}
+                    custom={index}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    className="group relative bg-card border border-border rounded-xl sm:rounded-2xl p-3 sm:p-6 hover:shadow-2xl hover:border-primary/50 transition-all duration-300"
+                  >
+                    {/* Gradient background on hover */}
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-5 rounded-xl sm:rounded-2xl transition-opacity duration-300`}
+                    />
+
+                    <div className="relative flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-4">
+                      <div
+                        className={`flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-gradient-to-r ${stat.color} flex items-center justify-center shadow-lg`}
+                      >
+                        <Icon className="h-5 w-5 sm:h-7 sm:w-7 text-white" />
+                      </div>
+                      <div className="text-center sm:text-left">
+                        <div className="text-xl sm:text-3xl font-bold text-foreground flex items-baseline justify-center sm:justify-start">
+                          {inView && (
+                            <CountUp
+                              end={stat.value}
+                              duration={2.5}
+                              separator=","
+                              suffix={stat.suffix}
+                            />
+                          )}
+                        </div>
+                        <div className="text-xs sm:text-sm text-muted-foreground font-medium mt-0.5 sm:mt-1">
+                          {stat.label}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
-
-            {/* Stats */}
-            <div className="mt-12 grid grid-cols-3 gap-4 sm:gap-6">
-              <div>
-                <div className="text-2xl sm:text-3xl font-bold text-foreground">500+</div>
-                <div className="mt-1 text-sm text-muted-foreground">Study Plans</div>
-              </div>
-              <div>
-                <div className="text-2xl sm:text-3xl font-bold text-foreground">10K+</div>
-                <div className="mt-1 text-sm text-muted-foreground">Hours Tracked</div>
-              </div>
-              <div>
-                <div className="text-2xl sm:text-3xl font-bold text-foreground">2K+</div>
-                <div className="mt-1 text-sm text-muted-foreground">Active Learners</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Visual Content */}
-          <div className="mt-16 sm:mt-24 lg:mt-0 lg:col-span-6">
-            <div className="relative">
-              {/* Feature Cards */}
-              <div className="relative z-10 grid grid-cols-2 gap-4">
-                <div className="bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 rounded-md bg-red-100 dark:bg-red-900/20">
-                      <Youtube className="h-5 w-5 text-red-600 dark:text-red-400" />
-                    </div>
-                    <span className="font-semibold text-foreground">YouTube</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Auto-import playlists with video durations
-                  </p>
-                </div>
-
-                <div className="bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 rounded-md bg-blue-100 dark:bg-blue-900/20">
-                      <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <span className="font-semibold text-foreground">PDFs</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Track reading progress page by page
-                  </p>
-                </div>
-
-                <div className="bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 rounded-md bg-green-100 dark:bg-green-900/20">
-                      <BookOpen className="h-5 w-5 text-green-600 dark:text-green-400" />
-                    </div>
-                    <span className="font-semibold text-foreground">Articles</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Organize blog posts and tutorials
-                  </p>
-                </div>
-
-                <div className="bg-card border border-border rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 rounded-md bg-purple-100 dark:bg-purple-900/20">
-                      <Clock className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                    </div>
-                    <span className="font-semibold text-foreground">Progress</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Global tracking across all plans
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
