@@ -48,11 +48,15 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [instancesData, plansData] = await Promise.all([
+      const [instancesResponse, plansResponse] = await Promise.all([
         getInstances(token),
         getStudyPlans({ view: "my" }, token),
       ]);
 
+      // API returns { instances: [...] } and { studyPlans: [...] }
+      const instancesData = instancesResponse.instances || [];
+      const plansData = plansResponse.studyPlans || [];
+      
       setInstances(instancesData);
       setMyPlans(plansData);
       calculateStats(instancesData);

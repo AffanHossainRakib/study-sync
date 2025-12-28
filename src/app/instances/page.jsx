@@ -29,8 +29,9 @@ export default function MyInstancesPage() {
   const fetchInstances = async () => {
     try {
       setLoading(true);
-      const data = await getInstances(token);
-      setInstances(data);
+      const response = await getInstances(token);
+      // API returns { instances: [...] }
+      setInstances(response.instances || []);
     } catch (error) {
       console.error('Error fetching instances:', error);
       toast.error('Failed to load instances');
