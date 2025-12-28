@@ -53,8 +53,39 @@ export async function GET(request) {
           return sum;
         }, 0);
 
+        const completedTime = planResources
+          .filter((r) =>
+            instance.completedResources?.includes(r._id.toString())
+          )
+          .reduce((sum, r) => {
+            if (r.type === "youtube-video")
+              return sum + (r.metadata?.duration || 0);
+            if (r.type === "pdf")
+              return (
+                sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0)
+              );
+            if (r.type === "article")
+              return sum + (r.metadata?.estimatedMins || 0);
+            return sum;
+          }, 0);
+
+        const progress =
+          planResources.length > 0
+            ? Math.round(
+                ((instance.completedResources?.length || 0) /
+                  planResources.length) *
+                  100
+              )
+            : 0;
+
         return {
           ...instance,
+          totalResources: planResources.length,
+          totalTime,
+          completedTime,
+          remainingTime: totalTime - completedTime,
+          progress,
+          deadline: instance.endDate,
           studyPlan: {
             _id: plan._id,
             title: plan.title,

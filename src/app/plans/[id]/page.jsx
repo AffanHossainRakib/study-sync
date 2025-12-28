@@ -41,6 +41,8 @@ export default function StudyPlanDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [creatingInstance, setCreatingInstance] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [showStartDialog, setShowStartDialog] = useState(false);
+  const [endDate, setEndDate] = useState("");
   const [shareEmail, setShareEmail] = useState("");
   const [shareRole, setShareRole] = useState("editor");
   const [sharing, setSharing] = useState(false);
@@ -81,17 +83,45 @@ export default function StudyPlanDetailsPage() {
       return;
     }
 
+    // Set default end date to 30 days from now
+    const oneMonthLater = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0];
+    setEndDate(oneMonthLater);
+    setShowStartDialog(true);
+  };
+
+  const handleConfirmStart = async () => {
+    if (!endDate) {
+      toast.error("Please select a target completion date");
+      return;
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+    if (new Date(today) >= new Date(endDate)) {
+      toast.error("Target date must be in the future");
+      return;
+    }
+
     try {
       setCreatingInstance(true);
-      const result = await createInstance({ studyPlanId: params.id }, token);
-      
+      const result = await createInstance(
+        {
+          studyPlanId: params.id,
+          startDate: today,
+          endDate,
+        },
+        token
+      );
+
       // Track start study plan event
-      mixpanel.track('Start Study Plan', {
+      mixpanel.track("Start Study Plan", {
         plan_id: params.id,
         plan_title: plan?.title,
       });
-      
+
       toast.success("Instance created successfully!");
+      setShowStartDialog(false);
       router.push(`/instances/${result.instance._id}`);
     } catch (error) {
       console.error("Error creating instance:", error);
@@ -560,6 +590,71 @@ export default function StudyPlanDetailsPage() {
           </div>
         )}
       </div>
+
+      {/* Start Plan Dialog */}
+      {showStartDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-lg w-full max-w-md mx-4 shadow-xl">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-foreground">
+                  Start Study Plan
+                </h3>
+                <button
+                  onClick={() => setShowStartDialog(false)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <p className="text-sm text-muted-foreground mb-6">
+                Set your target completion date for this study plan. You can
+                always adjust it later.
+              </p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Target Completion Date
+                  </label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    min={new Date().toISOString().split("T")[0]}
+                    className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => setShowStartDialog(false)}
+                  className="flex-1 px-4 py-2 border border-input bg-background text-foreground rounded-md hover:bg-muted transition-all"
+                  disabled={creatingInstance}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmStart}
+                  disabled={creatingInstance || !endDate}
+                  className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                >
+                  {creatingInstance ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Creating...
+                    </span>
+                  ) : (
+                    "Start Plan"
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

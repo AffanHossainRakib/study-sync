@@ -49,8 +49,49 @@ export async function GET(request, { params }) {
       return sum;
     }, 0);
 
+    const completedTime = planResources
+      .filter((r) => instance.completedResources?.includes(r._id.toString()))
+      .reduce((sum, r) => {
+        if (r.type === "youtube-video")
+          return sum + (r.metadata?.duration || 0);
+        if (r.type === "pdf")
+          return (
+            sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0)
+          );
+        if (r.type === "article") return sum + (r.metadata?.estimatedMins || 0);
+        return sum;
+      }, 0);
+
+    const resourcePercent =
+      planResources.length > 0
+        ? Math.round(
+            ((instance.completedResources?.length || 0) /
+              planResources.length) *
+              100
+          )
+        : 0;
+
+    const timePercent =
+      totalTime > 0 ? Math.round((completedTime / totalTime) * 100) : 0;
+
     return createSuccessResponse({
       ...instance,
+      studyPlanId: {
+        _id: plan._id,
+        title: plan.title,
+        courseCode: plan.courseCode,
+        shortDescription: plan.shortDescription,
+        fullDescription: plan.fullDescription,
+      },
+      resources: planResources,
+      totalResources: planResources.length,
+      totalTime,
+      completedTime,
+      remainingTime: totalTime - completedTime,
+      resourcePercent,
+      timePercent,
+      startedAt: instance.startDate,
+      deadline: instance.endDate,
       studyPlan: {
         ...plan,
         resourceIds: planResources,
