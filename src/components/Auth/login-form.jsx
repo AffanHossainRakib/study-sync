@@ -81,7 +81,7 @@ const LoginForm = ({
           <div className="flex items-center">
             <FieldLabel htmlFor="password">Password</FieldLabel>
             <Link
-              href="/ForgetPassword"
+              href="/forget-password"
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
               Forgot your password?

@@ -13,6 +13,7 @@ import {
   ArrowRight,
   Loader2,
   AlertCircle,
+  Plus,
 } from "lucide-react";
 import { getInstances, getStudyPlans, formatTime } from "@/lib/api";
 import useAuth from "@/hooks/useAuth";
@@ -110,14 +111,23 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-white dark:bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Dashboard
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Welcome back, {user?.displayName || "Learner"}! Here&apos;s your
-            learning overview.
-          </p>
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+              Dashboard
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400">
+              Welcome back, {user?.displayName || "Learner"}! Here&apos;s your
+              learning overview.
+            </p>
+          </div>
+          <Link
+            href="/create-plan"
+            className="px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg hover:bg-slate-800 dark:hover:bg-slate-100 font-medium flex items-center gap-2 transition-colors"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Create Plan
+          </Link>
         </div>
 
         {/* Stats Cards */}

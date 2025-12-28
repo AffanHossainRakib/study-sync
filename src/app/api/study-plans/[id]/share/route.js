@@ -13,7 +13,7 @@ export async function POST(request, { params }) {
     const auth = await authenticate(request);
     if (auth.error) return createErrorResponse(auth.message, auth.status);
 
-    const { id } = params;
+    const { id } = await params;
     const planId = toObjectId(id);
     if (!planId) return createErrorResponse("Invalid study plan ID", 400);
 

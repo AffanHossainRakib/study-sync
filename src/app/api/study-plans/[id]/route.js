@@ -11,9 +11,16 @@ import {
  */
 export async function GET(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
+    console.log("Received plan ID:", id, "Length:", id?.length);
     const planId = toObjectId(id);
-    if (!planId) return createErrorResponse("Invalid study plan ID", 400);
+    if (!planId) {
+      console.error("Invalid ObjectId:", id, "Must be 24 hex characters");
+      return createErrorResponse(
+        `Invalid study plan ID format. Expected 24 hex characters, got ${id?.length || 0}`,
+        400
+      );
+    }
 
     const auth = await optionalAuth(request);
     const { studyPlans, users, resources } = await getCollections();
@@ -80,7 +87,7 @@ export async function PUT(request, { params }) {
     const auth = await authenticate(request);
     if (auth.error) return createErrorResponse(auth.message, auth.status);
 
-    const { id } = params;
+    const { id } = await params;
     const planId = toObjectId(id);
     if (!planId) return createErrorResponse("Invalid study plan ID", 400);
 
@@ -147,7 +154,7 @@ export async function DELETE(request, { params }) {
     const auth = await authenticate(request);
     if (auth.error) return createErrorResponse(auth.message, auth.status);
 
-    const { id } = params;
+    const { id } = await params;
     const planId = toObjectId(id);
     if (!planId) return createErrorResponse("Invalid study plan ID", 400);
 

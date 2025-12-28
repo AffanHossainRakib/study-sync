@@ -12,7 +12,7 @@ import {
 export async function GET(request, { params }) {
   try {
     const auth = await optionalAuth(request);
-    const { id } = params;
+    const { id } = await params;
     const resourceId = toObjectId(id);
     if (!resourceId) return createErrorResponse("Invalid resource ID", 400);
 
@@ -49,7 +49,7 @@ export async function PUT(request, { params }) {
     const auth = await authenticate(request);
     if (auth.error) return createErrorResponse(auth.message, auth.status);
 
-    const { id } = params;
+    const { id } = await params;
     const resourceId = toObjectId(id);
     if (!resourceId) return createErrorResponse("Invalid resource ID", 400);
 
@@ -110,7 +110,7 @@ export async function DELETE(request, { params }) {
     const auth = await authenticate(request);
     if (auth.error) return createErrorResponse(auth.message, auth.status);
 
-    const { id } = params;
+    const { id } = await params;
     const resourceId = toObjectId(id);
     if (!resourceId) return createErrorResponse("Invalid resource ID", 400);
 

@@ -13,7 +13,7 @@ export async function GET(request, { params }) {
     const auth = await authenticate(request);
     if (auth.error) return createErrorResponse(auth.message, auth.status);
 
-    const { id } = params;
+    const { id } = await params;
     const instanceId = toObjectId(id);
     if (!instanceId) return createErrorResponse("Invalid instance ID", 400);
 
@@ -72,7 +72,7 @@ export async function PUT(request, { params }) {
     const auth = await authenticate(request);
     if (auth.error) return createErrorResponse(auth.message, auth.status);
 
-    const { id } = params;
+    const { id } = await params;
     const instanceId = toObjectId(id);
     if (!instanceId) return createErrorResponse("Invalid instance ID", 400);
 
@@ -140,7 +140,7 @@ export async function DELETE(request, { params }) {
     const auth = await authenticate(request);
     if (auth.error) return createErrorResponse(auth.message, auth.status);
 
-    const { id } = params;
+    const { id } = await params;
     const instanceId = toObjectId(id);
     if (!instanceId) return createErrorResponse("Invalid instance ID", 400);
 

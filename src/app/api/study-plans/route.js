@@ -99,8 +99,13 @@ export async function GET(request) {
           return sum;
         }, 0);
 
+        // Ensure _id is properly formatted as string
+        const planId = plan._id.toString();
+        console.log("Plan ID:", planId, "Length:", planId.length);
+
         return {
           ...plan,
+          _id: planId,
           createdBy: creator
             ? {
                 _id: creator._id,

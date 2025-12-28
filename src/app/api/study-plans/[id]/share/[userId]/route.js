@@ -13,7 +13,7 @@ export async function DELETE(request, { params }) {
     const auth = await authenticate(request);
     if (auth.error) return createErrorResponse(auth.message, auth.status);
 
-    const { id, userId } = params;
+    const { id, userId } = await params;
     const planId = toObjectId(id);
     const targetUserId = toObjectId(userId);
 

@@ -183,7 +183,7 @@ export default function AllPlansPage() {
                     </div>
 
                     <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
-                      {plan.title}
+                      {plan.courseCode} - {plan.title}
                     </h3>
 
                     <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
@@ -214,7 +214,7 @@ export default function AllPlansPage() {
                   {/* Footer */}
                   <div className="px-6 py-4 bg-muted/30 border-t border-border">
                     <Link
-                      href={`/plans/${plan._id}`}
+                      href={`/plans/${String(plan._id)}`}
                       className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                     >
                       View Details

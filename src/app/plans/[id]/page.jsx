@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
+import React, { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   ArrowLeft,
   Play,
@@ -14,11 +14,16 @@ import {
   Youtube,
   ExternalLink,
   CheckCircle2,
-  Loader2
-} from 'lucide-react';
-import { getStudyPlanById, createInstance, formatTime, getResourceTypeInfo } from '@/lib/api';
-import useAuth from '@/hooks/useAuth';
-import toast from 'react-hot-toast';
+  Loader2,
+} from "lucide-react";
+import {
+  getStudyPlanById,
+  createInstance,
+  formatTime,
+  getResourceTypeInfo,
+} from "@/lib/api";
+import useAuth from "@/hooks/useAuth";
+import toast from "react-hot-toast";
 
 export default function StudyPlanDetailsPage() {
   const params = useParams();
@@ -38,11 +43,19 @@ export default function StudyPlanDetailsPage() {
   const fetchPlanDetails = async () => {
     try {
       setLoading(true);
+      console.log(
+        "Fetching plan with ID:",
+        params.id,
+        "Length:",
+        params.id?.length
+      );
       const data = await getStudyPlanById(params.id, token);
       setPlan(data);
     } catch (error) {
-      console.error('Error fetching plan:', error);
-      toast.error('Failed to load study plan');
+      console.error("Error fetching plan:", error);
+      console.error("Plan ID:", params.id, "Length:", params.id?.length);
+      toast.error(error.message || "Failed to load study plan");
+      setPlan(null);
     } finally {
       setLoading(false);
     }
@@ -50,19 +63,19 @@ export default function StudyPlanDetailsPage() {
 
   const handleStartInstance = async () => {
     if (!user) {
-      toast.error('Please login to start an instance');
-      router.push('/login');
+      toast.error("Please login to start an instance");
+      router.push("/login");
       return;
     }
 
     try {
       setCreatingInstance(true);
       const result = await createInstance({ studyPlanId: params.id }, token);
-      toast.success('Instance created successfully!');
+      toast.success("Instance created successfully!");
       router.push(`/instances/${result.instance._id}`);
     } catch (error) {
-      console.error('Error creating instance:', error);
-      toast.error('Failed to create instance');
+      console.error("Error creating instance:", error);
+      toast.error("Failed to create instance");
     } finally {
       setCreatingInstance(false);
     }
@@ -91,7 +104,9 @@ export default function StudyPlanDetailsPage() {
     return (
       <div className="min-h-screen bg-background py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Study Plan Not Found</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-4">
+            Study Plan Not Found
+          </h1>
           <Link href="/plans" className="text-primary hover:underline">
             Browse All Plans
           </Link>
@@ -119,8 +134,12 @@ export default function StudyPlanDetailsPage() {
               <span className="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium bg-primary/10 text-primary mb-3">
                 {plan.courseCode}
               </span>
-              <h1 className="text-3xl font-bold text-foreground mb-3">{plan.title}</h1>
-              <p className="text-lg text-muted-foreground mb-4">{plan.shortDescription}</p>
+              <h1 className="text-3xl font-bold text-foreground mb-3">
+                {plan.courseCode} - {plan.title}
+              </h1>
+              <p className="text-lg text-muted-foreground mb-4">
+                {plan.shortDescription}
+              </p>
             </div>
           </div>
 
@@ -142,8 +161,11 @@ export default function StudyPlanDetailsPage() {
 
           {/* Creator */}
           <div className="text-sm text-muted-foreground mb-6">
-            Created by <span className="font-medium text-foreground">
-              {plan.createdBy?.displayName || plan.createdBy?.email?.split('@')[0] || 'Anonymous'}
+            Created by{" "}
+            <span className="font-medium text-foreground">
+              {plan.createdBy?.displayName ||
+                plan.createdBy?.email?.split("@")[0] ||
+                "Anonymous"}
             </span>
           </div>
 
@@ -161,7 +183,7 @@ export default function StudyPlanDetailsPage() {
                   Creating...
                 </>
               ) : (
-                'Start This Plan'
+                "Start This Plan"
               )}
             </button>
 
@@ -187,8 +209,12 @@ export default function StudyPlanDetailsPage() {
         {/* Full Description */}
         {plan.fullDescription && (
           <div className="bg-card border border-border rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold text-foreground mb-3">Description</h2>
-            <p className="text-muted-foreground whitespace-pre-wrap">{plan.fullDescription}</p>
+            <h2 className="text-xl font-semibold text-foreground mb-3">
+              Description
+            </h2>
+            <p className="text-muted-foreground whitespace-pre-wrap">
+              {plan.fullDescription}
+            </p>
           </div>
         )}
 
@@ -202,12 +228,14 @@ export default function StudyPlanDetailsPage() {
             <div className="space-y-3">
               {plan.resourceIds.map((resource, index) => {
                 const typeInfo = getResourceTypeInfo(resource.type);
-                const Icon = typeInfo.icon === 'Youtube' ? Youtube : FileText;
-                const totalTime = resource.type === 'youtube-video'
-                  ? resource.metadata?.duration
-                  : resource.type === 'pdf'
-                    ? (resource.metadata?.pages || 0) * (resource.metadata?.minsPerPage || 0)
-                    : resource.metadata?.estimatedMins || 0;
+                const Icon = typeInfo.icon === "Youtube" ? Youtube : FileText;
+                const totalTime =
+                  resource.type === "youtube-video"
+                    ? resource.metadata?.duration
+                    : resource.type === "pdf"
+                      ? (resource.metadata?.pages || 0) *
+                        (resource.metadata?.minsPerPage || 0)
+                      : resource.metadata?.estimatedMins || 0;
 
                 return (
                   <div
@@ -215,14 +243,24 @@ export default function StudyPlanDetailsPage() {
                     className="flex items-start gap-4 p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex-shrink-0">
-                      <div className={`p-2 rounded-md ${resource.type === 'youtube-video' ? 'bg-red-100 dark:bg-red-900/20' :
-                        resource.type === 'pdf' ? 'bg-blue-100 dark:bg-blue-900/20' :
-                          'bg-green-100 dark:bg-green-900/20'
-                        }`}>
-                        <Icon className={`h-5 w-5 ${resource.type === 'youtube-video' ? 'text-red-600 dark:text-red-400' :
-                          resource.type === 'pdf' ? 'text-blue-600 dark:text-blue-400' :
-                            'text-green-600 dark:text-green-400'
-                          }`} />
+                      <div
+                        className={`p-2 rounded-md ${
+                          resource.type === "youtube-video"
+                            ? "bg-red-100 dark:bg-red-900/20"
+                            : resource.type === "pdf"
+                              ? "bg-blue-100 dark:bg-blue-900/20"
+                              : "bg-green-100 dark:bg-green-900/20"
+                        }`}
+                      >
+                        <Icon
+                          className={`h-5 w-5 ${
+                            resource.type === "youtube-video"
+                              ? "text-red-600 dark:text-red-400"
+                              : resource.type === "pdf"
+                                ? "text-blue-600 dark:text-blue-400"
+                                : "text-green-600 dark:text-green-400"
+                          }`}
+                        />
                       </div>
                     </div>
 
@@ -266,8 +304,10 @@ export default function StudyPlanDetailsPage() {
         {/* Last Modified Info */}
         {plan.lastModifiedBy && (
           <div className="mt-6 text-sm text-muted-foreground text-center">
-            Last modified by {plan.lastModifiedBy?.displayName || plan.lastModifiedBy?.email?.split('@')[0]} on{' '}
-            {new Date(plan.lastModifiedAt).toLocaleDateString()}
+            Last modified by{" "}
+            {plan.lastModifiedBy?.displayName ||
+              plan.lastModifiedBy?.email?.split("@")[0]}{" "}
+            on {new Date(plan.lastModifiedAt).toLocaleDateString()}
           </div>
         )}
       </div>
