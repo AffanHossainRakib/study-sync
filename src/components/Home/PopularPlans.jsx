@@ -133,7 +133,7 @@ const PopularPlans = () => {
                 </div>
 
                 <h3 className="text-base sm:text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2 min-h-[2.5rem] sm:min-h-[3.5rem]">
-                  {plan.title}
+                  {plan.courseCode} - {plan.title}
                 </h3>
 
                 <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mb-3 sm:mb-4">
