@@ -278,7 +278,7 @@ export default function StudyPlanDetailsPage() {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={handleStartInstance}
-              disabled={creatingInstance || !user}
+              disabled={creatingInstance}
               className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-sm hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Play className="h-5 w-5 mr-2" />
