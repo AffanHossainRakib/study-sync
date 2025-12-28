@@ -2,34 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  Plus,
-  Trash2,
-  Youtube,
-  FileText,
-  Link as LinkIcon,
-  Loader2,
-  Share2,
-  X,
-  GripVertical,
-} from "lucide-react";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { ArrowLeft, Loader2, Share2, X } from "lucide-react";
 import Link from "next/link";
 import useAuth from "@/hooks/useAuth";
 import {
@@ -37,89 +10,11 @@ import {
   updateStudyPlan,
   createOrGetResource,
   shareStudyPlan,
-  removeCollaborator,
 } from "@/lib/api";
-
-// ... (inside component)
-
-const handleRemoveCollaborator = async (userId) => {
-  try {
-    await removeCollaborator(params.id, userId, token);
-
-    toast.success("Collaborator removed");
-    await fetchPlanData();
-  } catch (error) {
-    console.error("Error removing collaborator:", error);
-    toast.error("Failed to remove collaborator");
-  }
-};
 import toast from "react-hot-toast";
-
-function SortableResourceItem({ resource, index, onRemove }) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: resource.localId });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg group"
-    >
-      <div
-        {...attributes}
-        {...listeners}
-        className="cursor-grab active:cursor-grabbing p-1 text-muted-foreground hover:text-foreground"
-      >
-        <GripVertical className="h-4 w-4" />
-      </div>
-      <div className="text-sm font-medium text-muted-foreground">
-        {index + 1}
-      </div>
-      <div
-        className={`flex-shrink-0 p-2 rounded-md ${
-          resource.type === "youtube-video"
-            ? "bg-red-100 dark:bg-red-900/20"
-            : resource.type === "pdf"
-              ? "bg-blue-100 dark:bg-blue-900/20"
-              : "bg-green-100 dark:bg-green-900/20"
-        }`}
-      >
-        {resource.type === "youtube-video" ? (
-          <Youtube className="h-4 w-4 text-red-600 dark:text-red-400" />
-        ) : resource.type === "pdf" ? (
-          <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-        ) : (
-          <LinkIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
-        )}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-foreground truncate">
-          {resource.title}
-        </p>
-        <p className="text-xs text-muted-foreground">
-          {resource.type === "youtube-video" &&
-            `${resource.metadata?.duration || 0} mins`}
-          {resource.type === "pdf" && `${resource.metadata?.pages || 0} pages`}
-          {resource.type === "article" &&
-            `${resource.metadata?.estimatedMins || 0} mins`}
-        </p>
-      </div>
-      <button
-        type="button"
-        onClick={() => onRemove()}
-        className="flex-shrink-0 p-2 text-destructive hover:bg-destructive/10 rounded-md transition-all"
-        title="Remove this resource"
-      >
-        <Trash2 className="h-4 w-4" />
-      </button>
-    </div>
-  );
-}
+import BasicInfoForm from "@/app/create-plan/components/BasicInfoForm";
+import AddResourceForm from "@/app/create-plan/components/AddResourceForm";
+import ResourceList from "@/app/create-plan/components/ResourceList";
 
 export default function EditStudyPlanPage() {
   const params = useParams();
@@ -152,13 +47,6 @@ export default function EditStudyPlanPage() {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [shareEmail, setShareEmail] = useState("");
   const [sharing, setSharing] = useState(false);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -325,11 +213,7 @@ export default function EditStudyPlanPage() {
 
     try {
       setSharing(true);
-      await shareStudyPlan(
-        params.id,
-        { email: shareEmail, role: "editor" },
-        token
-      );
+      await shareStudyPlan(params.id, shareEmail, "editor", token);
       toast.success(`Study plan shared with ${shareEmail}`);
       setShareEmail("");
       setShowShareDialog(false);
@@ -535,274 +419,20 @@ export default function EditStudyPlanPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Basic Info */}
-          <div className="bg-card border border-border rounded-lg p-6 space-y-4">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              Basic Information
-            </h2>
+          <BasicInfoForm formData={formData} onChange={handleInputChange} />
 
-            <div>
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Title *
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                placeholder="e.g., CS50 Midterm Preparation"
-                required
-                className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-              />
-            </div>
+          <AddResourceForm
+            resourceForm={resourceForm}
+            onChange={handleResourceFormChange}
+            onAdd={handleAddResource}
+            isAdding={addingResource}
+          />
 
-            <div>
-              <label
-                htmlFor="courseCode"
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Course Code *
-              </label>
-              <input
-                type="text"
-                id="courseCode"
-                name="courseCode"
-                value={formData.courseCode}
-                onChange={handleInputChange}
-                placeholder="e.g., CSE110, EEE220, ECO101"
-                required
-                className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="shortDescription"
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Short Description *
-              </label>
-              <input
-                type="text"
-                id="shortDescription"
-                name="shortDescription"
-                value={formData.shortDescription}
-                onChange={handleInputChange}
-                placeholder="Brief description (1-2 lines)"
-                required
-                maxLength={150}
-                className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                {formData.shortDescription.length}/150 characters
-              </p>
-            </div>
-
-            <div>
-              <label
-                htmlFor="fullDescription"
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Full Description (Optional)
-              </label>
-              <textarea
-                id="fullDescription"
-                name="fullDescription"
-                value={formData.fullDescription}
-                onChange={handleInputChange}
-                placeholder="Detailed description of what this study plan covers..."
-                rows={4}
-                className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground resize-none"
-              />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="isPublic"
-                name="isPublic"
-                checked={formData.isPublic}
-                onChange={handleInputChange}
-                className="h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-primary"
-              />
-              <label htmlFor="isPublic" className="text-sm text-foreground">
-                Make this plan public (others can view and clone it)
-              </label>
-            </div>
-          </div>
-
-          {/* Add Resources */}
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              Manage Resources
-            </h2>
-
-            <div className="space-y-4 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Resource Type
-                </label>
-                <select
-                  name="type"
-                  value={resourceForm.type}
-                  onChange={handleResourceFormChange}
-                  className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                >
-                  <option value="youtube-video">YouTube Video</option>
-                  <option value="youtube-playlist">YouTube Playlist</option>
-                  <option value="pdf">PDF Document</option>
-                  <option value="article">Article/Blog Post</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  URL
-                </label>
-                <input
-                  type="url"
-                  name="url"
-                  value={resourceForm.url}
-                  onChange={handleResourceFormChange}
-                  placeholder={
-                    resourceForm.type.includes("youtube")
-                      ? "https://www.youtube.com/watch?v=..."
-                      : "https://example.com/resource"
-                  }
-                  className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                />
-              </div>
-
-              {(resourceForm.type === "pdf" ||
-                resourceForm.type === "article") && (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Title
-                    </label>
-                    <input
-                      type="text"
-                      name="title"
-                      value={resourceForm.title}
-                      onChange={handleResourceFormChange}
-                      placeholder="Resource title"
-                      className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                    />
-                  </div>
-
-                  {resourceForm.type === "pdf" ? (
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          Number of Pages
-                        </label>
-                        <input
-                          type="number"
-                          name="pages"
-                          value={resourceForm.pages}
-                          onChange={handleResourceFormChange}
-                          placeholder="50"
-                          min="1"
-                          className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          Minutes per Page
-                        </label>
-                        <input
-                          type="number"
-                          name="minsPerPage"
-                          value={resourceForm.minsPerPage}
-                          onChange={handleResourceFormChange}
-                          placeholder="3"
-                          min="1"
-                          className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Estimated Reading Time (minutes)
-                      </label>
-                      <input
-                        type="number"
-                        name="estimatedMins"
-                        value={resourceForm.estimatedMins}
-                        onChange={handleResourceFormChange}
-                        placeholder="15"
-                        min="1"
-                        className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-
-              <button
-                type="button"
-                onClick={handleAddResource}
-                disabled={addingResource || !resourceForm.url}
-                className="w-full inline-flex items-center justify-center rounded-md border border-primary bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {addingResource ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Adding...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Resource
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Resources List */}
-            {resources.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-medium text-foreground">
-                    Resources ({resources.length})
-                  </h3>
-                  <p className="text-xs text-muted-foreground">
-                    Drag to reorder • Click trash to remove
-                  </p>
-                </div>
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <SortableContext
-                    items={resources.map((r) => r.localId)}
-                    strategy={verticalListSortingStrategy}
-                  >
-                    {resources.map((resource, index) => (
-                      <SortableResourceItem
-                        key={resource.localId}
-                        resource={resource}
-                        index={index}
-                        onRemove={() => handleRemoveResource(index)}
-                      />
-                    ))}
-                  </SortableContext>
-                </DndContext>
-              </div>
-            )}
-            {resources.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
-                <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No resources added yet</p>
-              </div>
-            )}
-          </div>
+          <ResourceList
+            resources={resources}
+            onReorder={setResources}
+            onRemove={handleRemoveResource}
+          />
 
           {/* Submit Buttons */}
           <div className="flex gap-4">

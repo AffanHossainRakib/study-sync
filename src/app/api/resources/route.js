@@ -66,16 +66,16 @@ export async function POST(request) {
     // Handle different resource types
     if (type === "youtube-video" && url) {
       try {
-        const videoId = url.match(
-          /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/
-        )?.[1];
-        if (videoId) {
-          const ytMetadata = await getVideoMetadata(videoId);
-          finalMetadata = { ...ytMetadata };
-          finalTitle = ytMetadata.title || finalTitle;
-        }
+        // Pass the full URL to getVideoMetadata, not just the video ID
+        const ytMetadata = await getVideoMetadata(url);
+        finalMetadata = { ...ytMetadata };
+        finalTitle = ytMetadata.title || finalTitle;
       } catch (ytError) {
-        console.warn("Failed to fetch YouTube metadata:", ytError);
+        console.error("Failed to fetch YouTube metadata:", ytError);
+        return createErrorResponse(
+          ytError.message || "Failed to fetch video metadata",
+          500
+        );
       }
 
       resourcesToCreate.push({
@@ -179,7 +179,24 @@ export async function POST(request) {
     }
 
     if (resourcesToCreate.length === 1) {
-      // Single resource
+      // Single resource - check if it already exists
+      const existingResource = await resources.findOne({
+        url: resourcesToCreate[0].url,
+      });
+
+      if (existingResource) {
+        // Resource already exists, return it
+        return createSuccessResponse(
+          {
+            message: "Resource already exists",
+            resource: existingResource,
+            isNew: false,
+          },
+          200
+        );
+      }
+
+      // Create new resource
       const result = await resources.insertOne(resourcesToCreate[0]);
       return createSuccessResponse(
         {

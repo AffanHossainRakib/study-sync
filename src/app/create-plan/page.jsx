@@ -1,36 +1,40 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, Loader2 } from 'lucide-react';
-import Link from 'next/link';
-import useAuth from '@/hooks/useAuth';
-import { createStudyPlan, updateStudyPlan, createOrGetResource } from '@/lib/api';
-import toast from 'react-hot-toast';
-import BasicInfoForm from './components/BasicInfoForm';
-import AddResourceForm from './components/AddResourceForm';
-import ResourceList from './components/ResourceList';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import Link from "next/link";
+import useAuth from "@/hooks/useAuth";
+import {
+  createStudyPlan,
+  updateStudyPlan,
+  createOrGetResource,
+} from "@/lib/api";
+import toast from "react-hot-toast";
+import BasicInfoForm from "./components/BasicInfoForm";
+import AddResourceForm from "./components/AddResourceForm";
+import ResourceList from "./components/ResourceList";
 
 export default function CreateStudyPlanPage() {
   const router = useRouter();
   const { user, token } = useAuth();
 
   const [formData, setFormData] = useState({
-    title: '',
-    shortDescription: '',
-    fullDescription: '',
-    courseCode: '',
-    isPublic: false
+    title: "",
+    shortDescription: "",
+    fullDescription: "",
+    courseCode: "",
+    isPublic: false,
   });
 
   const [resources, setResources] = useState([]);
   const [resourceForm, setResourceForm] = useState({
-    type: 'youtube-playlist',
-    url: '',
-    title: '',
-    pages: '',
-    minsPerPage: '3',
-    estimatedMins: ''
+    type: "youtube-video",
+    url: "",
+    title: "",
+    pages: "",
+    minsPerPage: "3",
+    estimatedMins: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -39,35 +43,35 @@ export default function CreateStudyPlanPage() {
   // Redirect if not logged in
   React.useEffect(() => {
     if (!user && !loading) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [user, loading, router]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleResourceFormChange = (e) => {
     const { name, value } = e.target;
-    setResourceForm(prev => ({
+    setResourceForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleAddResource = async () => {
     if (!resourceForm.url) {
-      toast.error('Please enter a URL');
+      toast.error("Please enter a URL");
       return;
     }
 
     // Validation for custom-link
-    if (resourceForm.type === 'custom-link' && !resourceForm.title) {
-      toast.error('Please provide a title for custom link');
+    if (resourceForm.type === "custom-link" && !resourceForm.title) {
+      toast.error("Please provide a title for custom link");
       return;
     }
 
@@ -76,32 +80,35 @@ export default function CreateStudyPlanPage() {
 
       let resourceData = {
         type: resourceForm.type,
-        url: resourceForm.url
+        url: resourceForm.url,
       };
 
       // Add type-specific fields
-      if (resourceForm.type === 'pdf') {
+      if (resourceForm.type === "pdf") {
         if (!resourceForm.title || !resourceForm.pages) {
-          toast.error('Please fill in all PDF fields');
+          toast.error("Please fill in all PDF fields");
           return;
         }
         resourceData = {
           ...resourceData,
           title: resourceForm.title,
           pages: parseInt(resourceForm.pages),
-          minsPerPage: parseInt(resourceForm.minsPerPage)
+          minsPerPage: parseInt(resourceForm.minsPerPage),
         };
-      } else if (resourceForm.type === 'article') {
+      } else if (resourceForm.type === "article") {
         if (!resourceForm.title || !resourceForm.estimatedMins) {
-          toast.error('Please fill in all article fields');
+          toast.error("Please fill in all article fields");
           return;
         }
         resourceData = {
           ...resourceData,
           title: resourceForm.title,
-          estimatedMins: parseInt(resourceForm.estimatedMins)
+          estimatedMins: parseInt(resourceForm.estimatedMins),
         };
-      } else if (resourceForm.type === 'google-drive' || resourceForm.type === 'custom-link') {
+      } else if (
+        resourceForm.type === "google-drive" ||
+        resourceForm.type === "custom-link"
+      ) {
         // For google-drive and custom-link, just store the link with optional title
         if (resourceForm.title) {
           resourceData.title = resourceForm.title;
@@ -110,43 +117,45 @@ export default function CreateStudyPlanPage() {
 
       const result = await createOrGetResource(resourceData, token);
 
-      if (resourceForm.type === 'youtube-playlist' && result.resources) {
+      if (resourceForm.type === "youtube-playlist" && result.resources) {
         // Add all videos from playlist
-        setResources(prev => [...prev, ...result.resources]);
+        setResources((prev) => [...prev, ...result.resources]);
         toast.success(`Added ${result.resources.length} videos from playlist`);
       } else if (result.resource) {
         // Add single resource
-        setResources(prev => [...prev, result.resource]);
-        toast.success(result.isNew ? 'Resource added' : 'Existing resource added');
+        setResources((prev) => [...prev, result.resource]);
+        toast.success(
+          result.isNew ? "Resource added" : "Existing resource added"
+        );
       }
 
       // Reset form
       setResourceForm({
-        type: 'youtube-playlist',
-        url: '',
-        title: '',
-        pages: '',
-        minsPerPage: '3',
-        estimatedMins: ''
+        type: "youtube-video",
+        url: "",
+        title: "",
+        pages: "",
+        minsPerPage: "3",
+        estimatedMins: "",
       });
     } catch (error) {
-      console.error('Error adding resource:', error);
-      toast.error(error.message || 'Failed to add resource');
+      console.error("Error adding resource:", error);
+      toast.error(error.message || "Failed to add resource");
     } finally {
       setAddingResource(false);
     }
   };
 
   const handleRemoveResource = (index) => {
-    setResources(prev => prev.filter((_, i) => i !== index));
-    toast.success('Resource removed');
+    setResources((prev) => prev.filter((_, i) => i !== index));
+    toast.success("Resource removed");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.title || !formData.shortDescription || !formData.courseCode) {
-      toast.error('Please fill in all required fields');
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -156,7 +165,7 @@ export default function CreateStudyPlanPage() {
       // Create study plan
       const planData = {
         ...formData,
-        resourceIds: []
+        resourceIds: [],
       };
 
       const planResult = await createStudyPlan(planData, token);
@@ -164,15 +173,15 @@ export default function CreateStudyPlanPage() {
 
       // Add resources to the plan if any
       if (resources.length > 0) {
-        const resourceIds = resources.map(r => r._id);
+        const resourceIds = resources.map((r) => r._id);
         await updateStudyPlan(planId, { resourceIds }, token);
       }
 
-      toast.success('Study plan created successfully!');
+      toast.success("Study plan created successfully!");
       router.push(`/plans/${planId}`);
     } catch (error) {
-      console.error('Error creating study plan:', error);
-      toast.error('Failed to create study plan');
+      console.error("Error creating study plan:", error);
+      toast.error("Failed to create study plan");
     } finally {
       setLoading(false);
     }
@@ -226,7 +235,7 @@ export default function CreateStudyPlanPage() {
                   Creating...
                 </>
               ) : (
-                'Create Study Plan'
+                "Create Study Plan"
               )}
             </button>
             <Link
