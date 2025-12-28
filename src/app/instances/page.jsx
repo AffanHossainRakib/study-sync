@@ -155,9 +155,16 @@ export default function MyInstancesPage() {
                   {/* Header */}
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-3">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-primary/10 text-primary">
-                        {instance.studyPlanId?.courseCode || "N/A"}
-                      </span>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
+                          {instance.customTitle
+                            ? instance.customTitle
+                            : instance.studyPlan?.courseCode &&
+                              instance.studyPlan?.title
+                            ? `${instance.studyPlan.courseCode} - ${instance.studyPlan.title}`
+                            : instance.studyPlan?.title || "Untitled Instance"}
+                        </h3>
+                      </div>
                       <div className="flex items-center">
                         <button
                           onClick={(e) => {
@@ -184,12 +191,6 @@ export default function MyInstancesPage() {
                         </button>
                       </div>
                     </div>
-
-                    <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
-                      {instance.customTitle ||
-                        instance.studyPlanId?.title ||
-                        "Untitled Instance"}
-                    </h3>
 
                     {instance.notes && (
                       <p className="text-sm text-muted-foreground line-clamp-2 mb-4">

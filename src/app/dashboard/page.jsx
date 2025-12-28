@@ -72,12 +72,14 @@ export default function DashboardPage() {
   const calculateStats = (instancesData) => {
     let totalCompleted = 0;
     let totalResources = 0;
+    let totalTimeSpent = 0;
 
     instancesData.forEach((instance) => {
-      const completed = instance.completedResourceIds?.length || 0;
-      const total = instance.snapshotResourceIds?.length || 0;
+      const completed = instance.completedResources || 0; // Count, not array
+      const total = instance.totalResources || 0;
       totalCompleted += completed;
       totalResources += total;
+      totalTimeSpent += instance.completedTime || 0;
     });
 
     const completionRate =
@@ -88,7 +90,7 @@ export default function DashboardPage() {
       totalCompletion: completionRate,
       completedResources: totalCompleted,
       totalResources,
-      totalTimeSpent: 0, // Will be implemented with study sessions
+      totalTimeSpent,
     });
   };
 
@@ -227,9 +229,9 @@ export default function DashboardPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {instances.slice(0, 6).map((instance) => {
-                const completed = instance.completedResourceIds?.length || 0;
-                const total = instance.snapshotResourceIds?.length || 0;
-                const percentage = total > 0 ? (completed / total) * 100 : 0;
+                const completed = instance.completedResources || 0; // Count, not array
+                const total = instance.totalResources || 0;
+                const percentage = instance.resourcePercent || 0;
 
                 return (
                   <Link

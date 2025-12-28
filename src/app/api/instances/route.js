@@ -32,6 +32,8 @@ export async function GET(request) {
       .sort({ createdAt: -1 })
       .toArray();
 
+    const { userProgress } = await getCollections();
+
     const instancesWithDetails = await Promise.all(
       userInstances.map(async (instance) => {
         const plan = await studyPlans.findOne({ _id: instance.studyPlanId });
@@ -40,6 +42,23 @@ export async function GET(request) {
         const planResources = await resources
           .find({ _id: { $in: plan.resourceIds } })
           .toArray();
+
+        // Get user progress for this instance
+        const progressRecords = await userProgress
+          .find({
+            userId: auth.user._id,
+            instanceId: instance._id,
+            resourceId: { $in: planResources.map((r) => r._id) },
+          })
+          .toArray();
+
+        // Create a map of resourceId -> completed status
+        const progressMap = new Map();
+        progressRecords.forEach((p) => {
+          if (p.completed) {
+            progressMap.set(p.resourceId.toString(), true);
+          }
+        });
 
         const totalTime = planResources.reduce((sum, r) => {
           if (r.type === "youtube-video")
@@ -53,38 +72,42 @@ export async function GET(request) {
           return sum;
         }, 0);
 
-        const completedTime = planResources
-          .filter((r) =>
-            instance.completedResources?.includes(r._id.toString())
-          )
-          .reduce((sum, r) => {
-            if (r.type === "youtube-video")
-              return sum + (r.metadata?.duration || 0);
-            if (r.type === "pdf")
-              return (
-                sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0)
-              );
-            if (r.type === "article")
-              return sum + (r.metadata?.estimatedMins || 0);
-            return sum;
-          }, 0);
+        const completedResources = planResources.filter((r) =>
+          progressMap.get(r._id.toString())
+        );
 
-        const progress =
+        const completedTime = completedResources.reduce((sum, r) => {
+          if (r.type === "youtube-video")
+            return sum + (r.metadata?.duration || 0);
+          if (r.type === "pdf")
+            return (
+              sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0)
+            );
+          if (r.type === "article")
+            return sum + (r.metadata?.estimatedMins || 0);
+          return sum;
+        }, 0);
+
+        const resourcePercent =
           planResources.length > 0
             ? Math.round(
-                ((instance.completedResources?.length || 0) /
-                  planResources.length) *
-                  100
+                (completedResources.length / planResources.length) * 100
               )
             : 0;
+
+        const timePercent =
+          totalTime > 0 ? Math.round((completedTime / totalTime) * 100) : 0;
 
         return {
           ...instance,
           totalResources: planResources.length,
+          completedResources: completedResources.length, // Count, not array
           totalTime,
           completedTime,
           remainingTime: totalTime - completedTime,
-          progress,
+          resourcePercent,
+          timePercent,
+          progress: resourcePercent,
           deadline: instance.endDate,
           studyPlan: {
             _id: plan._id,

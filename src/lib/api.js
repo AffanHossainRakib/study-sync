@@ -136,11 +136,13 @@ export const getUserProgress = async (token) => {
 };
 
 export const toggleResourceCompletion = async (
+  instanceId,
   resourceId,
   completed,
   token
 ) => {
   return apiRequest("/api/user-progress", "POST", token, {
+    instanceId,
     resourceId,
     completed,
   });

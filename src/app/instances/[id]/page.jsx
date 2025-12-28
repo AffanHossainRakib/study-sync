@@ -59,7 +59,7 @@ export default function InstanceDetailsPage() {
   const handleToggleComplete = async (resourceId, currentStatus) => {
     try {
       setTogglingResource(resourceId);
-      await toggleResourceCompletion(resourceId, !currentStatus, token);
+      await toggleResourceCompletion(instance._id, resourceId, !currentStatus, token);
 
       // Refresh instance data to update progress
       await fetchInstanceDetails();

@@ -41,6 +41,33 @@ export async function GET(request, { params }) {
       .find({ _id: { $in: plan.resourceIds } })
       .toArray();
 
+    // Get user progress for this instance
+    const { userProgress } = await getCollections();
+    const progressRecords = await userProgress
+      .find({
+        userId: auth.user._id,
+        instanceId: instanceId,
+        resourceId: { $in: planResources.map((r) => r._id) },
+      })
+      .toArray();
+
+    // Create a map of resourceId -> completed status
+    const progressMap = new Map();
+    progressRecords.forEach((p) => {
+      progressMap.set(p.resourceId.toString(), p.completed);
+    });
+
+    // Mark resources with completion status
+    const resourcesWithStatus = planResources.map((resource) => ({
+      ...resource,
+      completed: progressMap.get(resource._id.toString()) || false,
+      completedAt: progressRecords.find(
+        (p) => p.resourceId.toString() === resource._id.toString() && p.completed
+      )?.completedAt || null,
+    }));
+
+    const completedResources = resourcesWithStatus.filter((r) => r.completed);
+
     const totalTime = planResources.reduce((sum, r) => {
       if (r.type === "youtube-video") return sum + (r.metadata?.duration || 0);
       if (r.type === "pdf")
@@ -49,26 +76,20 @@ export async function GET(request, { params }) {
       return sum;
     }, 0);
 
-    const completedTime = planResources
-      .filter((r) => instance.completedResources?.includes(r._id.toString()))
-      .reduce((sum, r) => {
-        if (r.type === "youtube-video")
-          return sum + (r.metadata?.duration || 0);
-        if (r.type === "pdf")
-          return (
-            sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0)
-          );
-        if (r.type === "article") return sum + (r.metadata?.estimatedMins || 0);
-        return sum;
-      }, 0);
+    const completedTime = completedResources.reduce((sum, r) => {
+      if (r.type === "youtube-video")
+        return sum + (r.metadata?.duration || 0);
+      if (r.type === "pdf")
+        return (
+          sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0)
+        );
+      if (r.type === "article") return sum + (r.metadata?.estimatedMins || 0);
+      return sum;
+    }, 0);
 
     const resourcePercent =
       planResources.length > 0
-        ? Math.round(
-            ((instance.completedResources?.length || 0) /
-              planResources.length) *
-              100
-          )
+        ? Math.round((completedResources.length / planResources.length) * 100)
         : 0;
 
     const timePercent =
@@ -83,8 +104,9 @@ export async function GET(request, { params }) {
         shortDescription: plan.shortDescription,
         fullDescription: plan.fullDescription,
       },
-      resources: planResources,
+      resources: resourcesWithStatus,
       totalResources: planResources.length,
+      completedResources: completedResources.length, // Count, not array
       totalTime,
       completedTime,
       remainingTime: totalTime - completedTime,

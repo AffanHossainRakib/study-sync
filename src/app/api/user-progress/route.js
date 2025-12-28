@@ -82,12 +82,16 @@ export async function POST(request) {
     });
 
     const now = new Date();
+    const resourceIdStr = resId.toString();
+    const instanceCompletedResources = instance.completedResources || [];
 
     if (existingProgress) {
       // Update existing progress
+      const wasCompleted = existingProgress.completed;
+      const willBeCompleted = completed !== undefined ? completed : wasCompleted;
+      
       const updateDoc = {
-        completed:
-          completed !== undefined ? completed : existingProgress.completed,
+        completed: willBeCompleted,
         progress: progress !== undefined ? progress : existingProgress.progress,
         timeSpent:
           timeSpent !== undefined ? timeSpent : existingProgress.timeSpent,
@@ -96,13 +100,39 @@ export async function POST(request) {
         updatedAt: now,
       };
 
-      if (completed && !existingProgress.completed) {
+      if (willBeCompleted && !wasCompleted) {
         updateDoc.completedAt = now;
+      } else if (!willBeCompleted && wasCompleted) {
+        updateDoc.completedAt = null;
       }
 
       await userProgress.updateOne(
         { _id: existingProgress._id },
         { $set: updateDoc }
+      );
+
+      // Update instance's completedResources array
+      let updatedCompletedResources = [...instanceCompletedResources];
+      if (willBeCompleted && !wasCompleted) {
+        // Add to completedResources if not already there
+        if (!updatedCompletedResources.includes(resourceIdStr)) {
+          updatedCompletedResources.push(resourceIdStr);
+        }
+      } else if (!willBeCompleted && wasCompleted) {
+        // Remove from completedResources
+        updatedCompletedResources = updatedCompletedResources.filter(
+          (id) => id !== resourceIdStr
+        );
+      }
+
+      await instances.updateOne(
+        { _id: instId },
+        {
+          $set: {
+            completedResources: updatedCompletedResources,
+            updatedAt: now,
+          },
+        }
       );
 
       const updated = await userProgress.findOne({ _id: existingProgress._id });
@@ -113,21 +143,39 @@ export async function POST(request) {
       });
     } else {
       // Create new progress
+      const willBeCompleted = completed || false;
       const newProgress = {
         userId: auth.user._id,
         instanceId: instId,
         resourceId: resId,
-        completed: completed || false,
+        completed: willBeCompleted,
         progress: progress || 0,
         timeSpent: timeSpent || 0,
         notes: notes || "",
-        completedAt: completed ? now : null,
+        completedAt: willBeCompleted ? now : null,
         lastAccessedAt: now,
         createdAt: now,
         updatedAt: now,
       };
 
       const result = await userProgress.insertOne(newProgress);
+
+      // Update instance's completedResources array if completed
+      if (willBeCompleted) {
+        let updatedCompletedResources = [...instanceCompletedResources];
+        if (!updatedCompletedResources.includes(resourceIdStr)) {
+          updatedCompletedResources.push(resourceIdStr);
+        }
+        await instances.updateOne(
+          { _id: instId },
+          {
+            $set: {
+              completedResources: updatedCompletedResources,
+              updatedAt: now,
+            },
+          }
+        );
+      }
 
       return createSuccessResponse(
         {
