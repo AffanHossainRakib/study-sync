@@ -39,15 +39,22 @@ export async function GET(request) {
         const plan = await studyPlans.findOne({ _id: instance.studyPlanId });
         if (!plan) return { ...instance, studyPlan: null };
 
+        // Use snapshotResourceIds if available, otherwise fall back to plan.resourceIds (for backward compatibility)
+        const resourceIds =
+          instance.snapshotResourceIds &&
+          instance.snapshotResourceIds.length > 0
+            ? instance.snapshotResourceIds
+            : plan.resourceIds || [];
+
         const planResources = await resources
-          .find({ _id: { $in: plan.resourceIds } })
+          .find({ _id: { $in: resourceIds } })
           .toArray();
 
-        // Get user progress for this instance
+        // Get user progress for resources (GLOBAL - not per instance)
+        // If a resource is marked complete in any instance, it shows as complete everywhere
         const progressRecords = await userProgress
           .find({
             userId: auth.user._id,
-            instanceId: instance._id,
             resourceId: { $in: planResources.map((r) => r._id) },
           })
           .toArray();
@@ -67,7 +74,11 @@ export async function GET(request) {
             return (
               sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0)
             );
-          if (r.type === "article" || r.type === "google-drive" || r.type === "custom-link")
+          if (
+            r.type === "article" ||
+            r.type === "google-drive" ||
+            r.type === "custom-link"
+          )
             return sum + (r.metadata?.estimatedMins || 0);
           return sum;
         }, 0);
@@ -83,7 +94,11 @@ export async function GET(request) {
             return (
               sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0)
             );
-          if (r.type === "article" || r.type === "google-drive" || r.type === "custom-link")
+          if (
+            r.type === "article" ||
+            r.type === "google-drive" ||
+            r.type === "custom-link"
+          )
             return sum + (r.metadata?.estimatedMins || 0);
           return sum;
         }, 0);
@@ -154,9 +169,14 @@ export async function POST(request) {
       return createErrorResponse("End date must be after start date", 400);
     }
 
+    // Snapshot the plan's resources at creation time
+    // This ensures instances are independent of plan changes
+    const snapshotResourceIds = plan.resourceIds || [];
+
     const newInstance = {
       userId: auth.user._id,
       studyPlanId: planId,
+      snapshotResourceIds: snapshotResourceIds, // Snapshot of resources at creation
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       status: "active",

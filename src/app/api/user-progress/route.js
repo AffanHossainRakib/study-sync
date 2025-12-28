@@ -7,7 +7,8 @@ import {
 
 /**
  * GET /api/user-progress
- * Get user progress for resources in a study plan instance
+ * Get user progress for resources (GLOBAL - not per instance)
+ * Progress is tracked globally per user per resource
  */
 export async function GET(request) {
   try {
@@ -15,18 +16,14 @@ export async function GET(request) {
     if (auth.error) return createErrorResponse(auth.message, auth.status);
 
     const { searchParams } = new URL(request.url);
-    const instanceId = searchParams.get("instanceId");
     const resourceId = searchParams.get("resourceId");
 
     const { userProgress } = await getCollections();
 
     let query = { userId: auth.user._id };
 
-    if (instanceId) {
-      const instId = toObjectId(instanceId);
-      if (instId) query.instanceId = instId;
-    }
-
+    // instanceId is no longer used - progress is global per user per resource
+    // Only filter by resourceId if provided
     if (resourceId) {
       const resId = toObjectId(resourceId);
       if (resId) query.resourceId = resId;
@@ -75,9 +72,10 @@ export async function POST(request) {
     }
 
     // Find existing progress or create new
+    // Progress is GLOBAL per user per resource (not per instance)
+    // instanceId is only used for verification, not stored in userProgress
     const existingProgress = await userProgress.findOne({
       userId: auth.user._id,
-      instanceId: instId,
       resourceId: resId,
     });
 
@@ -143,11 +141,11 @@ export async function POST(request) {
       });
     } else {
       // Create new progress
+      // Progress is GLOBAL per user per resource (not per instance)
       const willBeCompleted = completed || false;
       const newProgress = {
         userId: auth.user._id,
-        instanceId: instId,
-        resourceId: resId,
+        resourceId: resId, // No instanceId - progress is global
         completed: willBeCompleted,
         progress: progress || 0,
         timeSpent: timeSpent || 0,

@@ -37,16 +37,21 @@ export async function GET(request, { params }) {
       });
     }
 
+    // Use snapshotResourceIds if available, otherwise fall back to plan.resourceIds (for backward compatibility)
+    const resourceIds = instance.snapshotResourceIds && instance.snapshotResourceIds.length > 0
+      ? instance.snapshotResourceIds
+      : plan.resourceIds || [];
+
     const planResources = await resources
-      .find({ _id: { $in: plan.resourceIds } })
+      .find({ _id: { $in: resourceIds } })
       .toArray();
 
-    // Get user progress for this instance
+    // Get user progress for resources (GLOBAL - not per instance)
+    // If a resource is marked complete in any instance, it shows as complete everywhere
     const { userProgress } = await getCollections();
     const progressRecords = await userProgress
       .find({
         userId: auth.user._id,
-        instanceId: instanceId,
         resourceId: { $in: planResources.map((r) => r._id) },
       })
       .toArray();
