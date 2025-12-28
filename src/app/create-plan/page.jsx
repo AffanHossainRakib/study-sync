@@ -2,11 +2,14 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, Trash2, Youtube, FileText, Link as LinkIcon, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import useAuth from '@/hooks/useAuth';
 import { createStudyPlan, updateStudyPlan, createOrGetResource } from '@/lib/api';
 import toast from 'react-hot-toast';
+import BasicInfoForm from './components/BasicInfoForm';
+import AddResourceForm from './components/AddResourceForm';
+import ResourceList from './components/ResourceList';
 
 export default function CreateStudyPlanPage() {
   const router = useRouter();
@@ -22,7 +25,7 @@ export default function CreateStudyPlanPage() {
 
   const [resources, setResources] = useState([]);
   const [resourceForm, setResourceForm] = useState({
-    type: 'youtube-video',
+    type: 'youtube-playlist',
     url: '',
     title: '',
     pages: '',
@@ -62,6 +65,12 @@ export default function CreateStudyPlanPage() {
       return;
     }
 
+    // Validation for custom-link
+    if (resourceForm.type === 'custom-link' && !resourceForm.title) {
+      toast.error('Please provide a title for custom link');
+      return;
+    }
+
     try {
       setAddingResource(true);
 
@@ -92,6 +101,11 @@ export default function CreateStudyPlanPage() {
           title: resourceForm.title,
           estimatedMins: parseInt(resourceForm.estimatedMins)
         };
+      } else if (resourceForm.type === 'google-drive' || resourceForm.type === 'custom-link') {
+        // For google-drive and custom-link, just store the link with optional title
+        if (resourceForm.title) {
+          resourceData.title = resourceForm.title;
+        }
       }
 
       const result = await createOrGetResource(resourceData, token);
@@ -108,7 +122,7 @@ export default function CreateStudyPlanPage() {
 
       // Reset form
       setResourceForm({
-        type: 'youtube-video',
+        type: 'youtube-playlist',
         url: '',
         title: '',
         pages: '',
@@ -179,266 +193,25 @@ export default function CreateStudyPlanPage() {
           Back to My Plans
         </Link>
 
-        <h1 className="text-3xl font-bold text-foreground mb-8">Create Study Plan</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-8">
+          Create Study Plan
+        </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Basic Info */}
-          <div className="bg-card border border-border rounded-lg p-6 space-y-4">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Basic Information</h2>
+          <BasicInfoForm formData={formData} onChange={handleInputChange} />
 
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
-                Title *
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleInputChange}
-                placeholder="e.g., CS50 Midterm Preparation"
-                required
-                className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-              />
-            </div>
+          <AddResourceForm
+            resourceForm={resourceForm}
+            onChange={handleResourceFormChange}
+            onAdd={handleAddResource}
+            isAdding={addingResource}
+          />
 
-            <div>
-              <label htmlFor="courseCode" className="block text-sm font-medium text-foreground mb-2">
-                Course Code *
-              </label>
-              <input
-                type="text"
-                id="courseCode"
-                name="courseCode"
-                value={formData.courseCode}
-                onChange={handleInputChange}
-                placeholder="e.g., CSE110, EEE220, ECO101"
-                required
-                className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="shortDescription" className="block text-sm font-medium text-foreground mb-2">
-                Short Description *
-              </label>
-              <input
-                type="text"
-                id="shortDescription"
-                name="shortDescription"
-                value={formData.shortDescription}
-                onChange={handleInputChange}
-                placeholder="Brief description (1-2 lines)"
-                required
-                maxLength={150}
-                className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                {formData.shortDescription.length}/150 characters
-              </p>
-            </div>
-
-            <div>
-              <label htmlFor="fullDescription" className="block text-sm font-medium text-foreground mb-2">
-                Full Description (Optional)
-              </label>
-              <textarea
-                id="fullDescription"
-                name="fullDescription"
-                value={formData.fullDescription}
-                onChange={handleInputChange}
-                placeholder="Detailed description of what this study plan covers..."
-                rows={4}
-                className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground resize-none"
-              />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="isPublic"
-                name="isPublic"
-                checked={formData.isPublic}
-                onChange={handleInputChange}
-                className="h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-primary"
-              />
-              <label htmlFor="isPublic" className="text-sm text-foreground">
-                Make this plan public (others can view and clone it)
-              </label>
-            </div>
-          </div>
-
-          {/* Add Resources */}
-          <div className="bg-card border border-border rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Add Resources</h2>
-
-            <div className="space-y-4 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Resource Type
-                </label>
-                <select
-                  name="type"
-                  value={resourceForm.type}
-                  onChange={handleResourceFormChange}
-                  className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                >
-                  <option value="youtube-video">YouTube Video</option>
-                  <option value="youtube-playlist">YouTube Playlist</option>
-                  <option value="pdf">PDF Document</option>
-                  <option value="article">Article/Blog Post</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  URL
-                </label>
-                <input
-                  type="url"
-                  name="url"
-                  value={resourceForm.url}
-                  onChange={handleResourceFormChange}
-                  placeholder={
-                    resourceForm.type.includes('youtube')
-                      ? 'https://www.youtube.com/watch?v=...'
-                      : 'https://example.com/resource'
-                  }
-                  className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                />
-              </div>
-
-              {(resourceForm.type === 'pdf' || resourceForm.type === 'article') && (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Title
-                    </label>
-                    <input
-                      type="text"
-                      name="title"
-                      value={resourceForm.title}
-                      onChange={handleResourceFormChange}
-                      placeholder="Resource title"
-                      className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                    />
-                  </div>
-
-                  {resourceForm.type === 'pdf' ? (
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          Number of Pages
-                        </label>
-                        <input
-                          type="number"
-                          name="pages"
-                          value={resourceForm.pages}
-                          onChange={handleResourceFormChange}
-                          placeholder="50"
-                          min="1"
-                          className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
-                          Minutes per Page
-                        </label>
-                        <input
-                          type="number"
-                          name="minsPerPage"
-                          value={resourceForm.minsPerPage}
-                          onChange={handleResourceFormChange}
-                          placeholder="3"
-                          min="1"
-                          className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Estimated Reading Time (minutes)
-                      </label>
-                      <input
-                        type="number"
-                        name="estimatedMins"
-                        value={resourceForm.estimatedMins}
-                        onChange={handleResourceFormChange}
-                        placeholder="15"
-                        min="1"
-                        className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-
-              <button
-                type="button"
-                onClick={handleAddResource}
-                disabled={addingResource || !resourceForm.url}
-                className="w-full inline-flex items-center justify-center rounded-md border border-primary bg-primary/10 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {addingResource ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Adding...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Resource
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Resources List */}
-            {resources.length > 0 && (
-              <div className="space-y-2">
-                <h3 className="text-sm font-medium text-foreground mb-3">
-                  Added Resources ({resources.length})
-                </h3>
-                {resources.map((resource, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg"
-                  >
-                    <div className={`flex-shrink-0 p-2 rounded-md ${resource.type === 'youtube-video' ? 'bg-red-100 dark:bg-red-900/20' :
-                        resource.type === 'pdf' ? 'bg-blue-100 dark:bg-blue-900/20' :
-                          'bg-green-100 dark:bg-green-900/20'
-                      }`}>
-                      {resource.type === 'youtube-video' ? (
-                        <Youtube className="h-4 w-4 text-red-600 dark:text-red-400" />
-                      ) : resource.type === 'pdf' ? (
-                        <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                      ) : (
-                        <LinkIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">
-                        {resource.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {resource.type === 'youtube-video' && `${resource.metadata?.duration || 0} mins`}
-                        {resource.type === 'pdf' && `${resource.metadata?.pages || 0} pages`}
-                        {resource.type === 'article' && `${resource.metadata?.estimatedMins || 0} mins`}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveResource(index)}
-                      className="flex-shrink-0 text-destructive hover:text-destructive/80 transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <ResourceList
+            resources={resources}
+            onReorder={setResources}
+            onRemove={handleRemoveResource}
+          />
 
           {/* Submit Button */}
           <div className="flex gap-4">

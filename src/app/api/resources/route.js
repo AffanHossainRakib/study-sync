@@ -51,33 +51,19 @@ export async function POST(request) {
     if (auth.error) return createErrorResponse(auth.message, auth.status);
 
     const body = await request.json();
-    const { studyPlanId, type, title, url, description, metadata = {} } = body;
+    const { type, title, url, pages, minsPerPage, estimatedMins } = body;
 
-    const planId = toObjectId(studyPlanId);
-    if (!planId) return createErrorResponse("Invalid study plan ID", 400);
-
-    const { resources, studyPlans } = await getCollections();
-
-    const plan = await studyPlans.findOne({ _id: planId });
-    if (!plan) return createErrorResponse("Study plan not found", 404);
-
-    // Check edit permissions
-    const canEdit =
-      plan.createdBy.equals(auth.user._id) ||
-      plan.sharedWith.some(
-        (s) => s.userId.equals(auth.user._id) && s.role === "editor"
-      );
-
-    if (!canEdit) {
-      return createErrorResponse(
-        "You do not have permission to add resources to this study plan",
-        403
-      );
+    if (!type || !url) {
+      return createErrorResponse("Type and URL are required", 400);
     }
 
-    let finalMetadata = { ...metadata };
+    const { resources } = await getCollections();
 
-    // Fetch YouTube metadata if type is youtube
+    let finalMetadata = {};
+    let finalTitle = title || "Untitled Resource";
+    let resourcesToCreate = [];
+
+    // Handle different resource types
     if (type === "youtube-video" && url) {
       try {
         const videoId = url.match(
@@ -85,63 +71,141 @@ export async function POST(request) {
         )?.[1];
         if (videoId) {
           const ytMetadata = await getVideoMetadata(videoId);
-          finalMetadata = { ...finalMetadata, ...ytMetadata };
+          finalMetadata = { ...ytMetadata };
+          finalTitle = ytMetadata.title || finalTitle;
         }
       } catch (ytError) {
         console.warn("Failed to fetch YouTube metadata:", ytError);
       }
+
+      resourcesToCreate.push({
+        type,
+        title: finalTitle,
+        url,
+        metadata: finalMetadata,
+        addedBy: auth.user._id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
     } else if (type === "youtube-playlist" && url) {
       try {
         const playlistId = url.match(/[?&]list=([^&]+)/)?.[1];
-        if (playlistId) {
-          const videos = await getPlaylistVideos(playlistId);
-          finalMetadata.videos = videos;
-          finalMetadata.videoCount = videos.length;
-          finalMetadata.duration = videos.reduce(
-            (sum, v) => sum + (v.duration || 0),
-            0
-          );
+        if (!playlistId) {
+          return createErrorResponse("Invalid playlist URL", 400);
         }
+
+        // getPlaylistVideos expects a URL, not just the ID
+        const videos = await getPlaylistVideos(url);
+
+        // Create individual resources for each video in playlist
+        resourcesToCreate = videos.map((video) => ({
+          type: "youtube-video",
+          title: video.title,
+          url: video.url,
+          metadata: {
+            duration: video.duration,
+            videoId: video.videoId,
+            thumbnail: video.thumbnailUrl,
+          },
+          addedBy: auth.user._id,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }));
       } catch (ytError) {
-        console.warn("Failed to fetch playlist metadata:", ytError);
+        console.error("Failed to fetch playlist:", ytError);
+        return createErrorResponse(
+          ytError.message || "Failed to fetch playlist videos",
+          500
+        );
       }
+    } else if (type === "pdf") {
+      if (!title || !pages) {
+        return createErrorResponse("Title and pages are required for PDF", 400);
+      }
+
+      finalMetadata = {
+        pages: parseInt(pages),
+        minsPerPage: parseInt(minsPerPage) || 3,
+      };
+
+      resourcesToCreate.push({
+        type,
+        title,
+        url,
+        metadata: finalMetadata,
+        addedBy: auth.user._id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    } else if (type === "article") {
+      if (!title || !estimatedMins) {
+        return createErrorResponse(
+          "Title and estimated minutes are required for article",
+          400
+        );
+      }
+
+      finalMetadata = {
+        estimatedMins: parseInt(estimatedMins),
+      };
+
+      resourcesToCreate.push({
+        type,
+        title,
+        url,
+        metadata: finalMetadata,
+        addedBy: auth.user._id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    } else if (type === "google-drive" || type === "custom-link") {
+      // For google-drive and custom-link, just store the URL with title
+      resourcesToCreate.push({
+        type,
+        title: title || url,
+        url,
+        metadata: {},
+        addedBy: auth.user._id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    } else {
+      return createErrorResponse(`Unsupported resource type: ${type}`, 400);
     }
 
-    const newResource = {
-      studyPlanId: planId,
-      type,
-      title: title || finalMetadata.title || "Untitled Resource",
-      url: url || "",
-      description: description || "",
-      metadata: finalMetadata,
-      addedBy: auth.user._id,
-      order: plan.resourceIds.length,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
+    // Insert resources
+    if (resourcesToCreate.length === 0) {
+      return createErrorResponse("No resources to create", 400);
+    }
 
-    const result = await resources.insertOne(newResource);
-
-    // Add to study plan
-    await studyPlans.updateOne(
-      { _id: planId },
-      {
-        $push: { resourceIds: result.insertedId },
-        $set: {
-          lastModifiedBy: auth.user._id,
-          lastModifiedAt: new Date(),
-          updatedAt: new Date(),
+    if (resourcesToCreate.length === 1) {
+      // Single resource
+      const result = await resources.insertOne(resourcesToCreate[0]);
+      return createSuccessResponse(
+        {
+          message: "Resource created successfully",
+          resource: { ...resourcesToCreate[0], _id: result.insertedId },
+          isNew: true,
         },
-      }
-    );
+        201
+      );
+    } else {
+      // Multiple resources (playlist)
+      const result = await resources.insertMany(resourcesToCreate);
+      const insertedResources = resourcesToCreate.map((r, i) => ({
+        ...r,
+        _id: result.insertedIds[i],
+      }));
 
-    return createSuccessResponse(
-      {
-        message: "Resource created successfully",
-        resource: { ...newResource, _id: result.insertedId },
-      },
-      201
-    );
+      return createSuccessResponse(
+        {
+          message: `${resourcesToCreate.length} resources created successfully`,
+          resources: insertedResources,
+          isNew: true,
+        },
+        201
+      );
+    }
   } catch (error) {
     console.error("Error creating resource:", error);
     return createErrorResponse("Failed to create resource", 500);
