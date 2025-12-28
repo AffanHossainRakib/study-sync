@@ -30,6 +30,7 @@ import {
 } from "@/lib/api";
 import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
+import mixpanel from "@/lib/mixpanel";
 
 export default function StudyPlanDetailsPage() {
   const params = useParams();
@@ -83,6 +84,13 @@ export default function StudyPlanDetailsPage() {
     try {
       setCreatingInstance(true);
       const result = await createInstance({ studyPlanId: params.id }, token);
+      
+      // Track start study plan event
+      mixpanel.track('Start Study Plan', {
+        plan_id: params.id,
+        plan_title: plan?.title,
+      });
+      
       toast.success("Instance created successfully!");
       router.push(`/instances/${result.instance._id}`);
     } catch (error) {
@@ -108,6 +116,14 @@ export default function StudyPlanDetailsPage() {
     try {
       setSharing(true);
       await shareStudyPlan(params.id, shareEmail, shareRole, token);
+      
+      // Track share event
+      mixpanel.track('Share Study Plan', {
+        plan_id: params.id,
+        recipient_email: shareEmail,
+        role: shareRole,
+      });
+      
       toast.success(`Study plan shared with ${shareEmail}`);
       setShareEmail("");
       setShareRole("editor");

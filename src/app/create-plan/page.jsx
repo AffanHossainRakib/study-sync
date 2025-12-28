@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import BasicInfoForm from "./components/BasicInfoForm";
 import AddResourceForm from "./components/AddResourceForm";
 import ResourceList from "./components/ResourceList";
+import mixpanel from "@/lib/mixpanel";
 
 export default function CreateStudyPlanPage() {
   const router = useRouter();
@@ -176,6 +177,12 @@ export default function CreateStudyPlanPage() {
         const resourceIds = resources.map((r) => r._id);
         await updateStudyPlan(planId, { resourceIds }, token);
       }
+
+      // Track conversion event
+      mixpanel.track("Conversion", {
+        "Conversion Type": "Study Plan Created",
+        "Conversion Value": resources.length,
+      });
 
       toast.success("Study plan created successfully!");
       router.push(`/plans/${planId}`);
