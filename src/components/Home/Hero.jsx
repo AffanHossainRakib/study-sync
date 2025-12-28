@@ -55,7 +55,7 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className="relative min-h-[80vh] sm:min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-background via-primary/5 to-background pt-8"
+      className="relative min-h-[80vh] sm:min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-background via-primary/5 to-background"
     >
       {/* Modern gradient mesh background */}
       <div className="absolute inset-0 -z-10 overflow-hidden">

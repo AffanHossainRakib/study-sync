@@ -97,7 +97,7 @@ export default function RootLayout({ children }) {
           <AuthProvider>
             <Toaster position="top-right" />
             <Navbar />
-            {children}
+            <main className="pt-16">{children}</main>
             <Footer />
           </AuthProvider>
         </ThemeProvider>
