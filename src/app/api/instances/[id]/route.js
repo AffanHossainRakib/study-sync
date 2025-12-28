@@ -168,6 +168,7 @@ export async function PUT(request, { params }) {
       "resourceSchedule",
       "reminderTime",
       "reminderEnabled",
+      "customReminders",
       "notes",
     ];
 

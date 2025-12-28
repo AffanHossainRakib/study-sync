@@ -42,7 +42,7 @@ export async function GET(request) {
         // Use snapshotResourceIds if available, otherwise fall back to plan.resourceIds (for backward compatibility)
         const resourceIds =
           instance.snapshotResourceIds &&
-          instance.snapshotResourceIds.length > 0
+            instance.snapshotResourceIds.length > 0
             ? instance.snapshotResourceIds
             : plan.resourceIds || [];
 
@@ -106,8 +106,8 @@ export async function GET(request) {
         const resourcePercent =
           planResources.length > 0
             ? Math.round(
-                (completedResources.length / planResources.length) * 100
-              )
+              (completedResources.length / planResources.length) * 100
+            )
             : 0;
 
         const timePercent =
@@ -185,6 +185,7 @@ export async function POST(request) {
       resourceSchedule: resourceSchedule || [],
       reminderTime: reminderTime || "09:00",
       reminderEnabled: true,
+      customReminders: auth.user.notificationSettings?.customReminders || [],
       notes: "",
       createdAt: new Date(),
       updatedAt: new Date(),

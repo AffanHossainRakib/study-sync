@@ -112,6 +112,7 @@ export const schemas = {
     notes: data.notes || "",
     deadline: data.deadline ? new Date(data.deadline) : null,
     startedAt: data.startedAt || new Date(),
+    customReminders: data.customReminders || [],
     createdAt: data.createdAt || new Date(),
     updatedAt: new Date(),
   }),

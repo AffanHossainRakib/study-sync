@@ -26,6 +26,7 @@ export async function GET(request) {
       customDays: [1, 2, 3, 4, 5],
       deadlineWarnings: true,
       weeklyDigest: true,
+      customReminders: [],
     };
 
     return createSuccessResponse({ settings });
@@ -52,6 +53,7 @@ export async function PUT(request) {
       "customDays",
       "deadlineWarnings",
       "weeklyDigest",
+      "customReminders",
     ];
 
     const { users } = await getCollections();

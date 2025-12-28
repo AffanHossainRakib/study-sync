@@ -9,6 +9,7 @@ export default function EditInstanceModal({ instance, isOpen, onClose, onUpdate,
     const [formData, setFormData] = useState({
         customTitle: '',
         notes: '',
+        customReminders: [],
         deadline: ''
     });
     const [saving, setSaving] = useState(false);
@@ -18,6 +19,7 @@ export default function EditInstanceModal({ instance, isOpen, onClose, onUpdate,
             setFormData({
                 customTitle: instance.customTitle || '',
                 notes: instance.notes || '',
+                customReminders: instance.customReminders || [],
                 deadline: instance.deadline ? new Date(instance.deadline).toISOString().split('T')[0] : ''
             });
         }
@@ -92,6 +94,85 @@ export default function EditInstanceModal({ instance, isOpen, onClose, onUpdate,
                             rows={4}
                             className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground resize-none"
                         />
+                    </div>
+
+                    <div className="pt-4 border-t border-border">
+                        <label className="block text-sm font-medium text-foreground mb-3">
+                            Custom Reminders
+                        </label>
+                        <div className="space-y-3">
+                            <div className="flex flex-wrap gap-2">
+                                {formData.customReminders?.map((reminder, index) => (
+                                    <div
+                                        key={index}
+                                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium"
+                                    >
+                                        <span>
+                                            {reminder.value} {reminder.unit} before
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const newReminders = formData.customReminders.filter((_, i) => i !== index);
+                                                setFormData({ ...formData, customReminders: newReminders });
+                                            }}
+                                            className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="flex gap-2 items-end">
+                                <div>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        id="modalReminderValue"
+                                        className="w-20 px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                        placeholder="1"
+                                    />
+                                </div>
+                                <div>
+                                    <select
+                                        id="modalReminderUnit"
+                                        className="w-24 px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                    >
+                                        <option value="minutes">Minutes</option>
+                                        <option value="hours">Hours</option>
+                                        <option value="days">Days</option>
+                                        <option value="weeks">Weeks</option>
+                                    </select>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const valueInput = document.getElementById("modalReminderValue");
+                                        const unitInput = document.getElementById("modalReminderUnit");
+                                        const value = parseInt(valueInput.value);
+                                        const unit = unitInput.value;
+
+                                        if (value > 0) {
+                                            const newReminder = {
+                                                id: `${Date.now()}`,
+                                                value,
+                                                unit,
+                                                type: 'before_deadline'
+                                            };
+                                            setFormData({
+                                                ...formData,
+                                                customReminders: [...(formData.customReminders || []), newReminder]
+                                            });
+                                            valueInput.value = "";
+                                        }
+                                    }}
+                                    className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground text-sm font-medium rounded-lg transition-colors"
+                                >
+                                    Add
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="flex justify-end gap-3 pt-2">
