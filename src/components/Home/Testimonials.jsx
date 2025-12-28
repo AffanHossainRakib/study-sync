@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
+import Image from "next/image";
 
 const testimonials = [
   {
@@ -14,7 +15,7 @@ const testimonials = [
     author: "Alex Chen",
     role: "Computer Science Student",
     rating: 5,
-    avatar: "AC",
+    avatar: "https://randomuser.me/api/portraits/men/44.jpg",
   },
   {
     id: 2,
@@ -23,7 +24,7 @@ const testimonials = [
     author: "Sarah Johnson",
     role: "Self-taught Designer",
     rating: 5,
-    avatar: "SJ",
+    avatar: "https://randomuser.me/api/portraits/women/32.jpg",
   },
   {
     id: 3,
@@ -32,7 +33,7 @@ const testimonials = [
     author: "Michael Brown",
     role: "Medical Student",
     rating: 5,
-    avatar: "MB",
+    avatar: "https://randomuser.me/api/portraits/men/68.jpg",
   },
 ];
 
@@ -112,7 +113,13 @@ export default function Testimonials() {
               {/* Author */}
               <div className="flex items-center gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-border">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md">
-                  {testimonial.avatar}
+                  <Image
+                    src={testimonial.avatar}
+                    alt={testimonial.author}
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
+                    width={64}
+                    height={64}
+                  />
                 </div>
                 <div>
                   <div className="text-sm sm:text-base font-semibold text-foreground">
