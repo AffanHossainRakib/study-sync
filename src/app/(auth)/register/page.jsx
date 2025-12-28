@@ -1,6 +1,5 @@
 "use client";
 
-import AuthLayout from "@/components/layouts/AuthLayout";
 import SignupForm from "@/components/Auth/signup-from";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -85,18 +84,16 @@ const Signup = () => {
 
   return (
     <>
-      <AuthLayout imgSrc="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=1200&auto=format&fit=crop">
-        <SignupForm
-          setName={setName}
-          setEmail={setEmail}
-          setPassword={setPassword}
-          setProfilePicture={setProfilePicture}
-          handleSignup={handleSignup}
-          loading={loading}
-          error={error}
-          setError={setError}
-        />
-      </AuthLayout>
+      <SignupForm
+        setName={setName}
+        setEmail={setEmail}
+        setPassword={setPassword}
+        setProfilePicture={setProfilePicture}
+        handleSignup={handleSignup}
+        loading={loading}
+        error={error}
+        setError={setError}
+      />
       <Toaster position="top-right" />
     </>
   );

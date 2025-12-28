@@ -1,6 +1,5 @@
 "use client";
 
-import AuthLayout from "@/components/layouts/AuthLayout";
 import { useRouter } from "next/navigation";
 import LoginForm from "@/components/Auth/login-form";
 import { toast, Toaster } from "react-hot-toast";
@@ -59,8 +58,11 @@ const Login = () => {
         if (err.code === "auth/popup-closed-by-user") {
           errorMessage = "Sign-in cancelled.";
         } else if (err.code === "auth/popup-blocked") {
-          errorMessage = "Popup was blocked. Please allow popups for this site.";
-        } else if (err.code === "auth/account-exists-with-different-credential") {
+          errorMessage =
+            "Popup was blocked. Please allow popups for this site.";
+        } else if (
+          err.code === "auth/account-exists-with-different-credential"
+        ) {
           errorMessage = "An account already exists with this email.";
         } else if (err.message) {
           errorMessage = err.message;
@@ -80,15 +82,13 @@ const Login = () => {
 
   return (
     <>
-      <AuthLayout imgSrc="https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=1200&auto=format&fit=crop">
-        <LoginForm
-          handleSignIn={handleSignIn}
-          loading={loading}
-          error={error}
-          setError={setError}
-          handleSignInWithGoogle={handleSignInWithGoogle}
-        />
-      </AuthLayout>
+      <LoginForm
+        handleSignIn={handleSignIn}
+        loading={loading}
+        error={error}
+        setError={setError}
+        handleSignInWithGoogle={handleSignInWithGoogle}
+      />
       <Toaster position="top-right" />
     </>
   );

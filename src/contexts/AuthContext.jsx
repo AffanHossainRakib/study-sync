@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -8,16 +8,16 @@ import {
   GoogleAuthProvider,
   signOut as firebaseSignOut,
   onAuthStateChanged,
-  updateProfile
-} from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+  updateProfile,
+} from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const AuthContext = createContext(null);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -35,9 +35,13 @@ export const AuthProvider = ({ children }) => {
         // Get ID token for API calls
         const idToken = await firebaseUser.getIdToken();
         setToken(idToken);
+        // Set auth cookie for middleware
+        document.cookie = `auth-token=${idToken}; path=/; max-age=3600; SameSite=Lax`;
       } else {
         setUser(null);
         setToken(null);
+        // Clear auth cookie
+        document.cookie = "auth-token=; path=/; max-age=0";
       }
       setLoading(false);
     });
@@ -48,7 +52,11 @@ export const AuthProvider = ({ children }) => {
   // Register with email and password
   const register = async (email, password, displayName) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
       // Update display name
       if (displayName) {
@@ -57,7 +65,7 @@ export const AuthProvider = ({ children }) => {
 
       return { user: userCredential.user, error: null };
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
       return { user: null, error: error.message };
     }
   };
@@ -65,10 +73,14 @@ export const AuthProvider = ({ children }) => {
   // Sign in with email and password
   const signIn = async (email, password) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       return { user: userCredential.user, error: null };
     } catch (error) {
-      console.error('Sign in error:', error);
+      console.error("Sign in error:", error);
       return { user: null, error: error.message };
     }
   };
@@ -80,7 +92,7 @@ export const AuthProvider = ({ children }) => {
       const userCredential = await signInWithPopup(auth, provider);
       return { user: userCredential.user, error: null };
     } catch (error) {
-      console.error('Google sign in error:', error);
+      console.error("Google sign in error:", error);
       return { user: null, error: error.message };
     }
   };
@@ -91,9 +103,11 @@ export const AuthProvider = ({ children }) => {
       await firebaseSignOut(auth);
       setUser(null);
       setToken(null);
+      // Clear auth cookie
+      document.cookie = "auth-token=; path=/; max-age=0";
       return { error: null };
     } catch (error) {
-      console.error('Sign out error:', error);
+      console.error("Sign out error:", error);
       return { error: error.message };
     }
   };
@@ -106,7 +120,7 @@ export const AuthProvider = ({ children }) => {
         setToken(idToken);
         return idToken;
       } catch (error) {
-        console.error('Token refresh error:', error);
+        console.error("Token refresh error:", error);
         return null;
       }
     }
@@ -121,14 +135,10 @@ export const AuthProvider = ({ children }) => {
     signIn,
     signInWithGoogle,
     signOut,
-    refreshToken
+    refreshToken,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContext;
