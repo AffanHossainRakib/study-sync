@@ -75,7 +75,7 @@ export default function ResourceList({ resources, onReorder, onRemove }) {
           (resource.metadata?.pages || 0) *
             (resource.metadata?.minsPerPage || 3)
         );
-      if (resource.type === "article")
+      if (resource.type === "article" || resource.type === "google-drive" || resource.type === "custom-link")
         return total + (resource.metadata?.estimatedMins || 0);
       return total;
     }, 0);

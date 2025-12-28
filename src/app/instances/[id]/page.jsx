@@ -208,6 +208,15 @@ export default function InstanceDetailsPage() {
                 const Icon = typeInfo.icon === 'Youtube' ? Youtube : FileText;
                 const isCompleted = resource.completed || false;
                 const isToggling = togglingResource === resource._id;
+                const totalTime =
+                  resource.type === "youtube-video"
+                    ? resource.metadata?.duration
+                    : resource.type === "pdf"
+                      ? (resource.metadata?.pages || 0) *
+                        (resource.metadata?.minsPerPage || 0)
+                      : (resource.type === "article" || resource.type === "google-drive" || resource.type === "custom-link")
+                        ? resource.metadata?.estimatedMins || 0
+                        : 0;
 
                 return (
                   <div
@@ -257,7 +266,7 @@ export default function InstanceDetailsPage() {
                             </span>
                             <span className="flex items-center">
                               <Clock className="h-3 w-3 mr-1" />
-                              {formatTime(resource.totalTime || 0)}
+                              {formatTime(totalTime)}
                             </span>
                             {isCompleted && resource.completedAt && (
                               <span className="text-green-600 dark:text-green-400">

@@ -67,7 +67,7 @@ export async function GET(request) {
             return (
               sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0)
             );
-          if (r.type === "article")
+          if (r.type === "article" || r.type === "google-drive" || r.type === "custom-link")
             return sum + (r.metadata?.estimatedMins || 0);
           return sum;
         }, 0);
@@ -83,7 +83,7 @@ export async function GET(request) {
             return (
               sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0)
             );
-          if (r.type === "article")
+          if (r.type === "article" || r.type === "google-drive" || r.type === "custom-link")
             return sum + (r.metadata?.estimatedMins || 0);
           return sum;
         }, 0);

@@ -149,6 +149,17 @@ export default function EditStudyPlanPage() {
           title: resourceForm.title,
           estimatedMins: parseInt(resourceForm.estimatedMins),
         };
+      } else if (
+        resourceForm.type === "google-drive" ||
+        resourceForm.type === "custom-link"
+      ) {
+        // For google-drive and custom-link, store the link with optional title and estimatedMins
+        if (resourceForm.title) {
+          resourceData.title = resourceForm.title;
+        }
+        if (resourceForm.estimatedMins) {
+          resourceData.estimatedMins = parseInt(resourceForm.estimatedMins);
+        }
       }
 
       const result = await createOrGetResource(resourceData, token);

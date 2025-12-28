@@ -72,7 +72,8 @@ export async function GET(request, { params }) {
       if (r.type === "youtube-video") return sum + (r.metadata?.duration || 0);
       if (r.type === "pdf")
         return sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0);
-      if (r.type === "article") return sum + (r.metadata?.estimatedMins || 0);
+      if (r.type === "article" || r.type === "google-drive" || r.type === "custom-link")
+        return sum + (r.metadata?.estimatedMins || 0);
       return sum;
     }, 0);
 
@@ -83,7 +84,8 @@ export async function GET(request, { params }) {
         return (
           sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0)
         );
-      if (r.type === "article") return sum + (r.metadata?.estimatedMins || 0);
+      if (r.type === "article" || r.type === "google-drive" || r.type === "custom-link")
+        return sum + (r.metadata?.estimatedMins || 0);
       return sum;
     }, 0);
 

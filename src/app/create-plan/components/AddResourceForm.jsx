@@ -47,6 +47,8 @@ export default function AddResourceForm({
   );
   const needsMetadata =
     resourceForm.type === "pdf" || resourceForm.type === "article";
+  const needsEstimatedMins =
+    resourceForm.type === "google-drive" || resourceForm.type === "custom-link";
 
   return (
     <div className="bg-card border border-border rounded-lg p-6">
@@ -154,6 +156,23 @@ export default function AddResourceForm({
               </div>
             )}
           </>
+        )}
+
+        {needsEstimatedMins && (
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Estimated Time (minutes)
+            </label>
+            <input
+              type="number"
+              name="estimatedMins"
+              value={resourceForm.estimatedMins}
+              onChange={onChange}
+              placeholder="15"
+              min="1"
+              className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+            />
+          </div>
         )}
 
         <button

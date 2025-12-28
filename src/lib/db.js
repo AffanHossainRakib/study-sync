@@ -145,7 +145,7 @@ export function getResourceTotalTime(resource) {
     return (
       (resource.metadata?.pages || 0) * (resource.metadata?.minsPerPage || 0)
     );
-  } else if (resource.type === "article") {
+  } else if (resource.type === "article" || resource.type === "google-drive" || resource.type === "custom-link") {
     return resource.metadata?.estimatedMins || 0;
   }
   return 0;

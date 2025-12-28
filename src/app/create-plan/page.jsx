@@ -110,9 +110,12 @@ export default function CreateStudyPlanPage() {
         resourceForm.type === "google-drive" ||
         resourceForm.type === "custom-link"
       ) {
-        // For google-drive and custom-link, just store the link with optional title
+        // For google-drive and custom-link, store the link with optional title and estimatedMins
         if (resourceForm.title) {
           resourceData.title = resourceForm.title;
+        }
+        if (resourceForm.estimatedMins) {
+          resourceData.estimatedMins = parseInt(resourceForm.estimatedMins);
         }
       }
 

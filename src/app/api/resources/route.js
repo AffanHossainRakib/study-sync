@@ -159,12 +159,16 @@ export async function POST(request) {
         updatedAt: new Date(),
       });
     } else if (type === "google-drive" || type === "custom-link") {
-      // For google-drive and custom-link, just store the URL with title
+      // For google-drive and custom-link, store the URL with title and optional estimatedMins
+      const metadata = {};
+      if (estimatedMins) {
+        metadata.estimatedMins = parseInt(estimatedMins);
+      }
       resourcesToCreate.push({
         type,
         title: title || url,
         url,
-        metadata: {},
+        metadata,
         addedBy: auth.user._id,
         createdAt: new Date(),
         updatedAt: new Date(),

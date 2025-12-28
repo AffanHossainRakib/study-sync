@@ -514,7 +514,9 @@ export default function StudyPlanDetailsPage() {
                     : resource.type === "pdf"
                       ? (resource.metadata?.pages || 0) *
                         (resource.metadata?.minsPerPage || 0)
-                      : resource.metadata?.estimatedMins || 0;
+                      : (resource.type === "article" || resource.type === "google-drive" || resource.type === "custom-link")
+                        ? resource.metadata?.estimatedMins || 0
+                        : 0;
 
                 return (
                   <div
