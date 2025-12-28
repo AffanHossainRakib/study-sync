@@ -68,7 +68,6 @@ const Navbar = () => {
 
   const userLinks = [
     { href: "/dashboard", label: "Dashboard", requiresAuth: true },
-
     { href: "/my-plans", label: "My Plans", requiresAuth: true },
     { href: "/instances", label: "My Instances", requiresAuth: true },
   ];
