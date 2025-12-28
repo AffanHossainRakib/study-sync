@@ -1,39 +1,42 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
 /**
- * Email service using Resend API
+ * Email service using Gmail SMTP
  * For sending reminder emails and notifications
  */
 
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
+// Gmail SMTP transporter
+const gmailTransporter =
+  process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD
+    ? nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_APP_PASSWORD,
+        },
+      })
+    : null;
 
 /**
- * Send a reminder email to a user
+ * Send an email to a user
  */
 export async function sendReminderEmail(to, subject, htmlContent) {
-  if (!resend) {
-    console.warn("Resend API key not configured, skipping email send");
+  if (!gmailTransporter) {
+    console.warn("Gmail not configured, skipping email send");
     return { success: false, message: "Email service not configured" };
   }
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || "StudySync <noreply@studysync.app>",
-      to: [to],
+    const info = await gmailTransporter.sendMail({
+      from: `StudySync <${process.env.GMAIL_USER}>`,
+      to,
       subject,
       html: htmlContent,
     });
-
-    if (error) {
-      console.error("Email send error:", error);
-      return { success: false, error };
-    }
-
-    return { success: true, data };
+    console.log("Email sent via Gmail:", info.messageId);
+    return { success: true, data: info };
   } catch (error) {
-    console.error("Failed to send email:", error);
+    console.error("Gmail send error:", error);
     return { success: false, error: error.message };
   }
 }
