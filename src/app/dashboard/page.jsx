@@ -56,7 +56,7 @@ export default function DashboardPage() {
       // API returns { instances: [...] } and { studyPlans: [...] }
       const instancesData = instancesResponse.instances || [];
       const plansData = plansResponse.studyPlans || [];
-      
+
       setInstances(instancesData);
       setMyPlans(plansData);
       calculateStats(instancesData);

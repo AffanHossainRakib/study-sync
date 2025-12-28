@@ -1,13 +1,21 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { BookOpen, Clock, CheckCircle2, ArrowRight, Trash2, Loader2, Edit } from 'lucide-react';
-import { getInstances, deleteInstance, formatTime } from '@/lib/api';
-import useAuth from '@/hooks/useAuth';
-import toast from 'react-hot-toast';
-import EditInstanceModal from '@/components/EditInstanceModal';
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  BookOpen,
+  Clock,
+  CheckCircle2,
+  ArrowRight,
+  Trash2,
+  Loader2,
+  Edit,
+} from "lucide-react";
+import { getInstances, deleteInstance, formatTime } from "@/lib/api";
+import useAuth from "@/hooks/useAuth";
+import toast from "react-hot-toast";
+import EditInstanceModal from "@/components/EditInstanceModal";
 
 export default function MyInstancesPage() {
   const router = useRouter();
@@ -20,7 +28,7 @@ export default function MyInstancesPage() {
 
   useEffect(() => {
     if (!user) {
-      router.push('/login');
+      router.push("/login");
       return;
     }
     fetchInstances();
@@ -33,26 +41,26 @@ export default function MyInstancesPage() {
       // API returns { instances: [...] }
       setInstances(response.instances || []);
     } catch (error) {
-      console.error('Error fetching instances:', error);
-      toast.error('Failed to load instances');
+      console.error("Error fetching instances:", error);
+      toast.error("Failed to load instances");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this instance?')) {
+    if (!confirm("Are you sure you want to delete this instance?")) {
       return;
     }
 
     try {
       setDeletingId(id);
       await deleteInstance(id, token);
-      toast.success('Instance deleted successfully');
-      setInstances(prev => prev.filter(inst => inst._id !== id));
+      toast.success("Instance deleted successfully");
+      setInstances((prev) => prev.filter((inst) => inst._id !== id));
     } catch (error) {
-      console.error('Error deleting instance:', error);
-      toast.error('Failed to delete instance');
+      console.error("Error deleting instance:", error);
+      toast.error("Failed to delete instance");
     } finally {
       setDeletingId(null);
     }
@@ -64,9 +72,13 @@ export default function MyInstancesPage() {
   };
 
   const handleUpdate = (updatedInstance) => {
-    setInstances(prev => prev.map(inst =>
-      inst._id === updatedInstance._id ? { ...inst, ...updatedInstance } : inst
-    ));
+    setInstances((prev) =>
+      prev.map((inst) =>
+        inst._id === updatedInstance._id
+          ? { ...inst, ...updatedInstance }
+          : inst
+      )
+    );
   };
 
   if (!user) {
@@ -79,7 +91,9 @@ export default function MyInstancesPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-4xl font-bold text-foreground mb-3">My Study Instances</h1>
+            <h1 className="text-4xl font-bold text-foreground mb-3">
+              My Study Instances
+            </h1>
             <p className="text-lg text-muted-foreground">
               Track your active learning sessions and monitor progress
             </p>
@@ -97,7 +111,10 @@ export default function MyInstancesPage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-card border border-border rounded-lg p-6 animate-pulse">
+              <div
+                key={i}
+                className="bg-card border border-border rounded-lg p-6 animate-pulse"
+              >
                 <div className="h-4 bg-muted rounded w-1/4 mb-4" />
                 <div className="h-6 bg-muted rounded w-3/4 mb-4" />
                 <div className="h-20 bg-muted rounded w-full mb-4" />
@@ -109,7 +126,9 @@ export default function MyInstancesPage() {
           /* Empty State */
           <div className="text-center py-16">
             <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">No active instances</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              No active instances
+            </h3>
             <p className="text-muted-foreground mb-6">
               Start learning by creating an instance from a study plan
             </p>
@@ -137,7 +156,7 @@ export default function MyInstancesPage() {
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-3">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-primary/10 text-primary">
-                        {instance.studyPlanId?.courseCode || 'N/A'}
+                        {instance.studyPlanId?.courseCode || "N/A"}
                       </span>
                       <div className="flex items-center">
                         <button
@@ -167,7 +186,9 @@ export default function MyInstancesPage() {
                     </div>
 
                     <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
-                      {instance.customTitle || instance.studyPlanId?.title || 'Untitled Instance'}
+                      {instance.customTitle ||
+                        instance.studyPlanId?.title ||
+                        "Untitled Instance"}
                     </h3>
 
                     {instance.notes && (
@@ -181,9 +202,12 @@ export default function MyInstancesPage() {
                       {/* Resource Progress */}
                       <div>
                         <div className="flex items-center justify-between text-sm mb-1">
-                          <span className="text-muted-foreground">Resources</span>
+                          <span className="text-muted-foreground">
+                            Resources
+                          </span>
                           <span className="font-medium text-foreground">
-                            {instance.completedResources || 0}/{instance.totalResources || 0}
+                            {instance.completedResources || 0}/
+                            {instance.totalResources || 0}
                           </span>
                         </div>
                         <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
@@ -199,7 +223,8 @@ export default function MyInstancesPage() {
                         <div className="flex items-center justify-between text-sm mb-1">
                           <span className="text-muted-foreground">Time</span>
                           <span className="font-medium text-foreground">
-                            {formatTime(instance.completedTime || 0)}/{formatTime(instance.totalTime || 0)}
+                            {formatTime(instance.completedTime || 0)}/
+                            {formatTime(instance.totalTime || 0)}
                           </span>
                         </div>
                         <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
@@ -225,7 +250,8 @@ export default function MyInstancesPage() {
 
                     {instance.deadline && (
                       <div className="mt-3 text-xs text-muted-foreground">
-                        Deadline: {new Date(instance.deadline).toLocaleDateString()}
+                        Deadline:{" "}
+                        {new Date(instance.deadline).toLocaleDateString()}
                       </div>
                     )}
                   </div>
