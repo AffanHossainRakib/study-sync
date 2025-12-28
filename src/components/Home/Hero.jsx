@@ -169,6 +169,7 @@ const Hero = () => {
                       width={32}
                       height={32}
                       className="w-8 h-8 rounded-full border-2 border-background object-cover"
+                      unoptimized
                     />
                   ))}
                 </div>

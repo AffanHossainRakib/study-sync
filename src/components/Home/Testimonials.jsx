@@ -96,11 +96,10 @@ export default function Testimonials() {
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-4 w-4 sm:h-5 sm:w-5 ${
-                      i < testimonial.rating
+                    className={`h-4 w-4 sm:h-5 sm:w-5 ${i < testimonial.rating
                         ? "text-yellow-400 fill-yellow-400"
                         : "text-gray-300 dark:text-gray-600"
-                    }`}
+                      }`}
                   />
                 ))}
               </div>
@@ -119,6 +118,7 @@ export default function Testimonials() {
                     className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
                     width={64}
                     height={64}
+                    unoptimized
                   />
                 </div>
                 <div>
