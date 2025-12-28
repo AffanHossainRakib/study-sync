@@ -31,7 +31,11 @@ export async function GET(request, { params }) {
     // Check access
     const hasAccess = auth.user
       ? plan.createdBy.equals(auth.user._id) ||
-        plan.sharedWith.some((s) => s.userId.equals(auth.user._id)) ||
+        plan.sharedWith.some(
+          (s) =>
+            (s.userId && s.userId.equals(auth.user._id)) ||
+            s.email === auth.user.email.toLowerCase()
+        ) ||
         plan.isPublic
       : plan.isPublic;
 
@@ -70,7 +74,12 @@ export async function GET(request, { params }) {
       resourceCount: planResources.length,
       canEdit: auth.user
         ? plan.createdBy.equals(auth.user._id) ||
-          plan.sharedWith.some((s) => s.userId.equals(auth.user._id))
+          plan.sharedWith.some(
+            (s) =>
+              ((s.userId && s.userId.equals(auth.user._id)) ||
+                s.email === auth.user.email.toLowerCase()) &&
+              s.role === "editor"
+          )
         : false,
     });
   } catch (error) {
@@ -99,7 +108,10 @@ export async function PUT(request, { params }) {
     const canEdit =
       plan.createdBy.equals(auth.user._id) ||
       plan.sharedWith.some(
-        (s) => s.userId.equals(auth.user._id) && s.role === "editor"
+        (s) =>
+          ((s.userId && s.userId.equals(auth.user._id)) ||
+            s.email === auth.user.email.toLowerCase()) &&
+          s.role === "editor"
       );
 
     if (!canEdit)

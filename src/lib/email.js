@@ -99,8 +99,8 @@ export async function sendDailyReminder(to, userName, activeInstancesCount) {
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h1 style="color: #3b82f6;">Good morning, ${userName}! 📖</h1>
       <p>You have <strong>${activeInstancesCount}</strong> active study plan${
-    activeInstancesCount !== 1 ? "s" : ""
-  } waiting for you.</p>
+        activeInstancesCount !== 1 ? "s" : ""
+      } waiting for you.</p>
       <p>Take a moment today to make progress on your learning journey!</p>
       <a href="${
         process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
@@ -111,6 +111,42 @@ export async function sendDailyReminder(to, userName, activeInstancesCount) {
       <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
       <p style="color: #6b7280; font-size: 12px;">
         This is your scheduled daily reminder. You can change your notification preferences in settings.
+      </p>
+    </div>
+  `;
+
+  return sendReminderEmail(to, subject, htmlContent);
+}
+
+/**
+ * Send study plan share invitation
+ */
+export async function sendShareInvitation(
+  to,
+  sharedByName,
+  studyPlanTitle,
+  studyPlanId,
+  role
+) {
+  const subject = `${sharedByName} shared a study plan with you`;
+  const roleText = role === "viewer" ? "view" : "view and edit";
+  const planUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/plans/${studyPlanId}`;
+
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h1 style="color: #3b82f6;">📚 Study Plan Shared With You</h1>
+      <p><strong>${sharedByName}</strong> has shared a study plan with you.</p>
+      <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <h2 style="margin: 0 0 10px 0; color: #1f2937;">${studyPlanTitle}</h2>
+        <p style="margin: 0; color: #6b7280;">You have been given <strong>${role}</strong> access to ${roleText} this study plan.</p>
+      </div>
+      <a href="${planUrl}" 
+         style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin-top: 10px; font-weight: 600;">
+        View Study Plan
+      </a>
+      <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
+      <p style="color: #6b7280; font-size: 12px;">
+        If you don't have a StudySync account yet, you'll be prompted to sign up to access this shared study plan.
       </p>
     </div>
   `;

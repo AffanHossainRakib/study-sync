@@ -264,19 +264,15 @@ export default function MyStudyPlansPage() {
             {/* Plans Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {plans.map((plan) => {
-                const creatorId =
+                // Check if user is creator by comparing emails (most reliable)
+                const creatorEmail =
                   typeof plan.createdBy === "object"
-                    ? plan.createdBy._id
-                    : plan.createdBy;
-                const creatorFirebaseUid =
-                  typeof plan.createdBy === "object"
-                    ? plan.createdBy.firebaseUid
+                    ? plan.createdBy.email
                     : null;
                 const isCreator =
-                  (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
-                  (creatorId &&
-                    user._id &&
-                    creatorId.toString() === user._id.toString());
+                  creatorEmail &&
+                  user.email &&
+                  creatorEmail.toLowerCase() === user.email.toLowerCase();
                 const isShared = !isCreator;
 
                 return (
@@ -302,26 +298,29 @@ export default function MyStudyPlansPage() {
                             </span>
                           )}
                         </div>
-                        {isCreator && (
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleDelete(plan._id);
-                            }}
-                            className="text-muted-foreground hover:text-destructive transition-colors"
-                            disabled={deletingId === plan._id}
-                          >
-                            {deletingId === plan._id ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="h-4 w-4" />
-                            )}
-                          </button>
-                        )}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleDelete(plan._id);
+                          }}
+                          disabled={deletingId === plan._id || !isCreator}
+                          className="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                          title={
+                            isCreator
+                              ? "Delete plan"
+                              : "Only the creator can delete this plan"
+                          }
+                        >
+                          {deletingId === plan._id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </button>
                       </div>
 
                       <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
-                        {plan.title}
+                        {plan.courseCode} - {plan.title}
                       </h3>
 
                       <p className="text-sm text-muted-foreground line-clamp-2 mb-4">

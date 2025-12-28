@@ -15,12 +15,18 @@ import {
   ExternalLink,
   CheckCircle2,
   Loader2,
+  X,
+  Trash2,
+  Mail,
+  UserPlus,
 } from "lucide-react";
 import {
   getStudyPlanById,
   createInstance,
   formatTime,
   getResourceTypeInfo,
+  shareStudyPlan,
+  removeSharedAccess,
 } from "@/lib/api";
 import useAuth from "@/hooks/useAuth";
 import toast from "react-hot-toast";
@@ -33,12 +39,11 @@ export default function StudyPlanDetailsPage() {
   const [plan, setPlan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [creatingInstance, setCreatingInstance] = useState(false);
-
-  useEffect(() => {
-    if (params.id) {
-      fetchPlanDetails();
-    }
-  }, [params.id, token]);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [shareEmail, setShareEmail] = useState("");
+  const [shareRole, setShareRole] = useState("editor");
+  const [sharing, setSharing] = useState(false);
+  const [removingAccess, setRemovingAccess] = useState(null);
 
   const fetchPlanDetails = async () => {
     try {
@@ -61,6 +66,13 @@ export default function StudyPlanDetailsPage() {
     }
   };
 
+  useEffect(() => {
+    if (params.id) {
+      fetchPlanDetails();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.id, token]);
+
   const handleStartInstance = async () => {
     if (!user) {
       toast.error("Please login to start an instance");
@@ -78,6 +90,53 @@ export default function StudyPlanDetailsPage() {
       toast.error("Failed to create instance");
     } finally {
       setCreatingInstance(false);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!shareEmail) {
+      toast.error("Please enter an email address");
+      return;
+    }
+
+    // Basic email validation
+    if (!shareEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    try {
+      setSharing(true);
+      await shareStudyPlan(params.id, shareEmail, shareRole, token);
+      toast.success(`Study plan shared with ${shareEmail}`);
+      setShareEmail("");
+      setShareRole("editor");
+      // Refresh plan data to show updated info
+      await fetchPlanDetails();
+    } catch (error) {
+      console.error("Error sharing plan:", error);
+      toast.error(error.message || "Failed to share study plan");
+    } finally {
+      setSharing(false);
+    }
+  };
+
+  const handleRemoveAccess = async (email) => {
+    if (!confirm(`Remove access for ${email}?`)) {
+      return;
+    }
+
+    try {
+      setRemovingAccess(email);
+      await removeSharedAccess(params.id, email, token);
+      toast.success(`Access removed for ${email}`);
+      // Refresh plan data to show updated info
+      await fetchPlanDetails();
+    } catch (error) {
+      console.error("Error removing access:", error);
+      toast.error(error.message || "Failed to remove access");
+    } finally {
+      setRemovingAccess(null);
     }
   };
 
@@ -174,7 +233,7 @@ export default function StudyPlanDetailsPage() {
             <button
               onClick={handleStartInstance}
               disabled={creatingInstance || !user}
-              className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-sm hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Play className="h-5 w-5 mr-2" />
               {creatingInstance ? (
@@ -191,6 +250,12 @@ export default function StudyPlanDetailsPage() {
               <Link
                 href={`/plans/${params.id}/edit`}
                 className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-base font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-all"
+                onClick={(e) => {
+                  console.log(
+                    "Edit link clicked, navigating to:",
+                    `/plans/${params.id}/edit`
+                  );
+                }}
               >
                 <Edit className="h-5 w-5 mr-2" />
                 Edit Plan
@@ -198,13 +263,181 @@ export default function StudyPlanDetailsPage() {
             )}
 
             {plan.canEdit && (
-              <button className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-base font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-all">
+              <button
+                onClick={() => setShowShareDialog(true)}
+                className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-base font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-all"
+              >
                 <Share2 className="h-5 w-5 mr-2" />
                 Share
               </button>
             )}
           </div>
         </div>
+
+        {/* Share Dialog */}
+        {showShareDialog && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-card border border-border rounded-lg p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-foreground">
+                  Share &ldquo;{plan.title}&rdquo;
+                </h3>
+                <button
+                  onClick={() => setShowShareDialog(false)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* Add People Section */}
+              <div className="space-y-4 mb-6">
+                <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                  <UserPlus className="h-4 w-4" />
+                  <span>Add people</span>
+                </div>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="email"
+                      value={shareEmail}
+                      onChange={(e) => setShareEmail(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && shareEmail) {
+                          handleShare();
+                        }
+                      }}
+                      placeholder="name@example.com"
+                      className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground text-sm"
+                      autoFocus
+                    />
+                  </div>
+                  <select
+                    value={shareRole}
+                    onChange={(e) => setShareRole(e.target.value)}
+                    className="px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground text-sm"
+                  >
+                    <option value="viewer">Viewer</option>
+                    <option value="editor">Editor</option>
+                  </select>
+                  <button
+                    onClick={handleShare}
+                    disabled={sharing || !shareEmail}
+                    className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium whitespace-nowrap"
+                  >
+                    {sharing ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "Share"
+                    )}
+                  </button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Anyone with the link and appropriate permissions can access
+                  this study plan. An invitation will be sent to the email
+                  address.
+                </p>
+              </div>
+
+              {/* People with Access Section */}
+              <div className="border-t border-border pt-6">
+                <div className="flex items-center gap-2 text-sm font-medium text-foreground mb-4">
+                  <Users className="h-4 w-4" />
+                  <span>People with access</span>
+                </div>
+                <div className="space-y-2">
+                  {/* Creator */}
+                  <div className="flex items-center justify-between p-3 bg-muted/30 rounded-md">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-primary">
+                          {(plan.createdBy?.displayName ||
+                            plan.createdBy?.email ||
+                            "U")[0].toUpperCase()}
+                        </span>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-foreground">
+                          {plan.createdBy?.displayName ||
+                            plan.createdBy?.email?.split("@")[0] ||
+                            "Unknown"}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {plan.createdBy?.email}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-xs font-medium text-muted-foreground px-3 py-1 bg-background rounded-md border border-border">
+                      Owner
+                    </span>
+                  </div>
+
+                  {/* Shared Users */}
+                  {plan.sharedWith && plan.sharedWith.length > 0 ? (
+                    plan.sharedWith.map((shared) => (
+                      <div
+                        key={shared.email}
+                        className="flex items-center justify-between p-3 bg-muted/30 rounded-md hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                            <Mail className="h-4 w-4 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-foreground truncate">
+                              {shared.email}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Shared{" "}
+                              {new Date(shared.sharedAt).toLocaleDateString()}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-xs font-medium text-muted-foreground px-3 py-1 bg-background rounded-md border border-border capitalize">
+                            {shared.role || "editor"}
+                          </span>
+                          <button
+                            onClick={() => handleRemoveAccess(shared.email)}
+                            disabled={removingAccess === shared.email}
+                            className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors disabled:opacity-50"
+                            title="Remove access"
+                          >
+                            {removingAccess === shared.email ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      Not shared with anyone yet
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Link Sharing Info */}
+              <div className="mt-6 p-4 bg-muted/30 rounded-md">
+                <div className="flex items-start gap-3">
+                  <Share2 className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
+                  <div className="text-sm text-muted-foreground">
+                    <p className="font-medium text-foreground mb-1">
+                      General access
+                    </p>
+                    <p>
+                      Anyone with this link can view this study plan. Editors
+                      can make changes.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Full Description */}
         {plan.fullDescription && (
@@ -242,7 +475,7 @@ export default function StudyPlanDetailsPage() {
                     key={resource._id}
                     className="flex items-start gap-4 p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
                   >
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                       <div
                         className={`p-2 rounded-md ${
                           resource.type === "youtube-video"
@@ -284,7 +517,7 @@ export default function StudyPlanDetailsPage() {
                           href={resource.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-shrink-0 text-muted-foreground hover:text-primary transition-colors"
+                          className="shrink-0 text-muted-foreground hover:text-primary transition-colors"
                         >
                           <ExternalLink className="h-4 w-4" />
                         </a>

@@ -85,8 +85,8 @@ function SortableResourceItem({ resource, index, onRemove }) {
           resource.type === "youtube-video"
             ? "bg-red-100 dark:bg-red-900/20"
             : resource.type === "pdf"
-            ? "bg-blue-100 dark:bg-blue-900/20"
-            : "bg-green-100 dark:bg-green-900/20"
+              ? "bg-blue-100 dark:bg-blue-900/20"
+              : "bg-green-100 dark:bg-green-900/20"
         }`}
       >
         {resource.type === "youtube-video" ? (
@@ -175,26 +175,8 @@ export default function EditStudyPlanPage() {
       setLoading(true);
       const data = await getStudyPlanById(params.id, token);
 
-      // Check if user has edit access
-      const creatorId = data.createdBy?._id;
-      const creatorFirebaseUid = data.createdBy?.firebaseUid;
-
-      const isCreator =
-        (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
-        (creatorId && user._id && creatorId === user._id);
-
-      const hasEditAccess =
-        isCreator ||
-        data.sharedWith?.some((share) => {
-          // Check shared user ID (could be populated object or string ID)
-          const shareUserId = share.userId?._id || share.userId;
-          // We might need to check against email if user._id isn't available on frontend user object
-          // But for now, let's assume if it's shared, we trust the backend's canEdit check if we had one
-          // Or better, check if the current user's email matches the shared email
-          return share.userId?.email === user.email && share.role === "editor";
-        });
-
-      if (!hasEditAccess) {
+      // Check if user has edit access using the canEdit field from backend
+      if (!data.canEdit) {
         toast.error("You do not have permission to edit this study plan");
         router.push(`/plans/${params.id}`);
         return;

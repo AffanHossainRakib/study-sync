@@ -32,12 +32,21 @@ export async function GET(request) {
       if (!auth.user) {
         return createErrorResponse("Authentication required", 401);
       }
+
+      console.log("Fetching 'my' plans for user:", {
+        userId: auth.user._id,
+        email: auth.user.email,
+      });
+
       query = {
         $or: [
           { createdBy: auth.user._id },
           { "sharedWith.userId": auth.user._id },
+          { "sharedWith.email": auth.user.email.toLowerCase() },
         ],
       };
+
+      console.log("Query:", JSON.stringify(query));
     }
 
     if (search) {

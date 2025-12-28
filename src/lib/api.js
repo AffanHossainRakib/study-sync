@@ -72,8 +72,16 @@ export const deleteStudyPlan = async (id, token) => {
   return apiRequest(`/api/study-plans/${id}`, "DELETE", token);
 };
 
-export const shareStudyPlan = async (id, email, token) => {
-  return apiRequest(`/api/study-plans/${id}/share`, "POST", token, { email });
+export const shareStudyPlan = async (id, email, role = "editor", token) => {
+  return apiRequest(`/api/study-plans/${id}/share`, "POST", token, {
+    email,
+    role,
+  });
+};
+
+export const removeSharedAccess = async (id, emailOrUserId, token) => {
+  const encoded = encodeURIComponent(emailOrUserId);
+  return apiRequest(`/api/study-plans/${id}/share/${encoded}`, "DELETE", token);
 };
 
 export const removeCollaborator = async (id, userId, token) => {
