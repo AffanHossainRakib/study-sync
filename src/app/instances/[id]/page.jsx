@@ -26,7 +26,7 @@ import EditInstanceModal from '@/components/EditInstanceModal';
 export default function InstanceDetailsPage() {
   const params = useParams();
   const router = useRouter();
-  const { user, token } = useAuth();
+  const { user, token, loading: authLoading } = useAuth();
 
   const [instance, setInstance] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -34,6 +34,9 @@ export default function InstanceDetailsPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
+    if (authLoading) {
+      return; // Wait for auth to load
+    }
     if (!user) {
       router.push('/login');
       return;
@@ -41,7 +44,7 @@ export default function InstanceDetailsPage() {
     if (params.id) {
       fetchInstanceDetails();
     }
-  }, [params.id, user, token]);
+  }, [params.id, user, token, authLoading]);
 
   const fetchInstanceDetails = async () => {
     try {
