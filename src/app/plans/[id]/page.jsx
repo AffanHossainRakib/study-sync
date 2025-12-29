@@ -188,16 +188,16 @@ export default function StudyPlanDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background py-12">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-muted rounded w-1/4 mb-8" />
-            <div className="h-10 bg-muted rounded w-3/4 mb-4" />
-            <div className="h-6 bg-muted rounded w-full mb-2" />
-            <div className="h-6 bg-muted rounded w-2/3 mb-8" />
+            <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded w-1/4 mb-8" />
+            <div className="h-10 bg-slate-200 dark:bg-slate-800 rounded w-3/4 mb-4" />
+            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded w-full mb-2" />
+            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded w-2/3 mb-8" />
             <div className="flex gap-4 mb-8">
-              <div className="h-10 bg-muted rounded w-32" />
-              <div className="h-10 bg-muted rounded w-32" />
+              <div className="h-10 bg-slate-200 dark:bg-slate-800 rounded w-32" />
+              <div className="h-10 bg-slate-200 dark:bg-slate-800 rounded w-32" />
             </div>
           </div>
         </div>
@@ -207,71 +207,78 @@ export default function StudyPlanDetailsPage() {
 
   if (!plan) {
     return (
-      <div className="min-h-screen bg-background py-12">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">
-            Study Plan Not Found
-          </h1>
-          <Link href="/plans" className="text-primary hover:underline">
-            Browse All Plans
-          </Link>
+          <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-16">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
+              Study Plan Not Found
+            </h1>
+            <Link href="/plans" className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105">
+              Browse All Plans
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background py-12">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <Link
           href="/plans"
-          className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+          className="inline-flex items-center text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           Back to All Plans
         </Link>
 
         {/* Header */}
-        <div className="bg-card border border-border rounded-lg p-8 mb-6">
-          <div className="flex items-start justify-between mb-4">
+        <div className="bg-white dark:bg-slate-900 border-2 border-purple-200 dark:border-purple-900 rounded-2xl p-8 mb-6 shadow-lg">
+          <div className="flex items-start justify-between mb-6">
             <div className="flex-1">
-              <span className="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium bg-primary/10 text-primary mb-3">
+              <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white mb-4 shadow-lg">
                 {plan.courseCode}
               </span>
-              <h1 className="text-3xl font-bold text-foreground mb-3">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
                 {plan.courseCode} - {plan.title}
               </h1>
-              <p className="text-lg text-muted-foreground mb-4">
+              <p className="text-lg text-slate-600 dark:text-slate-400 mb-4">
                 {plan.shortDescription}
               </p>
             </div>
           </div>
 
           {/* Meta Info */}
-          <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground mb-6">
-            <div className="flex items-center">
-              <FileText className="h-4 w-4 mr-2" />
+          <div className="flex flex-wrap items-center gap-4 text-sm mb-6">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg font-medium">
+              <FileText className="h-4 w-4" />
               {plan.resourceCount || 0} resources
             </div>
-            <div className="flex items-center">
-              <Clock className="h-4 w-4 mr-2" />
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg font-medium">
+              <Clock className="h-4 w-4" />
               {formatTime(plan.totalTime)} total
             </div>
-            <div className="flex items-center">
-              <Users className="h-4 w-4 mr-2" />
-              {plan.instanceCount || 0} instances started
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg font-medium">
+              <Users className="h-4 w-4" />
+              {plan.instanceCount || 0} started
             </div>
           </div>
 
           {/* Creator */}
-          <div className="text-sm text-muted-foreground mb-6">
-            Created by{" "}
-            <span className="font-medium text-foreground">
-              {plan.createdBy?.displayName ||
-                plan.createdBy?.email?.split("@")[0] ||
-                "Anonymous"}
-            </span>
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
+              {(plan.createdBy?.displayName || plan.createdBy?.email || "A").charAt(0).toUpperCase()}
+            </div>
+            <div className="text-sm text-slate-500 dark:text-slate-400">
+              Created by{" "}
+              <span className="font-bold text-slate-700 dark:text-slate-300">
+                {plan.createdBy?.displayName ||
+                  plan.createdBy?.email?.split("@")[0] ||
+                  "Anonymous"}
+              </span>
+            </div>
           </div>
 
           {/* Action Buttons */}
@@ -279,23 +286,25 @@ export default function StudyPlanDetailsPage() {
             <button
               onClick={handleStartInstance}
               disabled={creatingInstance}
-              className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-sm hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-green-700 hover:to-emerald-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              <Play className="h-5 w-5 mr-2" />
               {creatingInstance ? (
                 <>
                   <Loader2 className="h-5 w-5 mr-2 animate-spin" />
                   Creating...
                 </>
               ) : (
-                "Start This Plan"
+                <>
+                  <Play className="h-5 w-5 mr-2" />
+                  Start This Plan
+                </>
               )}
             </button>
 
             {plan.canEdit && (
               <Link
                 href={`/plans/${params.id}/edit`}
-                className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-base font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-all"
+                className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
                 onClick={(e) => {
                   console.log(
                     "Edit link clicked, navigating to:",
@@ -311,7 +320,7 @@ export default function StudyPlanDetailsPage() {
             {plan.canEdit && (
               <button
                 onClick={() => setShowShareDialog(true)}
-                className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-base font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-all"
+                className="inline-flex items-center justify-center rounded-xl border-2 border-blue-200 dark:border-blue-900 bg-white dark:bg-slate-900 px-6 py-3 text-base font-medium text-blue-600 dark:text-blue-400 shadow-lg hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-400 dark:hover:border-blue-600 transition-all"
               >
                 <Share2 className="h-5 w-5 mr-2" />
                 Share
@@ -487,19 +496,19 @@ export default function StudyPlanDetailsPage() {
 
         {/* Full Description */}
         {plan.fullDescription && (
-          <div className="bg-card border border-border rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold text-foreground mb-3">
+          <div className="bg-white dark:bg-slate-900 border-2 border-blue-200 dark:border-blue-900 rounded-2xl p-6 mb-6 shadow-lg">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
               Description
             </h2>
-            <p className="text-muted-foreground whitespace-pre-wrap">
+            <p className="text-slate-600 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">
               {plan.fullDescription}
             </p>
           </div>
         )}
 
         {/* Resources List */}
-        <div className="bg-card border border-border rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-foreground mb-4">
+        <div className="bg-white dark:bg-slate-900 border-2 border-purple-200 dark:border-purple-900 rounded-2xl p-6 shadow-lg">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
             Resources ({plan.resourceIds?.length || 0})
           </h2>
 
@@ -521,42 +530,38 @@ export default function StudyPlanDetailsPage() {
                 return (
                   <div
                     key={resource._id}
-                    className="flex items-start gap-4 p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
+                    className="flex items-start gap-4 p-5 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-800 rounded-xl transition-all"
                   >
                     <div className="shrink-0">
                       <div
-                        className={`p-2 rounded-md ${
+                        className={`p-2.5 rounded-xl shadow-md ${
                           resource.type === "youtube-video"
-                            ? "bg-red-100 dark:bg-red-900/20"
+                            ? "bg-gradient-to-br from-red-500 to-red-600"
                             : resource.type === "pdf"
-                              ? "bg-blue-100 dark:bg-blue-900/20"
-                              : "bg-green-100 dark:bg-green-900/20"
+                              ? "bg-gradient-to-br from-blue-500 to-blue-600"
+                              : "bg-gradient-to-br from-green-500 to-green-600"
                         }`}
                       >
-                        <Icon
-                          className={`h-5 w-5 ${
-                            resource.type === "youtube-video"
-                              ? "text-red-600 dark:text-red-400"
-                              : resource.type === "pdf"
-                                ? "text-blue-600 dark:text-blue-400"
-                                : "text-green-600 dark:text-green-400"
-                          }`}
-                        />
+                        <Icon className="h-5 w-5 text-white" />
                       </div>
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1">
-                          <h3 className="text-sm font-medium text-foreground mb-1 line-clamp-2">
+                          <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2 line-clamp-2">
                             {index + 1}. {resource.title}
                           </h3>
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-background border border-border">
+                          <div className="flex items-center gap-3 text-xs">
+                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full font-bold ${
+                              resource.type === 'youtube-video' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' :
+                              resource.type === 'pdf' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
+                              'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                            }`}>
                               {typeInfo.label}
                             </span>
-                            <span className="flex items-center">
-                              <Clock className="h-3 w-3 mr-1" />
+                            <span className="flex items-center gap-1 font-medium text-slate-600 dark:text-slate-400">
+                              <Clock className="h-3.5 w-3.5" />
                               {formatTime(totalTime)}
                             </span>
                           </div>
@@ -565,9 +570,9 @@ export default function StudyPlanDetailsPage() {
                           href={resource.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="shrink-0 text-muted-foreground hover:text-primary transition-colors"
+                          className="shrink-0 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors transform hover:scale-110"
                         >
-                          <ExternalLink className="h-4 w-4" />
+                          <ExternalLink className="h-5 w-5" />
                         </a>
                       </div>
                     </div>
@@ -576,7 +581,7 @@ export default function StudyPlanDetailsPage() {
               })}
             </div>
           ) : (
-            <p className="text-muted-foreground text-center py-8">
+            <p className="text-slate-600 dark:text-slate-400 text-center py-8 font-medium">
               No resources added yet.
             </p>
           )}
@@ -584,10 +589,12 @@ export default function StudyPlanDetailsPage() {
 
         {/* Last Modified Info */}
         {plan.lastModifiedBy && (
-          <div className="mt-6 text-sm text-muted-foreground text-center">
+          <div className="mt-6 px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm text-slate-600 dark:text-slate-400 text-center">
             Last modified by{" "}
-            {plan.lastModifiedBy?.displayName ||
-              plan.lastModifiedBy?.email?.split("@")[0]}{" "}
+            <span className="font-bold text-slate-700 dark:text-slate-300">
+              {plan.lastModifiedBy?.displayName ||
+                plan.lastModifiedBy?.email?.split("@")[0]}
+            </span>{" "}
             on {new Date(plan.lastModifiedAt).toLocaleDateString()}
           </div>
         )}
@@ -595,29 +602,29 @@ export default function StudyPlanDetailsPage() {
 
       {/* Start Plan Dialog */}
       {showStartDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-card border border-border rounded-lg w-full max-w-md mx-4 shadow-xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-slate-900 border-2 border-purple-200 dark:border-purple-900 rounded-2xl w-full max-w-md shadow-2xl">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold text-foreground">
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Start Study Plan
                 </h3>
                 <button
                   onClick={() => setShowStartDialog(false)}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-slate-400 hover:text-red-600 transition-colors"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-6 w-6" />
                 </button>
               </div>
 
-              <p className="text-sm text-muted-foreground mb-6">
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
                 Set your target completion date for this study plan. You can
                 always adjust it later.
               </p>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
+                  <label className="block text-sm font-bold text-slate-900 dark:text-white mb-2">
                     Target Completion Date
                   </label>
                   <input
@@ -625,7 +632,7 @@ export default function StudyPlanDetailsPage() {
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                     min={new Date().toISOString().split("T")[0]}
-                    className="w-full px-4 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+                    className="w-full px-4 py-3 border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white font-medium"
                   />
                 </div>
               </div>
@@ -633,7 +640,7 @@ export default function StudyPlanDetailsPage() {
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={() => setShowStartDialog(false)}
-                  className="flex-1 px-4 py-2 border border-input bg-background text-foreground rounded-md hover:bg-muted transition-all"
+                  className="flex-1 px-4 py-3 border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all font-medium"
                   disabled={creatingInstance}
                 >
                   Cancel
@@ -641,11 +648,11 @@ export default function StudyPlanDetailsPage() {
                 <button
                   onClick={handleConfirmStart}
                   disabled={creatingInstance || !endDate}
-                  className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg hover:shadow-xl"
                 >
                   {creatingInstance ? (
                     <span className="flex items-center justify-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-5 w-5 animate-spin" />
                       Creating...
                     </span>
                   ) : (

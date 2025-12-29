@@ -86,21 +86,21 @@ export default function MyInstancesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-12">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-4xl font-bold text-foreground mb-3">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
               My Study Instances
             </h1>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-lg text-slate-600 dark:text-slate-400">
               Track your active learning sessions and monitor progress
             </p>
           </div>
           <Link
             href="/plans"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-all"
+            className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
           >
             <BookOpen className="h-5 w-5 mr-2" />
             Browse Plans
@@ -124,17 +124,19 @@ export default function MyInstancesPage() {
           </div>
         ) : instances.length === 0 ? (
           /* Empty State */
-          <div className="text-center py-16">
-            <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">
+          <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-16 text-center">
+            <div className="bg-slate-200 dark:bg-slate-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="h-10 w-10 text-slate-400 dark:text-slate-500" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
               No active instances
             </h3>
-            <p className="text-muted-foreground mb-6">
+            <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-md mx-auto">
               Start learning by creating an instance from a study plan
             </p>
             <Link
               href="/plans"
-              className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-all"
+              className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
             >
               Browse Study Plans
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -143,20 +145,36 @@ export default function MyInstancesPage() {
         ) : (
           /* Instances Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {instances.map((instance) => {
+            {instances.map((instance, index) => {
               const progressPercent = instance.resourcePercent || 0;
               const timePercent = instance.timePercent || 0;
+
+              const gradients = [
+                "from-blue-500 to-cyan-500",
+                "from-purple-500 to-pink-500",
+                "from-orange-500 to-red-500",
+                "from-green-500 to-teal-500",
+                "from-indigo-500 to-purple-500",
+                "from-yellow-500 to-orange-500",
+              ];
+
+              const gradient = gradients[index % gradients.length];
 
               return (
                 <div
                   key={instance._id}
-                  className="group bg-card border border-border rounded-lg overflow-hidden hover:shadow-xl hover:border-primary/50 transition-all"
+                  className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:shadow-2xl transition-all transform hover:scale-105"
                 >
+                  {/* Colorful Header */}
+                  <div
+                    className={`h-2 bg-gradient-to-r ${gradient} group-hover:h-3 transition-all`}
+                  />
+
                   {/* Header */}
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-blue-600 group-hover:to-purple-600 transition-all">
                           {instance.customTitle
                             ? instance.customTitle
                             : instance.studyPlan?.courseCode &&
@@ -165,13 +183,13 @@ export default function MyInstancesPage() {
                             : instance.studyPlan?.title || "Untitled Instance"}
                         </h3>
                       </div>
-                      <div className="flex items-center">
+                      <div className="flex items-center gap-2">
                         <button
                           onClick={(e) => {
                             e.preventDefault();
                             handleEdit(instance);
                           }}
-                          className="text-muted-foreground hover:text-foreground transition-colors mr-2"
+                          className="text-slate-400 hover:text-blue-600 transition-colors"
                         >
                           <Edit className="h-4 w-4" />
                         </button>
@@ -180,7 +198,7 @@ export default function MyInstancesPage() {
                             e.preventDefault();
                             handleDelete(instance._id);
                           }}
-                          className="text-muted-foreground hover:text-destructive transition-colors"
+                          className="text-slate-400 hover:text-red-600 transition-colors"
                           disabled={deletingId === instance._id}
                         >
                           {deletingId === instance._id ? (
@@ -193,7 +211,7 @@ export default function MyInstancesPage() {
                     </div>
 
                     {instance.notes && (
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4 italic">
                         {instance.notes}
                       </p>
                     )}
@@ -202,18 +220,18 @@ export default function MyInstancesPage() {
                     <div className="space-y-3 mb-4">
                       {/* Resource Progress */}
                       <div>
-                        <div className="flex items-center justify-between text-sm mb-1">
-                          <span className="text-muted-foreground">
+                        <div className="flex items-center justify-between text-sm mb-2">
+                          <span className="text-slate-600 dark:text-slate-400 font-medium">
                             Resources
                           </span>
-                          <span className="font-medium text-foreground">
+                          <span className="font-bold text-slate-900 dark:text-white">
                             {instance.completedResources || 0}/
                             {instance.totalResources || 0}
                           </span>
                         </div>
-                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                        <div className="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-primary transition-all duration-300"
+                            className={`h-full bg-gradient-to-r ${gradient} transition-all duration-500 shadow-lg`}
                             style={{ width: `${progressPercent}%` }}
                           />
                         </div>
@@ -221,16 +239,18 @@ export default function MyInstancesPage() {
 
                       {/* Time Progress */}
                       <div>
-                        <div className="flex items-center justify-between text-sm mb-1">
-                          <span className="text-muted-foreground">Time</span>
-                          <span className="font-medium text-foreground">
+                        <div className="flex items-center justify-between text-sm mb-2">
+                          <span className="text-slate-600 dark:text-slate-400 font-medium">
+                            Time
+                          </span>
+                          <span className="font-bold text-slate-900 dark:text-white">
                             {formatTime(instance.completedTime || 0)}/
                             {formatTime(instance.totalTime || 0)}
                           </span>
                         </div>
-                        <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                        <div className="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-green-500 transition-all duration-300"
+                            className="h-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-500 shadow-lg"
                             style={{ width: `${timePercent}%` }}
                           />
                         </div>
@@ -238,19 +258,22 @@ export default function MyInstancesPage() {
                     </div>
 
                     {/* Meta Info */}
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
                       <div className="flex items-center">
-                        <CheckCircle2 className="h-4 w-4 mr-1" />
-                        {progressPercent}%
+                        <CheckCircle2 className="h-4 w-4 mr-1 text-green-500" />
+                        <span className="font-medium">{Math.round(progressPercent)}%</span>
                       </div>
                       <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {formatTime(instance.remainingTime || 0)} left
+                        <Clock className="h-4 w-4 mr-1 text-orange-500" />
+                        <span className="font-medium">
+                          {formatTime(instance.remainingTime || 0)} left
+                        </span>
                       </div>
                     </div>
 
                     {instance.deadline && (
-                      <div className="mt-3 text-xs text-muted-foreground">
+                      <div className="mt-3 px-3 py-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-lg text-xs font-medium inline-flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
                         Deadline:{" "}
                         {new Date(instance.deadline).toLocaleDateString()}
                       </div>
@@ -258,10 +281,10 @@ export default function MyInstancesPage() {
                   </div>
 
                   {/* Footer */}
-                  <div className="px-6 py-4 bg-muted/30 border-t border-border">
+                  <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700">
                     <Link
                       href={`/instances/${instance._id}`}
-                      className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                      className="inline-flex items-center text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                     >
                       Continue Learning
                       <ArrowRight className="ml-1 h-4 w-4" />
