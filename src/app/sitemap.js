@@ -1,4 +1,4 @@
-import { connectToDatabase } from "@/lib/mongodb";
+import { getDb } from "@/lib/mongodb";
 
 export default async function sitemap() {
   const baseUrl = "https://thestudysync.vercel.app";
@@ -51,7 +51,7 @@ export default async function sitemap() {
 
   try {
     // Fetch dynamic public study plans
-    const { db } = await connectToDatabase();
+    const db = await getDb();
     const studyPlans = await db
       .collection("studyplans")
       .find({ isPublic: true })
