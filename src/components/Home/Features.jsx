@@ -1,7 +1,4 @@
-"use client";
-
 import React from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Globe,
   Users,
@@ -12,74 +9,72 @@ import {
   Youtube,
   FileText,
 } from "lucide-react";
-import { useInView } from "react-intersection-observer";
-import { fadeInUp, staggerContainer } from "@/lib/animations";
 
 const Features = () => {
-  const { scrollYProgress } = useScroll();
-  const y = useTransform(scrollYProgress, [0, 1], [0, 50]);
-
-  const [ref, inView] = useInView({
-    threshold: 0.2,
-    triggerOnce: true,
-  });
-
   const features = [
     {
       icon: Youtube,
       title: "YouTube Integration",
       description:
         "Auto-import playlists with video titles, durations, and thumbnails using YouTube API.",
-      gradient: "from-red-500 to-pink-500",
+      iconBg: "bg-red-500/10",
+      iconColor: "text-red-600 dark:text-red-400",
     },
     {
       icon: CheckCircle2,
       title: "Global Progress Tracking",
       description:
         "Mark a resource complete once, it stays marked everywhere. Never lose track of what you have learned.",
-      gradient: "from-green-500 to-emerald-500",
+      iconBg: "bg-green-500/10",
+      iconColor: "text-green-600 dark:text-green-400",
     },
     {
       icon: Share2,
       title: "Collaborative Plans",
       description:
         "Share study plans with friends via email. Edit together while maintaining individual progress.",
-      gradient: "from-blue-500 to-cyan-500",
+      iconBg: "bg-blue-500/10",
+      iconColor: "text-blue-600 dark:text-blue-400",
     },
     {
       icon: RefreshCw,
       title: "Reusable Resources",
       description:
         "Already watched a video? Add it to a new plan and it is automatically marked as complete.",
-      gradient: "from-purple-500 to-pink-500",
+      iconBg: "bg-purple-500/10",
+      iconColor: "text-purple-600 dark:text-purple-400",
     },
     {
       icon: Clock,
       title: "Smart Time Estimates",
       description:
         "Automatic calculation of total study time. Plan your learning schedule effectively.",
-      gradient: "from-orange-500 to-red-500",
+      iconBg: "bg-orange-500/10",
+      iconColor: "text-orange-600 dark:text-orange-400",
     },
     {
       icon: FileText,
       title: "Multi-Format Support",
       description:
         "Organize YouTube videos, PDFs, slides, and articles all in one centralized location.",
-      gradient: "from-cyan-500 to-blue-500",
+      iconBg: "bg-cyan-500/10",
+      iconColor: "text-cyan-600 dark:text-cyan-400",
     },
     {
       icon: Users,
       title: "Public & Private",
       description:
         "Keep plans private or share publicly. Clone others' plans to kickstart your learning.",
-      gradient: "from-pink-500 to-purple-500",
+      iconBg: "bg-pink-500/10",
+      iconColor: "text-pink-600 dark:text-pink-400",
     },
     {
       icon: Globe,
       title: "Course-Based Organization",
       description:
         "Tag plans with course codes (CSE110, EEE220, etc.) for easy filtering and discovery.",
-      gradient: "from-indigo-500 to-purple-500",
+      iconBg: "bg-primary/10",
+      iconColor: "text-primary",
     },
   ];
 
@@ -88,19 +83,14 @@ const Features = () => {
       id="features"
       className="relative py-12 sm:py-20 lg:py-24 bg-background overflow-hidden"
     >
-      {/* Parallax background elements */}
-      <motion.div style={{ y }} className="absolute inset-0 -z-10">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
-      </motion.div>
+      {/* Background elements */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-float-delayed" />
+      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" ref={ref}>
-        <motion.div
-          className="text-center mb-10 sm:mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6 }}
-        >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10 sm:mb-16 animate-fade-in-up">
           <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-xs sm:text-sm font-semibold mb-3 sm:mb-4">
             Features
           </span>
@@ -111,35 +101,24 @@ const Features = () => {
             Powerful features designed specifically for self-learners who use
             online resources
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
-          variants={staggerContainer}
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <motion.div
+              <div
                 key={index}
-                variants={fadeInUp}
-                custom={index}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="group relative bg-card border border-border rounded-2xl p-6 hover:shadow-2xl hover:border-primary/50 transition-all duration-300"
+                className="group relative bg-card border border-border rounded-2xl p-6 hover:shadow-2xl hover:border-primary/30 hover:-translate-y-2 transition-all duration-300 animate-fade-in-up"
+                style={{ animationDelay: `${100 + index * 50}ms` }}
               >
-                {/* Gradient background on hover */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity duration-300`}
-                />
+                {/* Subtle background on hover */}
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity duration-300" />
 
                 <div className="relative">
-                  {/* Icon with gradient */}
-                  <div
-                    className={`inline-flex p-3 rounded-xl bg-gradient-to-r ${feature.gradient} mb-4 shadow-lg`}
-                  >
-                    <Icon className="h-6 w-6 text-white" />
+                  {/* Icon */}
+                  <div className={`inline-flex p-3 rounded-xl ${feature.iconBg} mb-4`}>
+                    <Icon className={`h-6 w-6 ${feature.iconColor}`} />
                   </div>
 
                   <h3 className="text-base sm:text-lg font-semibold text-foreground mb-2 sm:mb-3 group-hover:text-primary transition-colors">
@@ -149,10 +128,10 @@ const Features = () => {
                     {feature.description}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

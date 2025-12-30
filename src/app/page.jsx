@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Hero from "@/components/Home/Hero";
 import HowItWorks from "@/components/Home/HowItWorks";
 import Features from "@/components/Home/Features";
@@ -16,7 +17,7 @@ export default function Home() {
         url: "https://thestudysync.vercel.app",
         logo: {
           "@type": "ImageObject",
-          url: "https://thestudysync.vercel.app/icon.png",
+          url: "https://thestudysync.vercel.app/og-image.png",
         },
         description:
           "StudySync is a collaborative study plan manager that helps students organize their learning resources, track progress, and achieve their educational goals.",
@@ -74,7 +75,9 @@ export default function Home() {
       <HowItWorks />
       <Features />
       <Testimonials />
-      <PopularPlans />
+      <Suspense fallback={<div className="py-12 sm:py-20 lg:py-24" />}>
+        <PopularPlans />
+      </Suspense>
       <ScrollToTop />
     </>
   );

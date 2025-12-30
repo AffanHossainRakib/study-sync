@@ -3,7 +3,8 @@
  * Helper functions for making authenticated API calls to the backend
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/";
 
 /**
  * Make an authenticated API request

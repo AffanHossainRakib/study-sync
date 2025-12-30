@@ -1,10 +1,5 @@
-"use client";
-
 import React from "react";
-import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
-import { useInView } from "react-intersection-observer";
-import { fadeInUp, staggerContainer } from "@/lib/animations";
 import Image from "next/image";
 
 const testimonials = [
@@ -38,11 +33,6 @@ const testimonials = [
 ];
 
 export default function Testimonials() {
-  const [ref, inView] = useInView({
-    threshold: 0.2,
-    triggerOnce: true,
-  });
-
   return (
     <section
       id="reviews"
@@ -50,16 +40,11 @@ export default function Testimonials() {
     >
       {/* Background decoration */}
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl animate-float" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" ref={ref}>
-        <motion.div
-          className="text-center mb-10 sm:mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6 }}
-        >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10 sm:mb-16 animate-fade-in-up">
           <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-xs sm:text-sm font-semibold mb-3 sm:mb-4">
             Student Success Stories
           </span>
@@ -70,25 +55,18 @@ export default function Testimonials() {
             Join thousands of students and professionals who are mastering new
             skills with StudySync
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
-          variants={staggerContainer}
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {testimonials.map((testimonial, index) => (
-            <motion.div
+            <div
               key={testimonial.id}
-              variants={fadeInUp}
-              custom={index}
-              whileHover={{ y: -8 }}
-              className="relative bg-card border border-border rounded-xl sm:rounded-2xl p-5 sm:p-8 shadow-sm hover:shadow-2xl hover:border-primary/50 transition-all duration-300"
+              className="relative bg-card border border-border rounded-xl sm:rounded-2xl p-5 sm:p-8 shadow-sm hover:shadow-2xl hover:border-primary/30 hover:-translate-y-2 transition-all duration-300 animate-fade-in-up"
+              style={{ animationDelay: `${200 + index * 100}ms` }}
             >
               {/* Quote icon */}
-              <div className="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary to-purple-500 rounded-full flex items-center justify-center shadow-lg">
-                <Quote className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              <div className="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center shadow-lg">
+                <Quote className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
               </div>
 
               {/* Rating */}
@@ -96,26 +74,27 @@ export default function Testimonials() {
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-4 w-4 sm:h-5 sm:w-5 ${i < testimonial.rating
-                        ? "text-yellow-400 fill-yellow-400"
+                    className={`h-4 w-4 sm:h-5 sm:w-5 ${
+                      i < testimonial.rating
+                        ? "text-primary fill-primary"
                         : "text-gray-300 dark:text-gray-600"
-                      }`}
+                    }`}
                   />
                 ))}
               </div>
 
               {/* Content */}
               <p className="text-sm sm:text-base text-foreground mb-4 sm:mb-6 leading-relaxed">
-                "{testimonial.content}"
+                &quot;{testimonial.content}&quot;
               </p>
 
               {/* Author */}
               <div className="flex items-center gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-border">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                   <Image
                     src={testimonial.avatar}
                     alt={testimonial.author}
-                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
                     width={64}
                     height={64}
                     unoptimized
@@ -130,9 +109,9 @@ export default function Testimonials() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
