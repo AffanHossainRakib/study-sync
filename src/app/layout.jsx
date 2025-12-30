@@ -19,24 +19,44 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: {
-    default: "StudySync - Your Personal Learning Hub",
+    default: "StudySync - Collaborative Study Plan Manager & Learning Hub",
     template: "%s | StudySync",
   },
   description:
-    "Centralize your learning journey with StudySync. Organize YouTube playlists, PDFs, and articles in one powerful platform. Track progress, collaborate on study plans, and achieve your learning goals efficiently.",
+    "Create, share, and track study plans with StudySync. Organize YouTube videos, PDFs, and articles in one platform. Features progress tracking, deadline reminders, collaboration tools, and multi-source resource integration for students and self-learners.",
   keywords: [
     "study management",
     "learning platform",
     "study planner",
+    "collaborative learning",
+    "study plan manager",
     "YouTube learning",
     "PDF organizer",
     "progress tracking",
     "self-learning",
     "online education",
+    "educational app",
+    "student productivity",
+    "study tracker",
+    "learning resources",
+    "study schedule",
+    "academic planner",
+    "course management",
+    "learning management system",
+    "study notes organizer",
+    "educational technology",
+    "online study tools",
+    "student organization",
+    "study goal tracking",
+    "learning progress tracker",
+    "collaborative study platform",
   ],
   authors: [{ name: "StudySync Team" }],
   creator: "StudySync",
   publisher: "StudySync",
+  applicationName: "StudySync",
+  category: "Education",
+  classification: "Educational Application",
   formatDetection: {
     email: false,
     address: false,
@@ -47,20 +67,29 @@ export const metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "StudySync - Your Personal Learning Hub",
+    title: "StudySync - Collaborative Study Plan Manager & Learning Hub",
     description:
-      "Centralize your learning journey. Organize YouTube playlists, PDFs, and articles with smart progress tracking.",
+      "Create, share, and track study plans. Organize YouTube videos, PDFs, and articles with smart progress tracking, deadline reminders, and collaboration tools for students.",
     url: "https://thestudysync.vercel.app",
     siteName: "StudySync",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "StudySync - Collaborative Study Plan Manager",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "StudySync - Your Personal Learning Hub",
+    title: "StudySync - Collaborative Study Plan Manager & Learning Hub",
     description:
-      "Centralize your learning journey. Organize YouTube playlists, PDFs, and articles with smart progress tracking.",
-    creator: "@studysync", // Update with your actual Twitter handle if you have one
+      "Create, share, and track study plans. Organize YouTube videos, PDFs, and articles with smart progress tracking and collaboration tools.",
+    creator: "@studysync",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -72,6 +101,9 @@ export const metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
+  },
+  verification: {
+    google: "w7sndvrvHbhyRspL9bhk8CdDKX_Pm77z7SpMRo1meJc",
   },
   icons: {
     icon: [
