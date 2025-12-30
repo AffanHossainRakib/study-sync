@@ -19,15 +19,44 @@ const Signup = () => {
   const [error, setError] = useState(null);
   const router = useRouter();
 
-  const handleSignup = (e) => {
+  const uploadToImgBB = async (imageFile) => {
+    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+    if (!apiKey) {
+      throw new Error("ImgBB API key is not configured");
+    }
+
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    try {
+      const response = await fetch(
+        `https://api.imgbb.com/1/upload?key=${apiKey}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        return data.data.url;
+      } else {
+        throw new Error("Failed to upload image to ImgBB");
+      }
+    } catch (error) {
+      throw new Error("Failed to upload image: " + error.message);
+    }
+  };
+
+  const handleSignup = async (e) => {
     e.preventDefault();
 
     setLoading(true);
     setError(null);
 
-    // Validate inputs
-    if (!name || !email || !password || !profilePicture) {
-      setError("Please fill in all fields.");
+    // Validate inputs (profile picture is now optional)
+    if (!name || !email || !password) {
+      setError("Please fill in all required fields.");
       setLoading(false);
       return;
     }
@@ -50,30 +79,34 @@ const Signup = () => {
       return;
     }
 
-    // Validate URL format for profile picture
     try {
-      new URL(profilePicture);
-    } catch {
-      setError("Please enter a valid URL for the profile picture.");
-      setLoading(false);
-      return;
-    }
+      let profilePictureUrl = "";
 
-    createUser(email, password)
-      .then(() => {
-        updateUsersFullName(name);
-        updateUsersProfilePicture(profilePicture);
-        toast.success("Account created successfully!");
-        router.push("/");
-      })
-      .catch((err) => {
-        const errorMessage = err.message || "Failed to create account.";
-        setError(errorMessage);
-        toast.error(errorMessage);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      // Upload image to ImgBB if provided
+      if (profilePicture && profilePicture instanceof File) {
+        toast.loading("Uploading image...");
+        profilePictureUrl = await uploadToImgBB(profilePicture);
+        toast.dismiss();
+      }
+
+      // Create user account
+      await createUser(email, password);
+      await updateUsersFullName(name);
+
+      // Only update profile picture if we have a URL
+      if (profilePictureUrl) {
+        await updateUsersProfilePicture(profilePictureUrl);
+      }
+
+      toast.success("Account created successfully!");
+      router.push("/");
+    } catch (err) {
+      const errorMessage = err.message || "Failed to create account.";
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

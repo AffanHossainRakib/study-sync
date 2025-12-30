@@ -27,6 +27,31 @@ const SignupForm = ({
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Please select a valid image file');
+        return;
+      }
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size should be less than 5MB');
+        return;
+      }
+      setProfilePicture(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setError(null);
+    }
+  };
 
   return (
     <form
@@ -75,15 +100,27 @@ const SignupForm = ({
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="profilePicture">Profile Picture URL</FieldLabel>
+          <FieldLabel htmlFor="profilePicture">Profile Picture (Optional)</FieldLabel>
+          <FieldDescription className="text-xs text-gray-500 mb-2">
+            Upload an image or leave empty to use a default avatar
+          </FieldDescription>
           <Input
             id="profilePicture"
-            type="url"
-            placeholder="https://example.com/profile.jpg"
-            required
-            onChange={(e) => setProfilePicture(e.target.value)}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
             disabled={loading}
+            className="cursor-pointer"
           />
+          {imagePreview && (
+            <div className="mt-3 flex justify-center">
+              <img
+                src={imagePreview}
+                alt="Profile preview"
+                className="w-24 h-24 rounded-full object-cover border-2 border-indigo-200"
+              />
+            </div>
+          )}
         </Field>
 
         <Field>
