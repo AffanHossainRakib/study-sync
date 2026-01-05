@@ -246,7 +246,7 @@ export default function StudyPlanDetailsPage() {
               <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white mb-4 shadow-lg">
                 {plan.courseCode}
               </span>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
+              <h1 className="text-4xl font-bold text-black bg-clip-text mb-3">
                 {plan.courseCode} - {plan.title}
               </h1>
               <p className="text-lg text-slate-600 dark:text-slate-400 mb-4">
@@ -293,7 +293,7 @@ export default function StudyPlanDetailsPage() {
             <button
               onClick={handleStartInstance}
               disabled={creatingInstance}
-              className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-green-700 hover:to-emerald-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="inline-flex items-center justify-center rounded-xl bg-green-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-green-700 hover:to-emerald-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {creatingInstance ? (
                 <>
@@ -311,7 +311,7 @@ export default function StudyPlanDetailsPage() {
             {plan.canEdit && (
               <Link
                 href={`/plans/${params.id}/edit`}
-                className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
+                className="inline-flex items-center justify-center rounded-xl bg-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
                 onClick={(e) => {
                   console.log(
                     "Edit link clicked, navigating to:",
