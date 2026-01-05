@@ -246,7 +246,7 @@ export default function StudyPlanDetailsPage() {
               <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white mb-4 shadow-lg">
                 {plan.courseCode}
               </span>
-              <h1 className="text-4xl font-bold text-black bg-clip-text mb-3">
+              <h1 className="text-4xl font-bold text-black dark:text-white bg-clip-text mb-3">
                 {plan.courseCode} - {plan.title}
               </h1>
               <p className="text-lg text-slate-600 dark:text-slate-400 mb-4">
