@@ -212,17 +212,52 @@ export async function POST(request) {
       );
     } else {
       // Multiple resources (playlist)
-      const result = await resources.insertMany(resourcesToCreate);
-      const insertedResources = resourcesToCreate.map((r, i) => ({
-        ...r,
-        _id: result.insertedIds[i],
-      }));
+      // Check which resources already exist
+      const urls = resourcesToCreate.map((r) => r.url);
+      const existingResources = await resources
+        .find({ url: { $in: urls } })
+        .toArray();
+      const existingUrlMap = new Map(existingResources.map((r) => [r.url, r]));
+
+      // Separate new and existing resources
+      const newResources = [];
+      const finalResources = [];
+
+      for (const resource of resourcesToCreate) {
+        const existing = existingUrlMap.get(resource.url);
+        if (existing) {
+          // Use existing resource
+          finalResources.push(existing);
+        } else {
+          // Mark for insertion
+          newResources.push(resource);
+        }
+      }
+
+      // Insert only new resources
+      if (newResources.length > 0) {
+        const result = await resources.insertMany(newResources);
+        const insertedResources = newResources.map((r, i) => ({
+          ...r,
+          _id: result.insertedIds[i],
+        }));
+        finalResources.push(...insertedResources);
+      }
+
+      const newCount = newResources.length;
+      const existingCount = existingResources.length;
+      const message =
+        existingCount > 0
+          ? `${newCount} new resource(s) created, ${existingCount} already existed`
+          : `${newCount} resource(s) created successfully`;
 
       return createSuccessResponse(
         {
-          message: `${resourcesToCreate.length} resources created successfully`,
-          resources: insertedResources,
-          isNew: true,
+          message,
+          resources: finalResources,
+          newCount,
+          existingCount,
+          isNew: newCount > 0,
         },
         201
       );
