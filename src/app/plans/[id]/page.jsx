@@ -86,10 +86,10 @@ export default function StudyPlanDetailsPage() {
     }
 
     // Set default end date to 30 days from now
-    const oneMonthLater = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    const oneWeekLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
       .toISOString()
       .split("T")[0];
-    setEndDate(oneMonthLater);
+    setEndDate(oneWeekLater);
     setShowStartDialog(true);
   };
 
