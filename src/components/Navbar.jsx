@@ -61,7 +61,7 @@ const Navbar = () => {
   const centerLinks = [
     { href: "/#how-it-works", label: "How It Works", requiresAuth: false },
     { href: "/#features", label: "Features", requiresAuth: false },
-    { href: "/#reviews", label: "Reviews", requiresAuth: false },
+    // { href: "/#reviews", label: "Reviews", requiresAuth: false },
     { href: "/#popular-plans", label: "Popular Plans", requiresAuth: false },
     { href: "/plans", label: "All Plans", requiresAuth: false },
   ];
