@@ -1,4 +1,4 @@
-# 📚 StudySync - Collaborative Study Plan Manager
+# 📚 The Study Sync - Collaborative Study Plan Manager
 
 > A modern, colorful web application for creating, sharing, and tracking study plans with built-in progress monitoring, resource management, and smart notifications.
 
@@ -398,6 +398,7 @@ See [Database Schema](DOCS/DATABASE_SCHEMA.md) for detailed documentation.
 ## 🚧 Future Enhancements
 
 ### Advanced Features
+
 - [ ] AI-generated study plan suggestions
 - [ ] Smart quiz generation from resources
 - [ ] Personalized study schedule optimization
@@ -405,12 +406,14 @@ See [Database Schema](DOCS/DATABASE_SCHEMA.md) for detailed documentation.
 - [ ] Streak tracking and achievement badges
 
 ### Mobile & Extensions
+
 - [ ] Native mobile app (iOS & Android)
 - [ ] Offline mode for accessing materials
 - [ ] Chrome extension for quick resource addition
 - [ ] Browser bookmarklet for easy sharing
 
 ### Collaboration
+
 - [ ] Real-time collaborative editing
 - [ ] Discussion forums for each plan
 - [ ] Study group creation and management
@@ -418,6 +421,7 @@ See [Database Schema](DOCS/DATABASE_SCHEMA.md) for detailed documentation.
 - [ ] Peer review system
 
 ### Integration
+
 - [ ] LMS integration (Moodle, Canvas)
 - [ ] Google Calendar sync
 - [ ] Notion/Evernote integration
@@ -425,6 +429,7 @@ See [Database Schema](DOCS/DATABASE_SCHEMA.md) for detailed documentation.
 - [ ] Pomodoro timer integration
 
 ### Gamification
+
 - [ ] Points and rewards system
 - [ ] Leaderboards for competitive learning
 - [ ] Daily challenges and streaks
@@ -474,19 +479,23 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📸 Screenshots
 
 ### Dashboard
+
 Beautiful gradient-based dashboard with colorful stats and upcoming deadlines.
 
 ### Study Plans
+
 Browse and discover community study plans with colorful cards and smooth animations.
 
 ### Instance Tracking
+
 Track your progress with dual metrics (resources + time) and instant visual feedback.
 
 ### Resource Management
+
 Add resources from multiple sources with auto-metadata fetching and drag-and-drop reordering.
 
 ---
 
 **Made with ❤️ for students who want to study smarter, not harder.**
 
-*StudySync - Your collaborative learning companion* 📚✨
+_The Study Sync - Your collaborative learning companion_ 📚✨

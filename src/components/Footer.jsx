@@ -84,7 +84,7 @@ const Footer = () => {
                 <BookOpen className="h-6 w-6 text-white" />
               </div>
               <span className="text-xl font-bold text-foreground">
-                StudySync
+                The Study Sync
               </span>
             </Link>
             <p className="text-sm text-muted-foreground mb-6 max-w-sm">
@@ -174,7 +174,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-border pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
           <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
-            © {new Date().getFullYear()} StudySync. All rights reserved.
+            © {new Date().getFullYear()} The Study Sync. All rights reserved.
           </p>
           <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
             <Link href="#" className="hover:text-primary transition-colors">

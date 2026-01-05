@@ -9,12 +9,12 @@ import nodemailer from "nodemailer";
 const gmailTransporter =
   process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD
     ? nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
-      },
-    })
+        service: "gmail",
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_APP_PASSWORD,
+        },
+      })
     : null;
 
 /**
@@ -28,7 +28,7 @@ export async function sendReminderEmail(to, subject, htmlContent) {
 
   try {
     const info = await gmailTransporter.sendMail({
-      from: `StudySync <${process.env.GMAIL_USER}>`,
+      from: `The Study Sync <${process.env.GMAIL_USER}>`,
       to,
       subject,
       html: htmlContent,
@@ -45,15 +45,15 @@ export async function sendReminderEmail(to, subject, htmlContent) {
  * Send a test email
  */
 export async function sendTestEmail(to) {
-  const subject = "Test Email from StudySync";
+  const subject = "Test Email from The Study Sync";
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #3b82f6;">StudySync Test Email</h1>
-      <p>This is a test email from your StudySync application.</p>
+      <h1 style="color: #3b82f6;">The Study Sync Test Email</h1>
+      <p>This is a test email from your The Study Sync application.</p>
       <p>If you're receiving this, your email notifications are working correctly!</p>
       <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
       <p style="color: #6b7280; font-size: 12px;">
-        This is an automated message from StudySync. Please do not reply to this email.
+        This is an automated message from The Study Sync. Please do not reply to this email.
       </p>
     </div>
   `;
@@ -74,17 +74,18 @@ export async function sendDeadlineReminder(to, instanceData) {
       <h1 style="color: #3b82f6;">📚 Study Plan Reminder</h1>
       <p>Your study plan <strong>${title}</strong> has a deadline approaching.</p>
       <p><strong>Deadline:</strong> ${new Date(
-    deadline
-  ).toLocaleDateString()}</p>
+        deadline
+      ).toLocaleDateString()}</p>
       <p>Don't forget to complete your study materials on time!</p>
-      <a href="${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-    }/instances/${instanceData.id}" 
+      <a href="${
+        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      }/instances/${instanceData.id}" 
          style="display: inline-block; background-color: #3b82f6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 10px;">
         View Study Plan
       </a>
       <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
       <p style="color: #6b7280; font-size: 12px;">
-        This is an automated reminder from StudySync. You can manage your notification preferences in your account settings.
+        This is an automated reminder from The Study Sync. You can manage your notification preferences in your account settings.
       </p>
     </div>
   `;
@@ -100,11 +101,13 @@ export async function sendDailyReminder(to, userName, activeInstancesCount) {
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h1 style="color: #3b82f6;">Good morning, ${userName}! 📖</h1>
-      <p>You have <strong>${activeInstancesCount}</strong> active study plan${activeInstancesCount !== 1 ? "s" : ""
-    } waiting for you.</p>
+      <p>You have <strong>${activeInstancesCount}</strong> active study plan${
+    activeInstancesCount !== 1 ? "s" : ""
+  } waiting for you.</p>
       <p>Take a moment today to make progress on your learning journey!</p>
-      <a href="${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-    }/instances" 
+      <a href="${
+        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      }/instances" 
          style="display: inline-block; background-color: #3b82f6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-top: 10px;">
         View Your Study Plans
       </a>
@@ -130,7 +133,9 @@ export async function sendShareInvitation(
 ) {
   const subject = `${sharedByName} shared a study plan with you`;
   const roleText = role === "viewer" ? "view" : "view and edit";
-  const planUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/plans/${studyPlanId}`;
+  const planUrl = `${
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+  }/plans/${studyPlanId}`;
 
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -146,7 +151,7 @@ export async function sendShareInvitation(
       </a>
       <hr style="border: 1px solid #e5e7eb; margin: 20px 0;">
       <p style="color: #6b7280; font-size: 12px;">
-        If you don't have a StudySync account yet, you'll be prompted to sign up to access this shared study plan.
+        If you don't have a The Study Sync account yet, you'll be prompted to sign up to access this shared study plan.
       </p>
     </div>
   `;
@@ -178,7 +183,9 @@ export async function sendCustomReminder(to, instanceData, reminderType) {
         </p>
       </div>
       <p>Click below to jump back into your studies:</p>
-      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/instances/${instanceData._id}" 
+      <a href="${
+        process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+      }/instances/${instanceData._id}" 
          style="display: inline-block; background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin-top: 10px; font-weight: 600;">
         Go to Study Plan
       </a>

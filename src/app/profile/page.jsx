@@ -247,10 +247,10 @@ const ProfilePage = () => {
 
   const createdAt = user.metadata?.creationTime
     ? new Date(user.metadata.creationTime).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
     : "Unknown";
 
   return (
@@ -318,8 +318,9 @@ const ProfilePage = () => {
                   ) : null}
                   {!isEditing && (
                     <div
-                      className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center border-4 border-card shadow-xl ${photoURL ? "hidden" : ""
-                        }`}
+                      className={`w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center border-4 border-card shadow-xl ${
+                        photoURL ? "hidden" : ""
+                      }`}
                     >
                       <User className="h-12 w-12 sm:h-14 sm:w-14 text-white" />
                     </div>
@@ -626,10 +627,11 @@ const ProfilePage = () => {
                 {/* Success/Error Message */}
                 {settingsMessage.text && (
                   <div
-                    className={`p-4 rounded-lg flex items-start gap-3 ${settingsMessage.type === "success"
-                      ? "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900"
-                      : "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900"
-                      }`}
+                    className={`p-4 rounded-lg flex items-start gap-3 ${
+                      settingsMessage.type === "success"
+                        ? "bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900"
+                        : "bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900"
+                    }`}
                   >
                     {settingsMessage.type === "success" ? (
                       <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
@@ -637,10 +639,11 @@ const ProfilePage = () => {
                       <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
                     )}
                     <p
-                      className={`text-sm ${settingsMessage.type === "success"
-                        ? "text-green-800 dark:text-green-200"
-                        : "text-red-800 dark:text-red-200"
-                        }`}
+                      className={`text-sm ${
+                        settingsMessage.type === "success"
+                          ? "text-green-800 dark:text-green-200"
+                          : "text-red-800 dark:text-red-200"
+                      }`}
                     >
                       {settingsMessage.text}
                     </p>
@@ -666,16 +669,18 @@ const ProfilePage = () => {
                         !notificationSettings.emailReminders
                       )
                     }
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${notificationSettings.emailReminders
-                      ? "bg-primary"
-                      : "bg-muted"
-                      }`}
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                      notificationSettings.emailReminders
+                        ? "bg-primary"
+                        : "bg-muted"
+                    }`}
                   >
                     <span
-                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${notificationSettings.emailReminders
-                        ? "translate-x-5"
-                        : "translate-x-0"
-                        }`}
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        notificationSettings.emailReminders
+                          ? "translate-x-5"
+                          : "translate-x-0"
+                      }`}
                     />
                   </button>
                 </div>
@@ -768,10 +773,11 @@ const ProfilePage = () => {
                               key={day}
                               type="button"
                               onClick={() => toggleCustomDay(day)}
-                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${notificationSettings.customDays.includes(day)
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-muted text-muted-foreground hover:bg-muted/80"
-                                }`}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                notificationSettings.customDays.includes(day)
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+                              }`}
                             >
                               {label}
                             </button>
@@ -796,33 +802,41 @@ const ProfilePage = () => {
                     <div className="space-y-4">
                       {/* List of existing reminders */}
                       <div className="flex flex-wrap gap-2">
-                        {notificationSettings.customReminders?.map((reminder, index) => (
-                          <div
-                            key={index}
-                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium"
-                          >
-                            <span>
-                              {reminder.value} {reminder.unit} before
-                            </span>
-                            <button
-                              onClick={() => {
-                                const newReminders = notificationSettings.customReminders.filter(
-                                  (_, i) => i !== index
-                                );
-                                handleNotificationChange("customReminders", newReminders);
-                              }}
-                              className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+                        {notificationSettings.customReminders?.map(
+                          (reminder, index) => (
+                            <div
+                              key={index}
+                              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-medium"
                             >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </div>
-                        ))}
+                              <span>
+                                {reminder.value} {reminder.unit} before
+                              </span>
+                              <button
+                                onClick={() => {
+                                  const newReminders =
+                                    notificationSettings.customReminders.filter(
+                                      (_, i) => i !== index
+                                    );
+                                  handleNotificationChange(
+                                    "customReminders",
+                                    newReminders
+                                  );
+                                }}
+                                className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          )
+                        )}
                       </div>
 
                       {/* Add new reminder form */}
                       <div className="flex gap-2 items-end">
                         <div>
-                          <label className="text-xs font-medium text-muted-foreground mb-1 block">Value</label>
+                          <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                            Value
+                          </label>
                           <input
                             type="number"
                             min="1"
@@ -832,7 +846,9 @@ const ProfilePage = () => {
                           />
                         </div>
                         <div>
-                          <label className="text-xs font-medium text-muted-foreground mb-1 block">Unit</label>
+                          <label className="text-xs font-medium text-muted-foreground mb-1 block">
+                            Unit
+                          </label>
                           <select
                             id="reminderUnit"
                             className="w-24 px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
@@ -845,8 +861,10 @@ const ProfilePage = () => {
                         </div>
                         <button
                           onClick={() => {
-                            const valueInput = document.getElementById("reminderValue");
-                            const unitInput = document.getElementById("reminderUnit");
+                            const valueInput =
+                              document.getElementById("reminderValue");
+                            const unitInput =
+                              document.getElementById("reminderUnit");
 
                             const value = parseInt(valueInput.value);
                             const unit = unitInput.value;
@@ -856,12 +874,12 @@ const ProfilePage = () => {
                                 id: `${Date.now()}`, // Simple ID for uniqueness
                                 value,
                                 unit,
-                                type: 'before_deadline'
+                                type: "before_deadline",
                               };
 
                               handleNotificationChange("customReminders", [
                                 ...(notificationSettings.customReminders || []),
-                                newReminder
+                                newReminder,
                               ]);
 
                               valueInput.value = "";
@@ -895,16 +913,18 @@ const ProfilePage = () => {
                         !notificationSettings.deadlineWarnings
                       )
                     }
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${notificationSettings.deadlineWarnings
-                      ? "bg-primary"
-                      : "bg-muted"
-                      }`}
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                      notificationSettings.deadlineWarnings
+                        ? "bg-primary"
+                        : "bg-muted"
+                    }`}
                   >
                     <span
-                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${notificationSettings.deadlineWarnings
-                        ? "translate-x-5"
-                        : "translate-x-0"
-                        }`}
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        notificationSettings.deadlineWarnings
+                          ? "translate-x-5"
+                          : "translate-x-0"
+                      }`}
                     />
                   </button>
                 </div>
@@ -928,16 +948,18 @@ const ProfilePage = () => {
                         !notificationSettings.weeklyDigest
                       )
                     }
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${notificationSettings.weeklyDigest
-                      ? "bg-primary"
-                      : "bg-muted"
-                      }`}
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                      notificationSettings.weeklyDigest
+                        ? "bg-primary"
+                        : "bg-muted"
+                    }`}
                   >
                     <span
-                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${notificationSettings.weeklyDigest
-                        ? "translate-x-5"
-                        : "translate-x-0"
-                        }`}
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        notificationSettings.weeklyDigest
+                          ? "translate-x-5"
+                          : "translate-x-0"
+                      }`}
                     />
                   </button>
                 </div>
@@ -999,8 +1021,8 @@ const ProfilePage = () => {
             className="mt-8 p-4 bg-muted/30 border border-border rounded-xl"
           >
             <p className="text-sm text-muted-foreground">
-              <strong>Note:</strong> Your profile information is used across
-              StudySync to personalize your experience. Changes will be
+              <strong>Note:</strong> Your profile information is used across The
+              Study Sync to personalize your experience. Changes will be
               reflected immediately.
             </p>
           </motion.div>

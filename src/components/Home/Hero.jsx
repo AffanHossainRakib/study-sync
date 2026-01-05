@@ -65,8 +65,8 @@ const Hero = () => {
             </h1>
 
             <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto lg:mx-0 leading-relaxed animate-fade-in-up [animation-delay:400ms]">
-              Stop juggling scattered YouTube playlists, PDFs, and articles.
-              StudySync brings all your learning resources into one organized
+              Stop juggling scattered YouTube playlists, PDFs, and articles. The
+              Study Sync brings all your learning resources into one organized
               platform with smart progress tracking and collaboration tools.
             </p>
 

@@ -19,11 +19,11 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: {
-    default: "StudySync - Collaborative Study Plan Manager & Learning Hub",
-    template: "%s | StudySync",
+    default: "The Study Sync - Collaborative Study Plan Manager & Learning Hub",
+    template: "%s | The Study Sync",
   },
   description:
-    "Create, share, and track study plans with StudySync. Organize YouTube videos, PDFs, and articles in one platform. Features progress tracking, deadline reminders, collaboration tools, and multi-source resource integration for students and self-learners.",
+    "Create, share, and track study plans with The Study Sync. Organize YouTube videos, PDFs, and articles in one platform. Features progress tracking, deadline reminders, collaboration tools, and multi-source resource integration for students and self-learners.",
   keywords: [
     "study management",
     "learning platform",
@@ -51,10 +51,10 @@ export const metadata = {
     "learning progress tracker",
     "collaborative study platform",
   ],
-  authors: [{ name: "StudySync Team" }],
-  creator: "StudySync",
-  publisher: "StudySync",
-  applicationName: "StudySync",
+  authors: [{ name: "The Study Sync Team" }],
+  creator: "The Study Sync",
+  publisher: "The Study Sync",
+  applicationName: "The Study Sync",
   category: "Education",
   classification: "Educational Application",
   formatDetection: {
@@ -67,11 +67,11 @@ export const metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "StudySync - Collaborative Study Plan Manager & Learning Hub",
+    title: "The Study Sync - Collaborative Study Plan Manager & Learning Hub",
     description:
       "Create, share, and track study plans. Organize YouTube videos, PDFs, and articles with smart progress tracking, deadline reminders, and collaboration tools for students.",
     url: "https://thestudysync.vercel.app",
-    siteName: "StudySync",
+    siteName: "The Study Sync",
     locale: "en_US",
     type: "website",
     images: [
@@ -79,16 +79,16 @@ export const metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "StudySync - Collaborative Study Plan Manager",
+        alt: "The Study Sync - Collaborative Study Plan Manager",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "StudySync - Collaborative Study Plan Manager & Learning Hub",
+    title: "The Study Sync - Collaborative Study Plan Manager & Learning Hub",
     description:
       "Create, share, and track study plans. Organize YouTube videos, PDFs, and articles with smart progress tracking and collaboration tools.",
-    creator: "@studysync",
+    creator: "@The Study Sync",
     images: ["/og-image.png"],
   },
   robots: {
@@ -106,9 +106,7 @@ export const metadata = {
     google: "FEoJuVOJPe4NJ-7NlC0XByeEo5v4Rvg2JXTzA4X0e0o",
   },
   icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-    ],
+    icon: [{ url: "/favicon.ico", sizes: "any" }],
   },
 };
 

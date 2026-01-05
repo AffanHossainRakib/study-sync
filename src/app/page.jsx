@@ -13,35 +13,34 @@ export default function Home() {
       {
         "@type": "Organization",
         "@id": "https://thestudysync.vercel.app/#organization",
-        name: "StudySync",
+        name: "The Study Sync",
         url: "https://thestudysync.vercel.app",
         logo: {
           "@type": "ImageObject",
           url: "https://thestudysync.vercel.app/og-image.png",
         },
         description:
-          "StudySync is a collaborative study plan manager that helps students organize their learning resources, track progress, and achieve their educational goals.",
-        sameAs: [
-          "https://github.com/AffanHossainRakib/study-sync",
-        ],
+          "The Study Sync is a collaborative study plan manager that helps students organize their learning resources, track progress, and achieve their educational goals.",
+        sameAs: ["https://github.com/AffanHossainRakib/study-sync"],
       },
       {
         "@type": "WebSite",
         "@id": "https://thestudysync.vercel.app/#website",
         url: "https://thestudysync.vercel.app",
-        name: "StudySync",
+        name: "The Study Sync",
         publisher: {
           "@id": "https://thestudysync.vercel.app/#organization",
         },
         potentialAction: {
           "@type": "SearchAction",
-          target: "https://thestudysync.vercel.app/plans?search={search_term_string}",
+          target:
+            "https://thestudysync.vercel.app/plans?search={search_term_string}",
           "query-input": "required name=search_term_string",
         },
       },
       {
         "@type": "WebApplication",
-        name: "StudySync",
+        name: "The Study Sync",
         url: "https://thestudysync.vercel.app",
         applicationCategory: "EducationalApplication",
         operatingSystem: "Web Browser",

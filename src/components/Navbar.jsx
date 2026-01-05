@@ -104,7 +104,7 @@ const Navbar = () => {
                 </div>
               </div>
               <span className="font-bold text-xl text-foreground">
-                Study Sync
+                The Study Sync
               </span>
             </Link>
           </div>

@@ -6,7 +6,7 @@ const testimonials = [
   {
     id: 1,
     content:
-      "StudySync helped me organize my YouTube learning. I finally finished that 20-hour Python course! The progress tracking keeps me motivated every single day.",
+      "The Study Sync helped me organize my YouTube learning. I finally finished that 20-hour Python course! The progress tracking keeps me motivated every single day.",
     author: "Alex Chen",
     role: "Computer Science Student",
     rating: 5,
@@ -53,7 +53,7 @@ export default function Testimonials() {
           </h2>
           <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
             Join thousands of students and professionals who are mastering new
-            skills with StudySync
+            skills with The Study Sync
           </p>
         </div>
 

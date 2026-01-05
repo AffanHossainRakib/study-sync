@@ -1,7 +1,7 @@
 export default function manifest() {
   return {
-    name: "StudySync - Collaborative Study Plan Manager",
-    short_name: "StudySync",
+    name: "The Study Sync - Collaborative Study Plan Manager",
+    short_name: "The Study Sync",
     description:
       "Create, share, and track study plans with progress monitoring, resource management, and collaboration tools.",
     start_url: "/",
