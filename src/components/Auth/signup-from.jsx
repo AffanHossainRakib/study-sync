@@ -61,7 +61,7 @@ const SignupForm = ({
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-teal-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold text-foreground">
             Create an account
           </h1>
           <p className="text-gray-600 text-sm text-balance">

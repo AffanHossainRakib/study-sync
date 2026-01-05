@@ -127,13 +127,13 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+              <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
                 Welcome back, {user?.displayName || "Learner"}!
               </h1>
               <p className="text-slate-600 dark:text-slate-400 text-lg">
@@ -142,7 +142,7 @@ export default function DashboardPage() {
             </div>
             <Link
               href="/create-plan"
-              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 font-medium flex items-center gap-2 transition-all shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 font-medium flex items-center gap-2 transition-all shadow-lg hover:shadow-xl"
             >
               <Plus className="h-5 w-5" />
               Create Plan
@@ -153,57 +153,45 @@ export default function DashboardPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Active Study Plans */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
-            <div className="relative">
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 w-fit mb-4">
-                <BookOpen className="w-8 h-8" />
-              </div>
-              <div className="text-4xl font-bold mb-2">
-                {stats.activeInstances}
-              </div>
-              <h3 className="text-blue-100 font-medium">Active Plans</h3>
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
+              <BookOpen className="w-8 h-8 text-primary" />
             </div>
+            <div className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+              {stats.activeInstances}
+            </div>
+            <h3 className="text-slate-600 dark:text-slate-400 font-medium">Active Plans</h3>
           </div>
 
           {/* Overall Completion */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
-            <div className="relative">
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 w-fit mb-4">
-                <Target className="w-8 h-8" />
-              </div>
-              <div className="text-4xl font-bold mb-2">
-                {Math.round(stats.totalCompletion)}%
-              </div>
-              <h3 className="text-purple-100 font-medium">Overall Progress</h3>
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
+              <Target className="w-8 h-8 text-primary" />
             </div>
+            <div className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+              {Math.round(stats.totalCompletion)}%
+            </div>
+            <h3 className="text-slate-600 dark:text-slate-400 font-medium">Overall Progress</h3>
           </div>
 
           {/* Resources Completed */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-green-500 to-emerald-700 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
-            <div className="relative">
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 w-fit mb-4">
-                <CheckCircle2 className="w-8 h-8" />
-              </div>
-              <div className="text-4xl font-bold mb-2">
-                {stats.completedResources}/{stats.totalResources}
-              </div>
-              <h3 className="text-green-100 font-medium">Resources Done</h3>
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
+              <CheckCircle2 className="w-8 h-8 text-primary" />
             </div>
+            <div className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+              {stats.completedResources}/{stats.totalResources}
+            </div>
+            <h3 className="text-slate-600 dark:text-slate-400 font-medium">Resources Done</h3>
           </div>
 
           {/* Study Plans Created */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-pink-500 to-rose-700 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
-            <div className="relative">
-              <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 w-fit mb-4">
-                <TrendingUp className="w-8 h-8" />
-              </div>
-              <div className="text-4xl font-bold mb-2">{myPlans.length}</div>
-              <h3 className="text-pink-100 font-medium">Plans Created</h3>
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+            <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
+              <TrendingUp className="w-8 h-8 text-primary" />
             </div>
+            <div className="text-4xl font-bold text-slate-900 dark:text-white mb-2">{myPlans.length}</div>
+            <h3 className="text-slate-600 dark:text-slate-400 font-medium">Plans Created</h3>
           </div>
         </div>
 
@@ -283,9 +271,9 @@ export default function DashboardPage() {
           </div>
 
           {instances.length === 0 ? (
-            <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-12 text-center">
-              <div className="bg-slate-200 dark:bg-slate-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                <AlertCircle className="w-10 h-10 text-slate-400 dark:text-slate-500" />
+            <div className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-12 text-center">
+              <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="w-10 h-10 text-primary" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
                 No active study plans yet
@@ -297,7 +285,7 @@ export default function DashboardPage() {
               <div className="flex items-center justify-center gap-4">
                 <Link
                   href="/plans"
-                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
+                  className="px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 font-medium shadow-lg hover:shadow-xl transition-all"
                 >
                   Browse Plans
                 </Link>
@@ -311,46 +299,28 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {instances.slice(0, 6).map((instance, index) => {
+              {instances.slice(0, 6).map((instance) => {
                 const completed = instance.completedResources || 0;
                 const total = instance.totalResources || 0;
                 const percentage = instance.resourcePercent || 0;
-
-                const gradients = [
-                  "from-blue-500 to-cyan-500",
-                  "from-purple-500 to-pink-500",
-                  "from-orange-500 to-red-500",
-                  "from-green-500 to-teal-500",
-                  "from-indigo-500 to-purple-500",
-                  "from-yellow-500 to-orange-500",
-                ];
-
-                const gradient = gradients[index % gradients.length];
 
                 return (
                   <Link
                     key={instance._id}
                     href={`/instances/${instance._id}`}
-                    className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:shadow-2xl transition-all transform hover:scale-105"
+                    className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all"
                   >
-                    {/* Colorful Header */}
-                    <div
-                      className={`h-2 bg-gradient-to-r ${gradient} group-hover:h-3 transition-all`}
-                    />
+                    {/* Header accent */}
+                    <div className="h-1 bg-primary group-hover:h-2 transition-all" />
 
                     <div className="p-6">
                       <div className="mb-4">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-blue-600 group-hover:to-purple-600 transition-all">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                           {instance.customTitle || instance.studyPlanId?.title}
                         </h3>
                         <div className="flex items-center gap-2">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r ${gradient} text-white`}
-                          >
-                            <span>
-                              {instance.studyPlan.courseCode} -{" "}
-                              {instance.studyPlan.title}
-                            </span>
+                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                            {instance.studyPlan.courseCode} - {instance.studyPlan.title}
                           </span>
                         </div>
                       </div>
@@ -365,9 +335,9 @@ export default function DashboardPage() {
                             {Math.round(percentage)}%
                           </span>
                         </div>
-                        <div className="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                           <div
-                            className={`h-full bg-gradient-to-r ${gradient} transition-all duration-500 shadow-lg`}
+                            className="h-full bg-primary transition-all duration-500"
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
@@ -407,73 +377,64 @@ export default function DashboardPage() {
         {/* Quick Actions */}
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-            <Award className="w-6 h-6 text-purple-500" />
+            <Award className="w-6 h-6 text-primary" />
             Quick Actions
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Link
               href="/plans"
-              className="relative overflow-hidden bg-white dark:bg-slate-900 border-2 border-blue-200 dark:border-blue-900 rounded-2xl p-6 hover:shadow-2xl transition-all group hover:border-blue-400 dark:hover:border-blue-600"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 hover:shadow-lg hover:border-primary/50 transition-all group"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform" />
-              <div className="relative">
-                <div className="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl p-3 w-fit mb-4 shadow-lg">
-                  <BookOpen className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-                  Browse Plans
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                  Discover study plans created by the community
-                </p>
-                <div className="flex items-center text-sm font-bold text-blue-600 dark:text-blue-400 group-hover:gap-2 transition-all">
-                  Explore Now
-                  <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                </div>
+              <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
+                <BookOpen className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                Browse Plans
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                Discover study plans created by the community
+              </p>
+              <div className="flex items-center text-sm font-medium text-primary group-hover:gap-2 transition-all">
+                Explore Now
+                <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
 
             <Link
               href="/create-plan"
-              className="relative overflow-hidden bg-white dark:bg-slate-900 border-2 border-purple-200 dark:border-purple-900 rounded-2xl p-6 hover:shadow-2xl transition-all group hover:border-purple-400 dark:hover:border-purple-600"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 hover:shadow-lg hover:border-primary/50 transition-all group"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform" />
-              <div className="relative">
-                <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl p-3 w-fit mb-4 shadow-lg">
-                  <Target className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-                  Create Plan
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                  Build a custom study plan with your resources
-                </p>
-                <div className="flex items-center text-sm font-bold text-purple-600 dark:text-purple-400 group-hover:gap-2 transition-all">
-                  Get Started
-                  <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                </div>
+              <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
+                <Target className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                Create Plan
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                Build a custom study plan with your resources
+              </p>
+              <div className="flex items-center text-sm font-medium text-primary group-hover:gap-2 transition-all">
+                Get Started
+                <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
 
             <Link
               href="/my-plans"
-              className="relative overflow-hidden bg-white dark:bg-slate-900 border-2 border-green-200 dark:border-green-900 rounded-2xl p-6 hover:shadow-2xl transition-all group hover:border-green-400 dark:hover:border-green-600"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 hover:shadow-lg hover:border-primary/50 transition-all group"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-400/20 to-emerald-400/20 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform" />
-              <div className="relative">
-                <div className="bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl p-3 w-fit mb-4 shadow-lg">
-                  <TrendingUp className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-                  My Plans
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                  Manage your created study plans
-                </p>
-                <div className="flex items-center text-sm font-bold text-green-600 dark:text-green-400 group-hover:gap-2 transition-all">
-                  View Plans
-                  <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                </div>
+              <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
+                <TrendingUp className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                My Plans
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                Manage your created study plans
+              </p>
+              <div className="flex items-center text-sm font-medium text-primary group-hover:gap-2 transition-all">
+                View Plans
+                <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
           </div>

@@ -98,9 +98,9 @@ const Navbar = () => {
               }}
             >
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg blur-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative bg-gradient-to-br from-blue-500 to-purple-600 p-2 rounded-lg shadow-md">
-                  <GraduationCap className="h-5 w-5 text-white" />
+                <div className="absolute inset-0 bg-primary rounded-lg blur-sm opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                <div className="relative bg-primary p-2 rounded-lg shadow-md">
+                  <GraduationCap className="h-5 w-5 text-primary-foreground" />
                 </div>
               </div>
               <span className="font-bold text-xl text-foreground">
@@ -174,11 +174,11 @@ const Navbar = () => {
                           />
                         ) : null}
                         <div
-                          className={`w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center shadow-md ${
+                          className={`w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-md ${
                             user?.photoURL ? "hidden" : ""
                           }`}
                         >
-                          <User className="h-4 w-4 text-white" />
+                          <User className="h-4 w-4 text-primary-foreground" />
                         </div>
                         <ChevronDown
                           className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
@@ -258,10 +258,9 @@ const Navbar = () => {
                     </Link>
                     <Link
                       href="/register"
-                      className="relative group inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white rounded-lg overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95"
+                      className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-primary-foreground bg-primary rounded-lg transition-all duration-300 hover:bg-primary/90 active:scale-95"
                     >
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 transition-transform duration-300 group-hover:scale-110"></div>
-                      <span className="relative">Sign Up Free</span>
+                      Sign Up Free
                     </Link>
                   </>
                 )}
@@ -336,8 +335,8 @@ const Navbar = () => {
                   {user ? (
                     <div className="space-y-3">
                       <div className="flex items-center gap-3 px-2">
-                        <div className="h-11 w-11 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
-                          <User className="h-5 w-5 text-white" />
+                        <div className="h-11 w-11 rounded-full bg-primary flex items-center justify-center shadow-lg">
+                          <User className="h-5 w-5 text-primary-foreground" />
                         </div>
                         <div>
                           <div className="text-sm font-semibold text-foreground">
@@ -368,7 +367,7 @@ const Navbar = () => {
                       <Link
                         href="/register"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="block w-full text-center px-4 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-md transition-all hover:shadow-lg active:scale-95"
+                        className="block w-full text-center px-4 py-3 text-sm font-semibold text-primary-foreground bg-primary rounded-lg shadow-md transition-all hover:bg-primary/90 active:scale-95"
                       >
                         Sign Up Free
                       </Link>

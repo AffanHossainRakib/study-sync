@@ -121,12 +121,12 @@ export default function MyStudyPlansPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
+            <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-3">
               My Study Plans
             </h1>
             <p className="text-lg text-slate-600 dark:text-slate-400">
@@ -135,7 +135,7 @@ export default function MyStudyPlansPage() {
           </div>
           <Link
             href="/create-plan"
-            className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
+            className="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-lg hover:bg-primary/90 transition-all"
           >
             <Plus className="h-5 w-5 mr-2" />
             Create Plan
@@ -143,7 +143,7 @@ export default function MyStudyPlansPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white dark:bg-slate-900 border-2 border-purple-200 dark:border-purple-900 rounded-2xl p-6 mb-8 shadow-lg">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 mb-8 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div className="relative">
@@ -241,9 +241,9 @@ export default function MyStudyPlansPage() {
           </div>
         ) : plans.length === 0 ? (
           /* Empty State */
-          <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-16 text-center">
-            <div className="bg-slate-200 dark:bg-slate-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="h-10 w-10 text-slate-400 dark:text-slate-500" />
+          <div className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-16 text-center">
+            <div className="bg-primary/10 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="h-10 w-10 text-primary" />
             </div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
               No study plans found
@@ -255,7 +255,7 @@ export default function MyStudyPlansPage() {
             </p>
             <Link
               href="/create-plan"
-              className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
+              className="inline-flex items-center justify-center rounded-xl bg-primary px-6 py-3 text-base font-medium text-primary-foreground shadow-lg hover:bg-primary/90 transition-all"
             >
               <Plus className="h-5 w-5 mr-2" />
               Create Study Plan
@@ -265,7 +265,7 @@ export default function MyStudyPlansPage() {
           <>
             {/* Plans Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {plans.map((plan, index) => {
+              {plans.map((plan) => {
                 // Check if user is creator by comparing emails (most reliable)
                 const creatorEmail =
                   typeof plan.createdBy === "object"
@@ -277,34 +277,19 @@ export default function MyStudyPlansPage() {
                   creatorEmail.toLowerCase() === user.email.toLowerCase();
                 const isShared = !isCreator;
 
-                const gradients = [
-                  "from-blue-500 to-cyan-500",
-                  "from-purple-500 to-pink-500",
-                  "from-orange-500 to-red-500",
-                  "from-green-500 to-teal-500",
-                  "from-indigo-500 to-purple-500",
-                  "from-yellow-500 to-orange-500",
-                ];
-
-                const gradient = gradients[index % gradients.length];
-
                 return (
                   <div
                     key={plan._id}
-                    className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:shadow-2xl transition-all transform hover:scale-105"
+                    className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/50 transition-all"
                   >
-                    {/* Colorful Header */}
-                    <div
-                      className={`h-2 bg-gradient-to-r ${gradient} group-hover:h-3 transition-all`}
-                    />
+                    {/* Header accent */}
+                    <div className="h-1 bg-primary group-hover:h-2 transition-all" />
 
                     {/* Header */}
                     <div className="p-6 pb-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r ${gradient} text-white`}
-                          >
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
                             {plan.courseCode}
                           </span>
                           {isShared && (
@@ -339,7 +324,7 @@ export default function MyStudyPlansPage() {
                         </button>
                       </div>
 
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:from-blue-600 group-hover:to-purple-600 transition-all">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                         {plan.courseCode} - {plan.title}
                       </h3>
 
@@ -350,13 +335,13 @@ export default function MyStudyPlansPage() {
                       {/* Meta Info */}
                       <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-4">
                         <div className="flex items-center">
-                          <FileText className="h-4 w-4 mr-1 text-blue-500" />
+                          <FileText className="h-4 w-4 mr-1 text-primary" />
                           <span className="font-medium">
                             {plan.resourceCount || 0}
                           </span>
                         </div>
                         <div className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1 text-purple-500" />
+                          <Clock className="h-4 w-4 mr-1 text-primary/70" />
                           <span className="font-medium">
                             {formatTime(plan.totalTime)}
                           </span>
@@ -382,7 +367,7 @@ export default function MyStudyPlansPage() {
                     <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
                       <Link
                         href={`/plans/${plan._id}`}
-                        className="inline-flex items-center text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                        className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                       >
                         View Details
                         <ArrowRight className="ml-1 h-4 w-4" />
@@ -407,17 +392,17 @@ export default function MyStudyPlansPage() {
                 <button
                   onClick={() => handlePageChange(page - 1)}
                   disabled={!pagination.hasPrevPage}
-                  className="px-6 py-2 bg-white dark:bg-slate-900 border-2 border-blue-200 dark:border-blue-900 rounded-xl text-sm font-bold text-blue-600 dark:text-blue-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-400 dark:hover:border-blue-600 transition-all disabled:hover:bg-white dark:disabled:hover:bg-slate-900"
+                  className="px-6 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
                 >
                   Previous
                 </button>
-                <span className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl text-sm font-bold shadow-lg">
+                <span className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium">
                   Page {pagination.currentPage} of {pagination.totalPages}
                 </span>
                 <button
                   onClick={() => handlePageChange(page + 1)}
                   disabled={!pagination.hasNextPage}
-                  className="px-6 py-2 bg-white dark:bg-slate-900 border-2 border-blue-200 dark:border-blue-900 rounded-xl text-sm font-bold text-blue-600 dark:text-blue-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-400 dark:hover:border-blue-600 transition-all disabled:hover:bg-white dark:disabled:hover:bg-slate-900"
+                  className="px-6 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
                 >
                   Next
                 </button>
@@ -429,71 +414,71 @@ export default function MyStudyPlansPage() {
         {/* Quick Stats */}
         {plans.length > 0 && (
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="relative overflow-hidden bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
-              <div className="relative">
-                <div className="text-4xl font-bold mb-1">{plans.length}</div>
-                <div className="text-blue-100 font-medium">
-                  Total Study Plans
-                </div>
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+              <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
+                <BookOpen className="w-6 h-6 text-primary" />
+              </div>
+              <div className="text-4xl font-bold text-slate-900 dark:text-white mb-1">{plans.length}</div>
+              <div className="text-slate-600 dark:text-slate-400 font-medium">
+                Total Study Plans
               </div>
             </div>
-            <div className="relative overflow-hidden bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
-              <div className="relative">
-                <div className="text-4xl font-bold mb-1">
-                  {
-                    plans.filter((p) => {
-                      const creatorId =
-                        typeof p.createdBy === "object"
-                          ? p.createdBy._id
-                          : p.createdBy;
-                      const creatorFirebaseUid =
-                        typeof p.createdBy === "object"
-                          ? p.createdBy.firebaseUid
-                          : null;
-                      return (
-                        (creatorFirebaseUid &&
-                          creatorFirebaseUid === user.uid) ||
-                        (creatorId &&
-                          user._id &&
-                          creatorId.toString() === user._id.toString())
-                      );
-                    }).length
-                  }
-                </div>
-                <div className="text-purple-100 font-medium">
-                  Created by You
-                </div>
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+              <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
+                <Plus className="w-6 h-6 text-primary" />
+              </div>
+              <div className="text-4xl font-bold text-slate-900 dark:text-white mb-1">
+                {
+                  plans.filter((p) => {
+                    const creatorId =
+                      typeof p.createdBy === "object"
+                        ? p.createdBy._id
+                        : p.createdBy;
+                    const creatorFirebaseUid =
+                      typeof p.createdBy === "object"
+                        ? p.createdBy.firebaseUid
+                        : null;
+                    return (
+                      (creatorFirebaseUid &&
+                        creatorFirebaseUid === user.uid) ||
+                      (creatorId &&
+                        user._id &&
+                        creatorId.toString() === user._id.toString())
+                    );
+                  }).length
+                }
+              </div>
+              <div className="text-slate-600 dark:text-slate-400 font-medium">
+                Created by You
               </div>
             </div>
-            <div className="relative overflow-hidden bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
-              <div className="relative">
-                <div className="text-4xl font-bold mb-1">
-                  {
-                    plans.filter((p) => {
-                      const creatorId =
-                        typeof p.createdBy === "object"
-                          ? p.createdBy._id
-                          : p.createdBy;
-                      const creatorFirebaseUid =
-                        typeof p.createdBy === "object"
-                          ? p.createdBy.firebaseUid
-                          : null;
-                      const isCreator =
-                        (creatorFirebaseUid &&
-                          creatorFirebaseUid === user.uid) ||
-                        (creatorId &&
-                          user._id &&
-                          creatorId.toString() === user._id.toString());
-                      return !isCreator;
-                    }).length
-                  }
-                </div>
-                <div className="text-green-100 font-medium">
-                  Shared with You
-                </div>
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
+              <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
+                <Users className="w-6 h-6 text-primary" />
+              </div>
+              <div className="text-4xl font-bold text-slate-900 dark:text-white mb-1">
+                {
+                  plans.filter((p) => {
+                    const creatorId =
+                      typeof p.createdBy === "object"
+                        ? p.createdBy._id
+                        : p.createdBy;
+                    const creatorFirebaseUid =
+                      typeof p.createdBy === "object"
+                        ? p.createdBy.firebaseUid
+                        : null;
+                    const isCreator =
+                      (creatorFirebaseUid &&
+                        creatorFirebaseUid === user.uid) ||
+                      (creatorId &&
+                        user._id &&
+                        creatorId.toString() === user._id.toString());
+                    return !isCreator;
+                  }).length
+                }
+              </div>
+              <div className="text-slate-600 dark:text-slate-400 font-medium">
+                Shared with You
               </div>
             </div>
           </div>
