@@ -122,15 +122,39 @@ export default function CreateStudyPlanPage() {
       const result = await createOrGetResource(resourceData, token);
 
       if (resourceForm.type === "youtube-playlist" && result.resources) {
-        // Add all videos from playlist
-        setResources((prev) => [...prev, ...result.resources]);
-        toast.success(`Added ${result.resources.length} videos from playlist`);
-      } else if (result.resource) {
-        // Add single resource
-        setResources((prev) => [...prev, result.resource]);
-        toast.success(
-          result.isNew ? "Resource added" : "Existing resource added"
+        // Filter out duplicates from playlist
+        const existingIds = new Set(resources.map((r) => r._id.toString()));
+        const newResources = result.resources.filter(
+          (r) => !existingIds.has(r._id.toString())
         );
+        const duplicateCount = result.resources.length - newResources.length;
+
+        if (newResources.length > 0) {
+          setResources((prev) => [...prev, ...newResources]);
+        }
+
+        if (duplicateCount > 0) {
+          toast.success(
+            `Added ${newResources.length} video(s), ${duplicateCount} already in plan`
+          );
+        } else {
+          toast.success(`Added ${newResources.length} video(s) from playlist`);
+        }
+      } else if (result.resource) {
+        // Check if resource already exists in the plan
+        const isDuplicate = resources.some(
+          (r) => r._id.toString() === result.resource._id.toString()
+        );
+
+        if (isDuplicate) {
+          toast.error("This resource is already in your plan");
+        } else {
+          // Add single resource
+          setResources((prev) => [...prev, result.resource]);
+          toast.success(
+            result.isNew ? "Resource added" : "Existing resource added"
+          );
+        }
       }
 
       // Reset form

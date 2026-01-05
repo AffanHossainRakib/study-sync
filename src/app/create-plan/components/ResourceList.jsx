@@ -13,12 +13,13 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { BookOpen, Trash2, X } from "lucide-react";
+import { BookOpen, Trash2, X, ArrowUpDown } from "lucide-react";
 import ResourceListItem from "./ResourceListItem";
 
 export default function ResourceList({ resources, onReorder, onRemove }) {
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
+  const [sortBy, setSortBy] = useState("order");
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -65,6 +66,38 @@ export default function ResourceList({ resources, onReorder, onRemove }) {
     setSelectedIds(new Set());
   };
 
+  const handleSortChange = (newSortBy) => {
+    setSortBy(newSortBy);
+
+    let sortedResources = [...resources];
+    switch (newSortBy) {
+      case "title":
+        sortedResources.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case "duration":
+        sortedResources.sort((a, b) => {
+          const getDuration = (r) => {
+            if (r.metadata?.duration) return r.metadata.duration;
+            if (r.metadata?.estimatedMins) return r.metadata.estimatedMins * 60;
+            if (r.metadata?.pages && r.metadata?.minsPerPage)
+              return r.metadata.pages * r.metadata.minsPerPage * 60;
+            return 0;
+          };
+          return getDuration(a) - getDuration(b);
+        });
+        break;
+      case "type":
+        sortedResources.sort((a, b) => a.type.localeCompare(b.type));
+        break;
+      case "order":
+      default:
+        // Keep original order - no sorting needed
+        return;
+    }
+
+    onReorder(sortedResources);
+  };
+
   const getTotalTime = () => {
     return resources.reduce((total, resource) => {
       if (resource.type === "youtube-video")
@@ -75,7 +108,11 @@ export default function ResourceList({ resources, onReorder, onRemove }) {
           (resource.metadata?.pages || 0) *
             (resource.metadata?.minsPerPage || 3)
         );
-      if (resource.type === "article" || resource.type === "google-drive" || resource.type === "custom-link")
+      if (
+        resource.type === "article" ||
+        resource.type === "google-drive" ||
+        resource.type === "custom-link"
+      )
         return total + (resource.metadata?.estimatedMins || 0);
       return total;
     }, 0);
@@ -118,35 +155,52 @@ export default function ResourceList({ resources, onReorder, onRemove }) {
           )}
         </div>
 
-        {!isSelecting ? (
-          <button
-            type="button"
-            onClick={() => setIsSelecting(true)}
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Select
-          </button>
-        ) : (
+        <div className="flex items-center gap-3">
+          {/* Sort Dropdown */}
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleDeleteSelected}
-              disabled={selectedIds.size === 0}
-              className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium text-destructive hover:text-destructive/80 disabled:opacity-50 disabled:cursor-not-allowed"
+            <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+            <select
+              value={sortBy}
+              onChange={(e) => handleSortChange(e.target.value)}
+              className="px-3 py-1 text-sm border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             >
-              <Trash2 className="h-3 w-3" />
-              Delete ({selectedIds.size})
-            </button>
-            <button
-              type="button"
-              onClick={handleCancelSelect}
-              className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-3 w-3" />
-              Cancel
-            </button>
+              <option value="order">Original Order</option>
+              <option value="title">Sort by Title</option>
+              <option value="duration">Sort by Duration</option>
+              <option value="type">Sort by Type</option>
+            </select>
           </div>
-        )}
+
+          {!isSelecting ? (
+            <button
+              type="button"
+              onClick={() => setIsSelecting(true)}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Select
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleDeleteSelected}
+                disabled={selectedIds.size === 0}
+                className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium text-destructive hover:text-destructive/80 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Trash2 className="h-3 w-3" />
+                Delete ({selectedIds.size})
+              </button>
+              <button
+                type="button"
+                onClick={handleCancelSelect}
+                className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-3 w-3" />
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <DndContext

@@ -57,8 +57,12 @@ export const getStudyPlans = async (params = {}, token = null) => {
   return data;
 };
 
-export const getStudyPlanById = async (id, token = null) => {
-  return apiRequest(`/api/study-plans/${id}`, "GET", token);
+export const getStudyPlanById = async (id, token = null, sortBy = "order") => {
+  const endpoint =
+    sortBy && sortBy !== "order"
+      ? `/api/study-plans/${id}?sortBy=${sortBy}`
+      : `/api/study-plans/${id}`;
+  return apiRequest(endpoint, "GET", token);
 };
 
 export const createStudyPlan = async (data, token) => {

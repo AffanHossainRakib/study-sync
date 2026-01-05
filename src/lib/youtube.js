@@ -14,8 +14,17 @@ const youtube = google.youtube({
  * Extract video ID from various YouTube URL formats
  */
 const extractVideoId = (url) => {
+  if (!url) return null;
+
+  // Trim whitespace
+  url = url.trim();
+
   const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&\n?#]+)/,
+    /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([^&\n?#]+)/,
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^&\n?#]+)/,
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([^&\n?#]+)/,
+    /(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([^&\n?#]+)/,
     /^([a-zA-Z0-9_-]{11})$/, // Direct video ID
   ];
 
@@ -33,6 +42,11 @@ const extractVideoId = (url) => {
  * Extract playlist ID from YouTube URL
  */
 const extractPlaylistId = (url) => {
+  if (!url) return null;
+
+  // Trim whitespace
+  url = url.trim();
+
   const match = url.match(/[?&]list=([^&\n?#]+)/);
   return match ? match[1] : null;
 };

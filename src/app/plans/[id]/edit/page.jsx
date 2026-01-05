@@ -165,21 +165,48 @@ export default function EditStudyPlanPage() {
       const result = await createOrGetResource(resourceData, token);
 
       if (resourceForm.type === "youtube-playlist" && result.resources) {
-        const newResources = result.resources.map((r) => ({
-          ...r,
-          localId: Math.random().toString(36).substr(2, 9),
-        }));
-        setResources((prev) => [...prev, ...newResources]);
-        toast.success(`Added ${result.resources.length} videos from playlist`);
-      } else if (result.resource) {
-        const newResource = {
-          ...result.resource,
-          localId: Math.random().toString(36).substr(2, 9),
-        };
-        setResources((prev) => [...prev, newResource]);
-        toast.success(
-          result.isNew ? "Resource added" : "Existing resource added"
+        // Filter out duplicates from playlist
+        const existingIds = new Set(
+          resources.map((r) => r._id?.toString() || r.localId)
         );
+        const newResources = result.resources
+          .filter((r) => !existingIds.has(r._id?.toString()))
+          .map((r) => ({
+            ...r,
+            localId: Math.random().toString(36).substr(2, 9),
+          }));
+        const duplicateCount = result.resources.length - newResources.length;
+
+        if (newResources.length > 0) {
+          setResources((prev) => [...prev, ...newResources]);
+        }
+
+        if (duplicateCount > 0) {
+          toast.success(
+            `Added ${newResources.length} video(s), ${duplicateCount} already in plan`
+          );
+        } else {
+          toast.success(`Added ${newResources.length} video(s) from playlist`);
+        }
+      } else if (result.resource) {
+        // Check if resource already exists in the plan
+        const isDuplicate = resources.some(
+          (r) =>
+            (r._id?.toString() || r.localId) === result.resource._id.toString()
+        );
+
+        if (isDuplicate) {
+          toast.error("This resource is already in your plan");
+        } else {
+          const newResource = {
+            ...result.resource,
+            localId: Math.random().toString(36).substr(2, 9),
+          };
+          setResources((prev) => [...prev, newResource]);
+          toast.success(
+            result.isNew ? "Resource added" : "Existing resource added"
+          );
+        }
       }
 
       // Reset form

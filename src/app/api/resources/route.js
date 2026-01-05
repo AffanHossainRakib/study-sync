@@ -14,6 +14,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const studyPlanId = searchParams.get("studyPlanId");
+    const sortBy = searchParams.get("sortBy") || "order"; // order, title, duration, type
 
     if (!studyPlanId) {
       return createErrorResponse(
@@ -34,7 +35,42 @@ export async function GET(request) {
       .find({ _id: { $in: plan.resourceIds } })
       .toArray();
 
-    return createSuccessResponse({ resources: planResources });
+    // Sort resources based on sortBy parameter
+    let sortedResources = [...planResources];
+    switch (sortBy) {
+      case "title":
+        sortedResources.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case "duration":
+        sortedResources.sort((a, b) => {
+          const getDuration = (r) => {
+            if (r.metadata?.duration) return r.metadata.duration;
+            if (r.metadata?.estimatedMins) return r.metadata.estimatedMins * 60;
+            if (r.metadata?.pages && r.metadata?.minsPerPage)
+              return r.metadata.pages * r.metadata.minsPerPage * 60;
+            return 0;
+          };
+          return getDuration(a) - getDuration(b);
+        });
+        break;
+      case "type":
+        sortedResources.sort((a, b) => a.type.localeCompare(b.type));
+        break;
+      case "order":
+      default:
+        // Maintain the order from resourceIds array
+        const orderMap = new Map(
+          plan.resourceIds.map((id, index) => [id.toString(), index])
+        );
+        sortedResources.sort((a, b) => {
+          const orderA = orderMap.get(a._id.toString()) ?? 999999;
+          const orderB = orderMap.get(b._id.toString()) ?? 999999;
+          return orderA - orderB;
+        });
+        break;
+    }
+
+    return createSuccessResponse({ resources: sortedResources, sortBy });
   } catch (error) {
     console.error("Error fetching resources:", error);
     return createErrorResponse("Failed to fetch resources", 500);

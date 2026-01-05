@@ -19,6 +19,7 @@ import {
   Trash2,
   Mail,
   UserPlus,
+  ArrowUpDown,
 } from "lucide-react";
 import {
   getStudyPlanById,
@@ -47,6 +48,7 @@ export default function StudyPlanDetailsPage() {
   const [shareRole, setShareRole] = useState("editor");
   const [sharing, setSharing] = useState(false);
   const [removingAccess, setRemovingAccess] = useState(null);
+  const [sortBy, setSortBy] = useState("order");
 
   const fetchPlanDetails = async () => {
     try {
@@ -57,7 +59,7 @@ export default function StudyPlanDetailsPage() {
         "Length:",
         params.id?.length
       );
-      const data = await getStudyPlanById(params.id, token);
+      const data = await getStudyPlanById(params.id, token, sortBy);
       setPlan(data);
     } catch (error) {
       console.error("Error fetching plan:", error);
@@ -74,7 +76,7 @@ export default function StudyPlanDetailsPage() {
       fetchPlanDetails();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.id, token]);
+  }, [params.id, token, sortBy]);
 
   const handleStartInstance = async () => {
     if (!user) {
@@ -146,14 +148,14 @@ export default function StudyPlanDetailsPage() {
     try {
       setSharing(true);
       await shareStudyPlan(params.id, shareEmail, shareRole, token);
-      
+
       // Track share event
-      mixpanel.track('Share Study Plan', {
+      mixpanel.track("Share Study Plan", {
         plan_id: params.id,
         recipient_email: shareEmail,
         role: shareRole,
       });
-      
+
       toast.success(`Study plan shared with ${shareEmail}`);
       setShareEmail("");
       setShareRole("editor");
@@ -213,7 +215,10 @@ export default function StudyPlanDetailsPage() {
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
               Study Plan Not Found
             </h1>
-            <Link href="/plans" className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105">
+            <Link
+              href="/plans"
+              className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
+            >
               Browse All Plans
             </Link>
           </div>
@@ -269,7 +274,9 @@ export default function StudyPlanDetailsPage() {
           {/* Creator */}
           <div className="flex items-center gap-2 mb-6">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
-              {(plan.createdBy?.displayName || plan.createdBy?.email || "A").charAt(0).toUpperCase()}
+              {(plan.createdBy?.displayName || plan.createdBy?.email || "A")
+                .charAt(0)
+                .toUpperCase()}
             </div>
             <div className="text-sm text-slate-500 dark:text-slate-400">
               Created by{" "}
@@ -508,9 +515,27 @@ export default function StudyPlanDetailsPage() {
 
         {/* Resources List */}
         <div className="bg-white dark:bg-slate-900 border-2 border-purple-200 dark:border-purple-900 rounded-2xl p-6 shadow-lg">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
-            Resources ({plan.resourceIds?.length || 0})
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Resources ({plan.resourceIds?.length || 0})
+            </h2>
+
+            {plan.resourceIds && plan.resourceIds.length > 0 && (
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className="h-4 w-4 text-slate-500" />
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="order">Original Order</option>
+                  <option value="title">Sort by Title</option>
+                  <option value="duration">Sort by Duration</option>
+                  <option value="type">Sort by Type</option>
+                </select>
+              </div>
+            )}
+          </div>
 
           {plan.resourceIds && plan.resourceIds.length > 0 ? (
             <div className="space-y-3">
@@ -521,11 +546,13 @@ export default function StudyPlanDetailsPage() {
                   resource.type === "youtube-video"
                     ? resource.metadata?.duration
                     : resource.type === "pdf"
-                      ? (resource.metadata?.pages || 0) *
-                        (resource.metadata?.minsPerPage || 0)
-                      : (resource.type === "article" || resource.type === "google-drive" || resource.type === "custom-link")
-                        ? resource.metadata?.estimatedMins || 0
-                        : 0;
+                    ? (resource.metadata?.pages || 0) *
+                      (resource.metadata?.minsPerPage || 0)
+                    : resource.type === "article" ||
+                      resource.type === "google-drive" ||
+                      resource.type === "custom-link"
+                    ? resource.metadata?.estimatedMins || 0
+                    : 0;
 
                 return (
                   <div
@@ -538,8 +565,8 @@ export default function StudyPlanDetailsPage() {
                           resource.type === "youtube-video"
                             ? "bg-gradient-to-br from-red-500 to-red-600"
                             : resource.type === "pdf"
-                              ? "bg-gradient-to-br from-blue-500 to-blue-600"
-                              : "bg-gradient-to-br from-green-500 to-green-600"
+                            ? "bg-gradient-to-br from-blue-500 to-blue-600"
+                            : "bg-gradient-to-br from-green-500 to-green-600"
                         }`}
                       >
                         <Icon className="h-5 w-5 text-white" />
@@ -553,11 +580,15 @@ export default function StudyPlanDetailsPage() {
                             {index + 1}. {resource.title}
                           </h3>
                           <div className="flex items-center gap-3 text-xs">
-                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full font-bold ${
-                              resource.type === 'youtube-video' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' :
-                              resource.type === 'pdf' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
-                              'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                            }`}>
+                            <span
+                              className={`inline-flex items-center px-2.5 py-1 rounded-full font-bold ${
+                                resource.type === "youtube-video"
+                                  ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                                  : resource.type === "pdf"
+                                  ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                                  : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                              }`}
+                            >
                               {typeInfo.label}
                             </span>
                             <span className="flex items-center gap-1 font-medium text-slate-600 dark:text-slate-400">

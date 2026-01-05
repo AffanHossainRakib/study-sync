@@ -12,12 +12,17 @@ import {
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const sortBy = searchParams.get("sortBy") || "order";
+
     console.log("Received plan ID:", id, "Length:", id?.length);
     const planId = toObjectId(id);
     if (!planId) {
       console.error("Invalid ObjectId:", id, "Must be 24 hex characters");
       return createErrorResponse(
-        `Invalid study plan ID format. Expected 24 hex characters, got ${id?.length || 0}`,
+        `Invalid study plan ID format. Expected 24 hex characters, got ${
+          id?.length || 0
+        }`,
         400
       );
     }
@@ -52,7 +57,42 @@ export async function GET(request, { params }) {
       .find({ _id: { $in: plan.resourceIds } })
       .toArray();
 
-    const totalTime = planResources.reduce((sum, r) => {
+    // Sort resources based on sortBy parameter
+    let sortedResources = [...planResources];
+    switch (sortBy) {
+      case "title":
+        sortedResources.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case "duration":
+        sortedResources.sort((a, b) => {
+          const getDuration = (r) => {
+            if (r.metadata?.duration) return r.metadata.duration;
+            if (r.metadata?.estimatedMins) return r.metadata.estimatedMins * 60;
+            if (r.metadata?.pages && r.metadata?.minsPerPage)
+              return r.metadata.pages * r.metadata.minsPerPage * 60;
+            return 0;
+          };
+          return getDuration(a) - getDuration(b);
+        });
+        break;
+      case "type":
+        sortedResources.sort((a, b) => a.type.localeCompare(b.type));
+        break;
+      case "order":
+      default:
+        // Maintain the order from resourceIds array
+        const orderMap = new Map(
+          plan.resourceIds.map((id, index) => [id.toString(), index])
+        );
+        sortedResources.sort((a, b) => {
+          const orderA = orderMap.get(a._id.toString()) ?? 999999;
+          const orderB = orderMap.get(b._id.toString()) ?? 999999;
+          return orderA - orderB;
+        });
+        break;
+    }
+
+    const totalTime = sortedResources.reduce((sum, r) => {
       if (r.type === "youtube-video") return sum + (r.metadata?.duration || 0);
       if (r.type === "pdf")
         return sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0);
@@ -69,9 +109,9 @@ export async function GET(request, { params }) {
             email: creator.email,
           }
         : null,
-      resourceIds: planResources,
+      resourceIds: sortedResources,
       totalTime,
-      resourceCount: planResources.length,
+      resourceCount: sortedResources.length,
       canEdit: auth.user
         ? plan.createdBy.equals(auth.user._id) ||
           plan.sharedWith.some(
