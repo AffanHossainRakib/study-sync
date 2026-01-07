@@ -2,31 +2,27 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import useAuth from "@/hooks/useAuth";
 import {
   Menu,
   X,
   LogOut,
   User,
-  BookOpen,
   GraduationCap,
-  ChevronDown,
-  UserCircle,
-  Settings,
+  LayoutDashboard,
   FolderOpen,
   Play,
+  Star,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Navbar = () => {
   const { user, loading, logOut } = useAuth();
-  const router = useRouter();
   const pathname = usePathname();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Handle scroll effect
   useEffect(() => {
@@ -37,21 +33,9 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isDropdownOpen && !event.target.closest(".avatar-dropdown")) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isDropdownOpen]);
-
   const handleLogout = async () => {
     try {
       await logOut();
-      router.push("/");
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -59,18 +43,18 @@ const Navbar = () => {
 
   // Navigation links for center section
   const centerLinks = [
-    { href: "/#how-it-works", label: "How It Works", requiresAuth: false },
-    { href: "/#features", label: "Features", requiresAuth: false },
-    { href: "/#popular-plans", label: "Popular Plans", requiresAuth: false },
-    { href: "/plans", label: "All Plans", requiresAuth: false },
-
+    { href: "/#how-it-works", label: "How It Works" },
+    { href: "/#features", label: "Features" },
+    { href: "/#popular-plans", label: "Popular Plans" },
+    { href: "/plans", label: "All Plans" },
   ];
 
-  const userLinks = [
-    { href: "/dashboard", label: "Dashboard", requiresAuth: true },
-    { href: "/my-plans", label: "My Plans", requiresAuth: true },
-    { href: "/instances", label: "My Instances", requiresAuth: true },
-    { href: "/reviews", label: "Add    Review", requiresAuth: true },
+  // Mobile-only user navigation links
+  const mobileUserLinks = [
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/my-plans", label: "My Plans", icon: FolderOpen },
+    { href: "/instances", label: "My Instances", icon: Play },
+    { href: "/reviews", label: "Add Review", icon: Star },
   ];
 
   // Helper to determine if link is active
@@ -111,166 +95,39 @@ const Navbar = () => {
 
           {/* Center Navigation - Desktop */}
           <div className="hidden lg:flex lg:items-center lg:gap-1 lg:flex-1 lg:justify-center lg:px-8">
-            {centerLinks.map((link) => {
-              if (!link.requiresAuth || user) {
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg whitespace-nowrap ${isActive(link.href)
-                      ? "text-primary bg-primary/10"
-                      : "text-foreground hover:text-primary hover:bg-muted"
-                      }`}
-                  >
-                    {link.label}
-                    {isActive(link.href) && (
-                      <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-0.5 bg-primary rounded-full"></span>
-                    )}
-                  </Link>
-                );
-              }
-              return null;
-            })}
+            {centerLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg whitespace-nowrap ${isActive(link.href)
+                  ? "text-primary bg-primary/10"
+                  : "text-foreground hover:text-primary hover:bg-muted"
+                  }`}
+              >
+                {link.label}
+                {isActive(link.href) && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-0.5 bg-primary rounded-full"></span>
+                )}
+              </Link>
+            ))}
           </div>
 
           {/* Right Side - Auth Buttons - Desktop */}
           <div className="hidden lg:flex items-center gap-3">
-            {!loading && (
+            {!loading && !user && (
               <>
-                {user ? (
-                  <div className="flex items-center gap-3">
-                    {userLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className={`px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${isActive(link.href)
-                          ? "text-primary bg-primary/10"
-                          : "text-foreground hover:text-primary hover:bg-muted"
-                          }`}
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
-                    <div className="w-px h-6 bg-border"></div>
-
-                    {/* Avatar Dropdown */}
-                    <div className="relative avatar-dropdown">
-                      <button
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-muted transition-all duration-200"
-                      >
-                        {user?.photoURL ? (
-                          <img
-                            src={user.photoURL}
-                            alt={user?.displayName || "User"}
-                            className="w-8 h-8 rounded-full object-cover shadow-md ring-2 ring-primary/20"
-                            onError={(e) => {
-                              e.target.style.display = "none";
-                              e.target.nextElementSibling.style.display =
-                                "flex";
-                            }}
-                          />
-                        ) : null}
-                        <div
-                          className={`w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-md ${user?.photoURL ? "hidden" : ""
-                            }`}
-                        >
-                          <User className="h-4 w-4 text-primary-foreground" />
-                        </div>
-                        <ChevronDown
-                          className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""
-                            }`}
-                        />
-                      </button>
-
-                      {/* Dropdown Menu */}
-                      {isDropdownOpen && (
-                        <div className="absolute right-0 mt-2 w-56 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50">
-                          <div className="p-3 border-b border-border bg-muted/30">
-                            <p className="text-sm font-semibold text-foreground truncate">
-                              {user?.displayName || user?.email || "User"}
-                            </p>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {user?.email}
-                            </p>
-                          </div>
-                          <div className="py-1">
-                            <Link
-                              href="/dashboard"
-                              onClick={() => setIsDropdownOpen(false)}
-                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
-                            >
-                              <BookOpen className="h-4 w-4" />
-                              Dashboard
-                            </Link>
-                            {/* <Link
-                              href="/profile"
-                              onClick={() => setIsDropdownOpen(false)}
-                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
-                            >
-                              <Settings className="h-4 w-4" />
-                              My Profile
-                            </Link> */}
-                            <Link
-                              href="/my-plans"
-                              onClick={() => setIsDropdownOpen(false)}
-                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
-                            >
-                              <FolderOpen className="h-4 w-4" />
-                              My Plans
-                            </Link>
-                            <Link
-                              href="/instances"
-                              onClick={() => setIsDropdownOpen(false)}
-                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
-                            >
-                              <Play className="h-4 w-4" />
-                              My Instances
-                            </Link>
-                            {/* Admin Link - simple check */}
-                            {user?.role === "admin" && (
-                              <Link
-                                href="/admin/reviews"
-                                onClick={() => setIsDropdownOpen(false)}
-                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
-                              >
-                                <Settings className="h-4 w-4" />
-                                Admin Reviews
-                              </Link>
-                            )}
-                          </div>
-                          <div className="border-t border-border py-1">
-                            <button
-                              onClick={() => {
-                                setIsDropdownOpen(false);
-                                handleLogout();
-                              }}
-                              className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-                            >
-                              <LogOut className="h-4 w-4" />
-                              Sign Out
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <Link
-                      href="/login"
-                      className="px-4 py-2 text-sm font-medium text-foreground hover:text-primary rounded-lg transition-all duration-200"
-                    >
-                      Login
-                    </Link>
-                    <Link
-                      href="/register"
-                      className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-primary-foreground bg-primary rounded-lg transition-all duration-300 hover:bg-primary/90 active:scale-95"
-                    >
-                      Sign Up Free
-                    </Link>
-                  </>
-                )}
+                <Link
+                  href="/login"
+                  className="px-4 py-2 text-sm font-medium text-foreground hover:text-primary rounded-lg transition-all duration-200"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-primary-foreground bg-primary rounded-lg transition-all duration-300 hover:bg-primary/90 active:scale-95"
+                >
+                  Sign Up Free
+                </Link>
               </>
             )}
             <ThemeToggle />
@@ -298,40 +155,44 @@ const Navbar = () => {
         <div className="lg:hidden border-t border-border bg-background shadow-xl">
           <div className="max-h-[calc(100vh-4rem)] overflow-y-auto">
             <div className="space-y-1 px-4 py-4">
-              {/* All navigation links */}
-              {centerLinks.map((link) => {
-                if (!link.requiresAuth || user) {
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`block rounded-lg px-4 py-3 text-base font-medium transition-all ${isActive(link.href)
-                        ? "bg-primary/10 text-primary"
-                        : "text-foreground hover:bg-muted hover:text-primary"
-                        }`}
-                    >
-                      {link.label}
-                    </Link>
-                  );
-                }
-                return null;
-              })}
+              {/* Center navigation links */}
+              {centerLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block rounded-lg px-4 py-3 text-base font-medium transition-all ${isActive(link.href)
+                    ? "bg-primary/10 text-primary"
+                    : "text-foreground hover:bg-muted hover:text-primary"
+                    }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
 
-              {user &&
-                userLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`block rounded-lg px-4 py-3 text-base font-medium transition-all ${isActive(link.href)
-                      ? "bg-primary/10 text-primary"
-                      : "text-foreground hover:bg-muted hover:text-primary"
-                      }`}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+              {/* User navigation links (mobile only) */}
+              {user && (
+                <>
+                  <div className="my-2 mx-4 border-t border-border" />
+                  {mobileUserLinks.map((link) => {
+                    const Icon = link.icon;
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={`flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-all ${isActive(link.href)
+                          ? "bg-primary/10 text-primary"
+                          : "text-foreground hover:bg-muted hover:text-primary"
+                          }`}
+                      >
+                        <Icon className="h-5 w-5" />
+                        {link.label}
+                      </Link>
+                    );
+                  })}
+                </>
+              )}
             </div>
 
             <div className="border-t border-border px-4 py-4 bg-muted/30">
@@ -340,24 +201,35 @@ const Navbar = () => {
                   {user ? (
                     <div className="space-y-3">
                       <div className="flex items-center gap-3 px-2">
-                        <div className="h-11 w-11 rounded-full bg-primary flex items-center justify-center shadow-lg">
-                          <User className="h-5 w-5 text-primary-foreground" />
-                        </div>
+                        {user?.photoURL ? (
+                          <img
+                            src={user.photoURL}
+                            alt={user?.displayName || "User"}
+                            className="h-11 w-11 rounded-full object-cover ring-2 ring-primary/20"
+                          />
+                        ) : (
+                          <div className="h-11 w-11 rounded-full bg-primary flex items-center justify-center shadow-lg">
+                            <User className="h-5 w-5 text-primary-foreground" />
+                          </div>
+                        )}
                         <div>
                           <div className="text-sm font-semibold text-foreground">
-                            {user.email || "User"}
+                            {user.displayName || user.email || "User"}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            Student Account
+                            {user.email}
                           </div>
                         </div>
                       </div>
                       <button
-                        onClick={handleLogout}
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                          handleLogout();
+                        }}
                         className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-all"
                       >
                         <LogOut className="h-4 w-4" />
-                        Logout
+                        Sign Out
                       </button>
                     </div>
                   ) : (
