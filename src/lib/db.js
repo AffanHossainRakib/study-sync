@@ -15,6 +15,7 @@ export async function getCollections() {
     instances: db.collection("instances"),
     resources: db.collection("resources"),
     userProgress: db.collection("userprogresses"),
+    reviews: db.collection("reviews"),
   };
 }
 
@@ -60,6 +61,10 @@ export async function ensureIndexes() {
     { userId: 1, resourceId: 1 },
     { unique: true }
   );
+
+  // Reviews indexes
+  await collections.reviews.createIndex({ userId: 1 });
+  await collections.reviews.createIndex({ createdAt: -1 });
 }
 
 /**
@@ -71,6 +76,7 @@ export const schemas = {
     email: data.email,
     displayName: data.displayName || "",
     photoURL: data.photoURL || "",
+    role: data.role || "user",
     notificationSettings: data.notificationSettings || {
       emailReminders: true,
       reminderTime: "09:00",
@@ -131,6 +137,14 @@ export const schemas = {
     resourceId: toObjectId(data.resourceId),
     completed: data.completed || false,
     completedAt: data.completed ? data.completedAt || new Date() : null,
+    createdAt: data.createdAt || new Date(),
+    updatedAt: new Date(),
+  }),
+
+  review: (data) => ({
+    userId: toObjectId(data.userId),
+    rating: data.rating,
+    comment: data.comment,
     createdAt: data.createdAt || new Date(),
     updatedAt: new Date(),
   }),

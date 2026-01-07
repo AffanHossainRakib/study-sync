@@ -32,12 +32,29 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        setUser(firebaseUser);
         // Get ID token for API calls
         const idToken = await firebaseUser.getIdToken();
         setToken(idToken);
         // Set auth cookie for middleware
         document.cookie = `auth-token=${idToken}; path=/; max-age=3600; SameSite=Lax`;
+
+        // Fetch user profile from MongoDB to get role
+        try {
+          const res = await fetch("/api/auth/me", {
+            headers: { Authorization: `Bearer ${idToken}` }
+          });
+          if (res.ok) {
+            const dbUser = await res.json();
+            // Merge firebase user with db user
+            setUser({ ...firebaseUser, ...dbUser });
+          } else {
+            console.error("Failed to fetch user profile");
+            setUser(firebaseUser);
+          }
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+          setUser(firebaseUser);
+        }
 
         // Identify user in Mixpanel
         mixpanel.identify(firebaseUser.uid);

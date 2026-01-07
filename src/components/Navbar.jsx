@@ -61,15 +61,16 @@ const Navbar = () => {
   const centerLinks = [
     { href: "/#how-it-works", label: "How It Works", requiresAuth: false },
     { href: "/#features", label: "Features", requiresAuth: false },
-    // { href: "/#reviews", label: "Reviews", requiresAuth: false },
     { href: "/#popular-plans", label: "Popular Plans", requiresAuth: false },
     { href: "/plans", label: "All Plans", requiresAuth: false },
+
   ];
 
   const userLinks = [
     { href: "/dashboard", label: "Dashboard", requiresAuth: true },
     { href: "/my-plans", label: "My Plans", requiresAuth: true },
     { href: "/instances", label: "My Instances", requiresAuth: true },
+    { href: "/reviews", label: "Add a Review", requiresAuth: true },
   ];
 
   // Helper to determine if link is active
@@ -77,11 +78,10 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-background/80 backdrop-blur-xl shadow-lg border-b border-border"
-          : "bg-background/60 backdrop-blur-md border-b border-border/50"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+        ? "bg-background/80 backdrop-blur-xl shadow-lg border-b border-border"
+        : "bg-background/60 backdrop-blur-md border-b border-border/50"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
@@ -117,11 +117,10 @@ const Navbar = () => {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg whitespace-nowrap ${
-                      isActive(link.href)
-                        ? "text-primary bg-primary/10"
-                        : "text-foreground hover:text-primary hover:bg-muted"
-                    }`}
+                    className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg whitespace-nowrap ${isActive(link.href)
+                      ? "text-primary bg-primary/10"
+                      : "text-foreground hover:text-primary hover:bg-muted"
+                      }`}
                   >
                     {link.label}
                     {isActive(link.href) && (
@@ -144,11 +143,10 @@ const Navbar = () => {
                       <Link
                         key={link.href}
                         href={link.href}
-                        className={`px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${
-                          isActive(link.href)
-                            ? "text-primary bg-primary/10"
-                            : "text-foreground hover:text-primary hover:bg-muted"
-                        }`}
+                        className={`px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${isActive(link.href)
+                          ? "text-primary bg-primary/10"
+                          : "text-foreground hover:text-primary hover:bg-muted"
+                          }`}
                       >
                         {link.label}
                       </Link>
@@ -174,16 +172,14 @@ const Navbar = () => {
                           />
                         ) : null}
                         <div
-                          className={`w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-md ${
-                            user?.photoURL ? "hidden" : ""
-                          }`}
+                          className={`w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-md ${user?.photoURL ? "hidden" : ""
+                            }`}
                         >
                           <User className="h-4 w-4 text-primary-foreground" />
                         </div>
                         <ChevronDown
-                          className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
-                            isDropdownOpen ? "rotate-180" : ""
-                          }`}
+                          className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""
+                            }`}
                         />
                       </button>
 
@@ -231,6 +227,17 @@ const Navbar = () => {
                               <Play className="h-4 w-4" />
                               My Instances
                             </Link>
+                            {/* Admin Link - simple check */}
+                            {user?.role === "admin" && (
+                              <Link
+                                href="/admin/reviews"
+                                onClick={() => setIsDropdownOpen(false)}
+                                className="flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors"
+                              >
+                                <Settings className="h-4 w-4" />
+                                Admin Reviews
+                              </Link>
+                            )}
                           </div>
                           <div className="border-t border-border py-1">
                             <button
@@ -299,11 +306,10 @@ const Navbar = () => {
                       key={link.href}
                       href={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className={`block rounded-lg px-4 py-3 text-base font-medium transition-all ${
-                        isActive(link.href)
-                          ? "bg-primary/10 text-primary"
-                          : "text-foreground hover:bg-muted hover:text-primary"
-                      }`}
+                      className={`block rounded-lg px-4 py-3 text-base font-medium transition-all ${isActive(link.href)
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground hover:bg-muted hover:text-primary"
+                        }`}
                     >
                       {link.label}
                     </Link>
@@ -318,11 +324,10 @@ const Navbar = () => {
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`block rounded-lg px-4 py-3 text-base font-medium transition-all ${
-                      isActive(link.href)
-                        ? "bg-primary/10 text-primary"
-                        : "text-foreground hover:bg-muted hover:text-primary"
-                    }`}
+                    className={`block rounded-lg px-4 py-3 text-base font-medium transition-all ${isActive(link.href)
+                      ? "bg-primary/10 text-primary"
+                      : "text-foreground hover:bg-muted hover:text-primary"
+                      }`}
                   >
                     {link.label}
                   </Link>
