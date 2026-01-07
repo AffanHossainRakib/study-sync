@@ -70,7 +70,7 @@ const Navbar = () => {
     { href: "/dashboard", label: "Dashboard", requiresAuth: true },
     { href: "/my-plans", label: "My Plans", requiresAuth: true },
     { href: "/instances", label: "My Instances", requiresAuth: true },
-    { href: "/reviews", label: "Add a Review", requiresAuth: true },
+    { href: "/reviews", label: "Add    Review", requiresAuth: true },
   ];
 
   // Helper to determine if link is active
