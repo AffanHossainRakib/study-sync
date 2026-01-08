@@ -158,10 +158,10 @@ export default function InstanceDetailsPage() {
         const updatedResources = prevInstance.resources.map((res) =>
           res._id === resourceId
             ? {
-                ...res,
-                completed: newStatus,
-                completedAt: newStatus ? new Date().toISOString() : null,
-              }
+              ...res,
+              completed: newStatus,
+              completedAt: newStatus ? new Date().toISOString() : null,
+            }
             : res
         );
 
@@ -178,8 +178,8 @@ export default function InstanceDetailsPage() {
             res.type === "youtube-video"
               ? res.metadata?.duration || 0
               : res.type === "pdf"
-              ? (res.metadata?.pages || 0) * (res.metadata?.minsPerPage || 0)
-              : res.metadata?.estimatedMins || 0;
+                ? (res.metadata?.pages || 0) * (res.metadata?.minsPerPage || 0)
+                : res.metadata?.estimatedMins || 0;
           return sum + time;
         }, 0);
 
@@ -261,6 +261,7 @@ export default function InstanceDetailsPage() {
               </Link>
               <div className="min-w-0">
                 <h1 className="text-lg font-bold text-slate-900 dark:text-white truncate">
+                  {instance.studyPlanId?.courseCode && `${instance.studyPlanId.courseCode} - `}
                   {instance.customTitle ||
                     instance.studyPlanId?.title ||
                     "Untitled"}
@@ -327,16 +328,15 @@ export default function InstanceDetailsPage() {
               <>
                 {/* Video Player */}
                 <div
-                  className={`bg-black rounded-xl overflow-hidden shadow-2xl ${
-                    theaterMode ? "min-h-[70vh]" : ""
-                  }`}
+                  className={`bg-black rounded-xl overflow-hidden shadow-2xl ${theaterMode ? "min-h-[70vh]" : ""
+                    }`}
                 >
                   <EmbeddedMediaPlayer
                     resource={selectedResource}
                     instanceId={instance._id}
                     isExpanded={true}
                     theaterMode={theaterMode}
-                    onClose={() => {}}
+                    onClose={() => { }}
                     onComplete={() => {
                       if (!selectedResource.completed) {
                         handleToggleComplete(selectedResource._id, false);
@@ -378,13 +378,12 @@ export default function InstanceDetailsPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-3 text-sm">
                       <span
-                        className={`inline-flex items-center px-2.5 py-1 rounded-full font-medium ${
-                          selectedResource.type === "youtube-video"
-                            ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
-                            : selectedResource.type === "pdf"
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full font-medium ${selectedResource.type === "youtube-video"
+                          ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                          : selectedResource.type === "pdf"
                             ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
                             : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                        }`}
+                          }`}
                       >
                         {getResourceTypeInfo(selectedResource.type).label}
                       </span>
@@ -394,9 +393,9 @@ export default function InstanceDetailsPage() {
                           selectedResource.type === "youtube-video"
                             ? selectedResource.metadata?.duration
                             : selectedResource.type === "pdf"
-                            ? (selectedResource.metadata?.pages || 0) *
+                              ? (selectedResource.metadata?.pages || 0) *
                               (selectedResource.metadata?.minsPerPage || 0)
-                            : selectedResource.metadata?.estimatedMins || 0
+                              : selectedResource.metadata?.estimatedMins || 0
                         )}
                       </span>
                       {selectedResource.completed && (
@@ -415,11 +414,10 @@ export default function InstanceDetailsPage() {
                           )
                         }
                         disabled={togglingResource === selectedResource._id}
-                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                          selectedResource.completed
-                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                        }`}
+                        className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedResource.completed
+                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                          }`}
                       >
                         {selectedResource.completed
                           ? "✓ Completed"
@@ -427,11 +425,10 @@ export default function InstanceDetailsPage() {
                       </button>
                       <button
                         onClick={() => setShowNotes(!showNotes)}
-                        className={`p-2 rounded-lg transition-all ${
-                          showNotes || resourceNotes[selectedResource._id]
-                            ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200"
-                        }`}
+                        className={`p-2 rounded-lg transition-all ${showNotes || resourceNotes[selectedResource._id]
+                          ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200"
+                          }`}
                         title="Toggle notes"
                       >
                         <StickyNote className="h-5 w-5" />
@@ -510,19 +507,18 @@ export default function InstanceDetailsPage() {
                       resource.type === "youtube-video"
                         ? resource.metadata?.duration
                         : resource.type === "pdf"
-                        ? (resource.metadata?.pages || 0) *
+                          ? (resource.metadata?.pages || 0) *
                           (resource.metadata?.minsPerPage || 0)
-                        : resource.metadata?.estimatedMins || 0;
+                          : resource.metadata?.estimatedMins || 0;
 
                     return (
                       <button
                         key={resource._id}
                         onClick={() => setSelectedResourceId(resource._id)}
-                        className={`w-full flex items-start gap-3 p-3 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 ${
-                          isSelected
-                            ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
-                            : "border-l-4 border-transparent"
-                        }`}
+                        className={`w-full flex items-start gap-3 p-3 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 ${isSelected
+                          ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                          : "border-l-4 border-transparent"
+                          }`}
                       >
                         {/* Playing indicator or index */}
                         <div className="w-6 flex-shrink-0 flex items-center justify-center">
@@ -537,33 +533,30 @@ export default function InstanceDetailsPage() {
 
                         {/* Thumbnail/Icon */}
                         <div
-                          className={`w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center ${
-                            resource.type === "youtube-video"
-                              ? "bg-red-100 dark:bg-red-900/30"
-                              : resource.type === "pdf"
+                          className={`w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center ${resource.type === "youtube-video"
+                            ? "bg-red-100 dark:bg-red-900/30"
+                            : resource.type === "pdf"
                               ? "bg-blue-100 dark:bg-blue-900/30"
                               : "bg-green-100 dark:bg-green-900/30"
-                          }`}
+                            }`}
                         >
                           <Icon
-                            className={`h-5 w-5 ${
-                              resource.type === "youtube-video"
-                                ? "text-red-600 dark:text-red-400"
-                                : resource.type === "pdf"
+                            className={`h-5 w-5 ${resource.type === "youtube-video"
+                              ? "text-red-600 dark:text-red-400"
+                              : resource.type === "pdf"
                                 ? "text-blue-600 dark:text-blue-400"
                                 : "text-green-600 dark:text-green-400"
-                            }`}
+                              }`}
                           />
                         </div>
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
                           <h4
-                            className={`text-sm font-medium truncate ${
-                              isCompleted
-                                ? "text-slate-400 line-through"
-                                : "text-slate-900 dark:text-white"
-                            }`}
+                            className={`text-sm font-medium truncate ${isCompleted
+                              ? "text-slate-400 line-through"
+                              : "text-slate-900 dark:text-white"
+                              }`}
                           >
                             {resource.title}
                           </h4>
@@ -615,19 +608,18 @@ export default function InstanceDetailsPage() {
                       resource.type === "youtube-video"
                         ? resource.metadata?.duration
                         : resource.type === "pdf"
-                        ? (resource.metadata?.pages || 0) *
+                          ? (resource.metadata?.pages || 0) *
                           (resource.metadata?.minsPerPage || 0)
-                        : resource.metadata?.estimatedMins || 0;
+                          : resource.metadata?.estimatedMins || 0;
 
                     return (
                       <button
                         key={resource._id}
                         onClick={() => setSelectedResourceId(resource._id)}
-                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 last:border-b-0 ${
-                          isSelected
-                            ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500"
-                            : "border-l-4 border-l-transparent"
-                        }`}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 last:border-b-0 ${isSelected
+                          ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500"
+                          : "border-l-4 border-l-transparent"
+                          }`}
                       >
                         <span className="w-6 text-center text-xs text-slate-400 font-medium">
                           {isSelected ? (
@@ -637,27 +629,24 @@ export default function InstanceDetailsPage() {
                           )}
                         </span>
                         <div
-                          className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${
-                            resource.type === "youtube-video"
-                              ? "bg-red-100 dark:bg-red-900/30"
-                              : "bg-blue-100 dark:bg-blue-900/30"
-                          }`}
+                          className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${resource.type === "youtube-video"
+                            ? "bg-red-100 dark:bg-red-900/30"
+                            : "bg-blue-100 dark:bg-blue-900/30"
+                            }`}
                         >
                           <Icon
-                            className={`h-4 w-4 ${
-                              resource.type === "youtube-video"
-                                ? "text-red-600"
-                                : "text-blue-600"
-                            }`}
+                            className={`h-4 w-4 ${resource.type === "youtube-video"
+                              ? "text-red-600"
+                              : "text-blue-600"
+                              }`}
                           />
                         </div>
                         <div className="flex-1 min-w-0">
                           <span
-                            className={`text-sm font-medium truncate block ${
-                              isCompleted
-                                ? "text-slate-400 line-through"
-                                : "text-slate-700 dark:text-slate-300"
-                            }`}
+                            className={`text-sm font-medium truncate block ${isCompleted
+                              ? "text-slate-400 line-through"
+                              : "text-slate-700 dark:text-slate-300"
+                              }`}
                           >
                             {resource.title}
                           </span>

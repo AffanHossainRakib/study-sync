@@ -218,27 +218,22 @@ export default function DashboardPage() {
                     className="bg-white dark:bg-slate-900 border-2 border-orange-200 dark:border-orange-900 rounded-xl p-4 hover:shadow-lg transition-all hover:border-orange-400"
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <span>
-                        {instance.studyPlan.courseCode} -{" "}
-                        {instance.studyPlan.title}
-                      </span>
                       <h3 className="font-semibold text-slate-900 dark:text-white line-clamp-2 flex-1 mr-2">
                         {displayTitle}
                       </h3>
                       <div
-                        className={`px-2 py-1 rounded-full text-xs font-bold whitespace-nowrap ${
-                          instance.daysUntil <= 2
+                        className={`px-2 py-1 rounded-full text-xs font-bold whitespace-nowrap ${instance.daysUntil <= 2
                             ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200"
                             : instance.daysUntil <= 7
-                            ? "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200"
-                            : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
-                        }`}
+                              ? "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200"
+                              : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+                          }`}
                       >
                         {instance.daysUntil === 0
                           ? "Today"
                           : instance.daysUntil === 1
-                          ? "Tomorrow"
-                          : `${instance.daysUntil}d`}
+                            ? "Tomorrow"
+                            : `${instance.daysUntil}d`}
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
@@ -316,13 +311,9 @@ export default function DashboardPage() {
                     <div className="p-6">
                       <div className="mb-4">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                          {instance.studyPlanId?.courseCode && `${instance.studyPlanId.courseCode} - `}
                           {instance.customTitle || instance.studyPlanId?.title}
                         </h3>
-                        <div className="flex items-center gap-2">
-                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                            {instance.studyPlan.courseCode} - {instance.studyPlan.title}
-                          </span>
-                        </div>
                       </div>
 
                       {/* Progress Bar */}
