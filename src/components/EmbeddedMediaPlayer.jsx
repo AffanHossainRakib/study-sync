@@ -40,6 +40,7 @@ export default function EmbeddedMediaPlayer({
         saveTimeSpent,
         markAsComplete,
         hasSavedProgress,
+        isLoaded,
     } = useMediaProgress(instanceId, resource._id);
 
     const mediaType = getMediaType(resource.url, resource.type);
@@ -53,7 +54,7 @@ export default function EmbeddedMediaPlayer({
 
     // Handle YouTube player
     useEffect(() => {
-        if (!isExpanded || mediaType !== 'youtube' || !youtubeId) return;
+        if (!isExpanded || mediaType !== 'youtube' || !youtubeId || !isLoaded) return;
 
         // Load YouTube IFrame API
         if (!window.YT) {
@@ -150,7 +151,7 @@ export default function EmbeddedMediaPlayer({
                 playerRef.current = null;
             }
         };
-    }, [isExpanded, mediaType, youtubeId, resource._id]);
+    }, [isExpanded, mediaType, youtubeId, resource._id, isLoaded]);
 
     // Handle time tracking for non-video content (PDFs, articles, Google Drive)
     useEffect(() => {

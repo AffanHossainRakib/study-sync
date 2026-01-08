@@ -22,18 +22,27 @@ export default function useMediaProgress(instanceId, resourceId) {
         timeSpent: 0, // For non-video content (PDFs, articles)
     });
 
+    const [isLoaded, setIsLoaded] = useState(false);
+
     // Load progress from localStorage on mount
     useEffect(() => {
-        if (!instanceId || !resourceId) return;
+        if (!instanceId || !resourceId) {
+            setIsLoaded(true);
+            return;
+        }
 
         try {
             const stored = localStorage.getItem(storageKey);
             if (stored) {
                 const parsed = JSON.parse(stored);
-                setProgress(parsed);
+                if (parsed && typeof parsed === 'object') {
+                    setProgress(prev => ({ ...prev, ...parsed }));
+                }
             }
         } catch (error) {
             console.error('Error loading media progress:', error);
+        } finally {
+            setIsLoaded(true);
         }
     }, [storageKey, instanceId, resourceId]);
 
@@ -140,6 +149,7 @@ export default function useMediaProgress(instanceId, resourceId) {
         markAsComplete,
         clearProgress,
         hasSavedProgress,
+        isLoaded,
     };
 }
 
