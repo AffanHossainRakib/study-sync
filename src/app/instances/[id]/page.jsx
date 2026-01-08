@@ -73,7 +73,7 @@ export default function InstanceDetailsPage() {
   useEffect(() => {
     if (instance?.resources?.length > 0 && !selectedResourceId) {
       // Find first incomplete resource, or first resource if all complete
-      const firstIncomplete = instance.resources.find(r => !r.completed);
+      const firstIncomplete = instance.resources.find((r) => !r.completed);
       const resourceToSelect = firstIncomplete || instance.resources[0];
       setSelectedResourceId(resourceToSelect._id);
     }
@@ -110,7 +110,9 @@ export default function InstanceDetailsPage() {
   const handlePlayNext = useCallback(() => {
     if (!instance?.resources || !selectedResourceId) return;
 
-    const currentIndex = instance.resources.findIndex(r => r._id === selectedResourceId);
+    const currentIndex = instance.resources.findIndex(
+      (r) => r._id === selectedResourceId
+    );
     if (currentIndex < instance.resources.length - 1) {
       setSelectedResourceId(instance.resources[currentIndex + 1]._id);
     }
@@ -145,18 +147,30 @@ export default function InstanceDetailsPage() {
       setTogglingResource(resourceId);
       const newStatus = !currentStatus;
 
-      await toggleResourceCompletion(instance._id, resourceId, newStatus, token);
+      await toggleResourceCompletion(
+        instance._id,
+        resourceId,
+        newStatus,
+        token
+      );
 
       setInstance((prevInstance) => {
         const updatedResources = prevInstance.resources.map((res) =>
           res._id === resourceId
-            ? { ...res, completed: newStatus, completedAt: newStatus ? new Date().toISOString() : null }
+            ? {
+                ...res,
+                completed: newStatus,
+                completedAt: newStatus ? new Date().toISOString() : null,
+              }
             : res
         );
 
-        const completedCount = updatedResources.filter((r) => r.completed).length;
+        const completedCount = updatedResources.filter(
+          (r) => r.completed
+        ).length;
         const totalCount = updatedResources.length;
-        const resourcePercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+        const resourcePercent =
+          totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
         const completedTime = updatedResources.reduce((sum, res) => {
           if (!res.completed) return sum;
@@ -164,13 +178,14 @@ export default function InstanceDetailsPage() {
             res.type === "youtube-video"
               ? res.metadata?.duration || 0
               : res.type === "pdf"
-                ? (res.metadata?.pages || 0) * (res.metadata?.minsPerPage || 0)
-                : res.metadata?.estimatedMins || 0;
+              ? (res.metadata?.pages || 0) * (res.metadata?.minsPerPage || 0)
+              : res.metadata?.estimatedMins || 0;
           return sum + time;
         }, 0);
 
         const totalTime = prevInstance.totalTime || 0;
-        const timePercent = totalTime > 0 ? (completedTime / totalTime) * 100 : 0;
+        const timePercent =
+          totalTime > 0 ? (completedTime / totalTime) * 100 : 0;
 
         return {
           ...prevInstance,
@@ -183,7 +198,9 @@ export default function InstanceDetailsPage() {
         };
       });
 
-      toast.success(currentStatus ? "Marked as incomplete" : "Marked as complete!");
+      toast.success(
+        currentStatus ? "Marked as incomplete" : "Marked as complete!"
+      );
     } catch (error) {
       console.error("Error toggling completion:", error);
       toast.error("Failed to update progress");
@@ -198,8 +215,11 @@ export default function InstanceDetailsPage() {
   };
 
   // Get selected resource
-  const selectedResource = instance?.resources?.find(r => r._id === selectedResourceId);
-  const selectedIndex = instance?.resources?.findIndex(r => r._id === selectedResourceId) ?? -1;
+  const selectedResource = instance?.resources?.find(
+    (r) => r._id === selectedResourceId
+  );
+  const selectedIndex =
+    instance?.resources?.findIndex((r) => r._id === selectedResourceId) ?? -1;
 
   if (loading) {
     return (
@@ -241,10 +261,15 @@ export default function InstanceDetailsPage() {
               </Link>
               <div className="min-w-0">
                 <h1 className="text-lg font-bold text-slate-900 dark:text-white truncate">
-                  {instance.customTitle || instance.studyPlanId?.title || "Untitled"}
+                  {instance.customTitle ||
+                    instance.studyPlanId?.title ||
+                    "Untitled"}
                 </h1>
                 <div className="flex items-center gap-2 text-xs text-slate-500">
-                  <span>{instance.completedResources || 0}/{instance.totalResources || 0} completed</span>
+                  <span>
+                    {instance.completedResources || 0}/
+                    {instance.totalResources || 0} completed
+                  </span>
                   <span>•</span>
                   <span>{Math.round(progressPercent)}%</span>
                 </div>
@@ -282,7 +307,10 @@ export default function InstanceDetailsPage() {
             </button>
             <div className="flex items-center gap-2 text-sm">
               <Info className="h-5 w-5" />
-              <span><strong>Tip:</strong> Click any resource in the playlist to play it. Videos auto-advance when finished!</span>
+              <span>
+                <strong>Tip:</strong> Click any resource in the playlist to play
+                it. Videos auto-advance when finished!
+              </span>
             </div>
           </div>
         </div>
@@ -290,20 +318,25 @@ export default function InstanceDetailsPage() {
 
       {/* Main Content - YouTube Style Layout */}
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 max-w-7xl">
-        <div className={`flex flex-col ${theaterMode ? '' : 'lg:flex-row'} gap-6`}>
-
+        <div
+          className={`flex flex-col ${theaterMode ? "" : "lg:flex-row"} gap-6`}
+        >
           {/* Left: Main Player Area */}
-          <div className={`min-w-0 ${theaterMode ? 'w-full' : 'flex-1'}`}>
+          <div className={`min-w-0 ${theaterMode ? "w-full" : "flex-1"}`}>
             {selectedResource ? (
               <>
                 {/* Video Player */}
-                <div className={`bg-black rounded-xl overflow-hidden shadow-2xl ${theaterMode ? 'min-h-[70vh]' : ''}`}>
+                <div
+                  className={`bg-black rounded-xl overflow-hidden shadow-2xl ${
+                    theaterMode ? "min-h-[70vh]" : ""
+                  }`}
+                >
                   <EmbeddedMediaPlayer
                     resource={selectedResource}
                     instanceId={instance._id}
                     isExpanded={true}
                     theaterMode={theaterMode}
-                    onClose={() => { }}
+                    onClose={() => {}}
                     onComplete={() => {
                       if (!selectedResource.completed) {
                         handleToggleComplete(selectedResource._id, false);
@@ -318,12 +351,18 @@ export default function InstanceDetailsPage() {
                   <button
                     onClick={() => setTheaterMode(!theaterMode)}
                     className="hidden md:inline-flex items-center gap-2 px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                    title={theaterMode ? 'Exit theater mode (T)' : 'Theater mode (T)'}
+                    title={
+                      theaterMode ? "Exit theater mode (T)" : "Theater mode (T)"
+                    }
                   >
                     {theaterMode ? (
-                      <><Minimize2 className="h-4 w-4" /> Exit Theater</>
+                      <>
+                        <Minimize2 className="h-4 w-4" /> Exit Theater
+                      </>
                     ) : (
-                      <><Maximize2 className="h-4 w-4" /> Theater Mode</>
+                      <>
+                        <Maximize2 className="h-4 w-4" /> Theater Mode
+                      </>
                     )}
                   </button>
                 </div>
@@ -338,12 +377,15 @@ export default function InstanceDetailsPage() {
                   {/* Info and Actions - Stack on mobile, row on desktop */}
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-3 text-sm">
-                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full font-medium ${selectedResource.type === "youtube-video"
-                        ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
-                        : selectedResource.type === "pdf"
-                          ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                          : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                        }`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full font-medium ${
+                          selectedResource.type === "youtube-video"
+                            ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                            : selectedResource.type === "pdf"
+                            ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                            : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                        }`}
+                      >
                         {getResourceTypeInfo(selectedResource.type).label}
                       </span>
                       <span className="flex items-center gap-1 text-slate-500">
@@ -352,8 +394,9 @@ export default function InstanceDetailsPage() {
                           selectedResource.type === "youtube-video"
                             ? selectedResource.metadata?.duration
                             : selectedResource.type === "pdf"
-                              ? (selectedResource.metadata?.pages || 0) * (selectedResource.metadata?.minsPerPage || 0)
-                              : selectedResource.metadata?.estimatedMins || 0
+                            ? (selectedResource.metadata?.pages || 0) *
+                              (selectedResource.metadata?.minsPerPage || 0)
+                            : selectedResource.metadata?.estimatedMins || 0
                         )}
                       </span>
                       {selectedResource.completed && (
@@ -365,21 +408,30 @@ export default function InstanceDetailsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => handleToggleComplete(selectedResource._id, selectedResource.completed)}
+                        onClick={() =>
+                          handleToggleComplete(
+                            selectedResource._id,
+                            selectedResource.completed
+                          )
+                        }
                         disabled={togglingResource === selectedResource._id}
-                        className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedResource.completed
-                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                          : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                          }`}
+                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                          selectedResource.completed
+                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        }`}
                       >
-                        {selectedResource.completed ? "✓ Completed" : "Mark Complete"}
+                        {selectedResource.completed
+                          ? "✓ Completed"
+                          : "Mark Complete"}
                       </button>
                       <button
                         onClick={() => setShowNotes(!showNotes)}
-                        className={`p-2 rounded-lg transition-all ${showNotes || resourceNotes[selectedResource._id]
-                          ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600"
-                          : "bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200"
-                          }`}
+                        className={`p-2 rounded-lg transition-all ${
+                          showNotes || resourceNotes[selectedResource._id]
+                            ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200"
+                        }`}
                         title="Toggle notes"
                       >
                         <StickyNote className="h-5 w-5" />
@@ -405,13 +457,17 @@ export default function InstanceDetailsPage() {
                       <textarea
                         placeholder="Add your notes for this resource..."
                         value={resourceNotes[selectedResource._id] || ""}
-                        onChange={(e) => saveResourceNote(selectedResource._id, e.target.value)}
+                        onChange={(e) =>
+                          saveResourceNote(selectedResource._id, e.target.value)
+                        }
                         className="w-full p-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         rows={4}
                       />
                       <div className="flex items-center justify-between mt-1 text-xs text-slate-400">
                         <span>Auto-saved • Synced across devices</span>
-                        {savingNotes && <span className="text-blue-500">Saving...</span>}
+                        {savingNotes && (
+                          <span className="text-blue-500">Saving...</span>
+                        )}
                       </div>
                     </div>
                   )}
@@ -436,7 +492,9 @@ export default function InstanceDetailsPage() {
                   <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
                     <span>{instance.completedResources || 0} completed</span>
                     <span>•</span>
-                    <span>{formatTime(instance.remainingTime || 0)} remaining</span>
+                    <span>
+                      {formatTime(instance.remainingTime || 0)} remaining
+                    </span>
                   </div>
                 </div>
 
@@ -446,53 +504,67 @@ export default function InstanceDetailsPage() {
                     const isSelected = selectedResourceId === resource._id;
                     const isCompleted = resource.completed;
                     const typeInfo = getResourceTypeInfo(resource.type);
-                    const Icon = typeInfo.icon === "Youtube" ? Youtube : FileText;
+                    const Icon =
+                      typeInfo.icon === "Youtube" ? Youtube : FileText;
                     const totalTime =
                       resource.type === "youtube-video"
                         ? resource.metadata?.duration
                         : resource.type === "pdf"
-                          ? (resource.metadata?.pages || 0) * (resource.metadata?.minsPerPage || 0)
-                          : resource.metadata?.estimatedMins || 0;
+                        ? (resource.metadata?.pages || 0) *
+                          (resource.metadata?.minsPerPage || 0)
+                        : resource.metadata?.estimatedMins || 0;
 
                     return (
                       <button
                         key={resource._id}
                         onClick={() => setSelectedResourceId(resource._id)}
-                        className={`w-full flex items-start gap-3 p-3 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 ${isSelected
-                          ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
-                          : "border-l-4 border-transparent"
-                          }`}
+                        className={`w-full flex items-start gap-3 p-3 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 ${
+                          isSelected
+                            ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                            : "border-l-4 border-transparent"
+                        }`}
                       >
                         {/* Playing indicator or index */}
                         <div className="w-6 flex-shrink-0 flex items-center justify-center">
                           {isSelected ? (
                             <Play className="h-4 w-4 text-blue-600 dark:text-blue-400 fill-current" />
                           ) : (
-                            <span className="text-xs text-slate-400 font-medium">{index + 1}</span>
+                            <span className="text-xs text-slate-400 font-medium">
+                              {index + 1}
+                            </span>
                           )}
                         </div>
 
                         {/* Thumbnail/Icon */}
-                        <div className={`w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center ${resource.type === "youtube-video"
-                          ? "bg-red-100 dark:bg-red-900/30"
-                          : resource.type === "pdf"
-                            ? "bg-blue-100 dark:bg-blue-900/30"
-                            : "bg-green-100 dark:bg-green-900/30"
-                          }`}>
-                          <Icon className={`h-5 w-5 ${resource.type === "youtube-video"
-                            ? "text-red-600 dark:text-red-400"
-                            : resource.type === "pdf"
-                              ? "text-blue-600 dark:text-blue-400"
-                              : "text-green-600 dark:text-green-400"
-                            }`} />
+                        <div
+                          className={`w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center ${
+                            resource.type === "youtube-video"
+                              ? "bg-red-100 dark:bg-red-900/30"
+                              : resource.type === "pdf"
+                              ? "bg-blue-100 dark:bg-blue-900/30"
+                              : "bg-green-100 dark:bg-green-900/30"
+                          }`}
+                        >
+                          <Icon
+                            className={`h-5 w-5 ${
+                              resource.type === "youtube-video"
+                                ? "text-red-600 dark:text-red-400"
+                                : resource.type === "pdf"
+                                ? "text-blue-600 dark:text-blue-400"
+                                : "text-green-600 dark:text-green-400"
+                            }`}
+                          />
                         </div>
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
-                          <h4 className={`text-sm font-medium truncate ${isCompleted
-                            ? "text-slate-400 line-through"
-                            : "text-slate-900 dark:text-white"
-                            }`}>
+                          <h4
+                            className={`text-sm font-medium truncate ${
+                              isCompleted
+                                ? "text-slate-400 line-through"
+                                : "text-slate-900 dark:text-white"
+                            }`}
+                          >
                             {resource.title}
                           </h4>
                           <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
@@ -528,7 +600,8 @@ export default function InstanceDetailsPage() {
                     Up Next • {instance.resources?.length || 0} items
                   </span>
                   <span className="text-xs text-slate-500">
-                    {instance.completedResources || 0}/{instance.totalResources || 0} completed
+                    {instance.completedResources || 0}/
+                    {instance.totalResources || 0} completed
                   </span>
                 </div>
                 <div className="overflow-y-auto">
@@ -536,38 +609,65 @@ export default function InstanceDetailsPage() {
                     const isSelected = selectedResourceId === resource._id;
                     const isCompleted = resource.completed;
                     const typeInfo = getResourceTypeInfo(resource.type);
-                    const Icon = typeInfo.icon === "Youtube" ? Youtube : FileText;
+                    const Icon =
+                      typeInfo.icon === "Youtube" ? Youtube : FileText;
                     const totalTime =
                       resource.type === "youtube-video"
                         ? resource.metadata?.duration
                         : resource.type === "pdf"
-                          ? (resource.metadata?.pages || 0) * (resource.metadata?.minsPerPage || 0)
-                          : resource.metadata?.estimatedMins || 0;
+                        ? (resource.metadata?.pages || 0) *
+                          (resource.metadata?.minsPerPage || 0)
+                        : resource.metadata?.estimatedMins || 0;
 
                     return (
                       <button
                         key={resource._id}
                         onClick={() => setSelectedResourceId(resource._id)}
-                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 last:border-b-0 ${isSelected
-                          ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500"
-                          : "border-l-4 border-l-transparent"
-                          }`}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 last:border-b-0 ${
+                          isSelected
+                            ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500"
+                            : "border-l-4 border-l-transparent"
+                        }`}
                       >
                         <span className="w-6 text-center text-xs text-slate-400 font-medium">
-                          {isSelected ? <Play className="h-4 w-4 text-blue-600 fill-current mx-auto" /> : index + 1}
+                          {isSelected ? (
+                            <Play className="h-4 w-4 text-blue-600 fill-current mx-auto" />
+                          ) : (
+                            index + 1
+                          )}
                         </span>
-                        <div className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${resource.type === "youtube-video" ? "bg-red-100 dark:bg-red-900/30" : "bg-blue-100 dark:bg-blue-900/30"
-                          }`}>
-                          <Icon className={`h-4 w-4 ${resource.type === "youtube-video" ? "text-red-600" : "text-blue-600"}`} />
+                        <div
+                          className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${
+                            resource.type === "youtube-video"
+                              ? "bg-red-100 dark:bg-red-900/30"
+                              : "bg-blue-100 dark:bg-blue-900/30"
+                          }`}
+                        >
+                          <Icon
+                            className={`h-4 w-4 ${
+                              resource.type === "youtube-video"
+                                ? "text-red-600"
+                                : "text-blue-600"
+                            }`}
+                          />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <span className={`text-sm font-medium truncate block ${isCompleted ? "text-slate-400 line-through" : "text-slate-700 dark:text-slate-300"
-                            }`}>
+                          <span
+                            className={`text-sm font-medium truncate block ${
+                              isCompleted
+                                ? "text-slate-400 line-through"
+                                : "text-slate-700 dark:text-slate-300"
+                            }`}
+                          >
                             {resource.title}
                           </span>
-                          <span className="text-xs text-slate-400">{formatTime(totalTime)}</span>
+                          <span className="text-xs text-slate-400">
+                            {formatTime(totalTime)}
+                          </span>
                         </div>
-                        {isCompleted && <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />}
+                        {isCompleted && (
+                          <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        )}
                       </button>
                     );
                   })}
@@ -582,7 +682,9 @@ export default function InstanceDetailsPage() {
           <div className="mt-8 bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500 rounded-2xl p-8 text-center text-white shadow-2xl">
             <CheckCircle2 className="h-16 w-16 mx-auto mb-4" />
             <h3 className="text-2xl font-bold mb-2">Congratulations!</h3>
-            <p className="text-white/90">You have completed all resources in this study plan.</p>
+            <p className="text-white/90">
+              You have completed all resources in this study plan.
+            </p>
           </div>
         )}
       </div>
