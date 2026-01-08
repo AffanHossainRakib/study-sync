@@ -24,6 +24,7 @@ export default function EmbeddedMediaPlayer({
     onComplete,
     onPlayNext,
     isExpanded,
+    theaterMode = false,
 }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -73,6 +74,8 @@ export default function EmbeddedMediaPlayer({
                     rel: 0,
                     modestbranding: 1,
                     fs: 1, // Allow fullscreen
+                    disablekb: 0, // Enable keyboard controls (F, T, K, J, L, etc.)
+                    enablejsapi: 1,
                 },
                 events: {
                     onReady: (event) => {
@@ -231,78 +234,70 @@ export default function EmbeddedMediaPlayer({
     if (!isExpanded) return null;
 
     return (
-        <div className="mt-4 animate-in slide-in-from-top-2 duration-300">
-            {/* Player Container */}
-            <div className="relative bg-black rounded-xl overflow-hidden shadow-2xl">
-                {/* Header Bar - Minimal */}
-                <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 to-transparent p-3 flex items-center justify-between opacity-0 hover:opacity-100 transition-opacity">
-                    <div className="flex items-center gap-2 text-white text-sm font-medium">
-                        {hasSavedProgress && !error && progress.percentage > 0 && (
-                            <span className="px-2 py-0.5 bg-blue-500/80 rounded text-xs">
-                                {Math.round(progress.percentage)}% watched
-                            </span>
-                        )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <a
-                            href={resource.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 rounded-lg bg-white/20 hover:bg-white/30 text-white transition-colors"
-                            title="Open in new tab"
-                        >
-                            <ExternalLink className="h-4 w-4" />
-                        </a>
-                        <button
-                            onClick={onClose}
-                            className="p-2 rounded-lg bg-white/20 hover:bg-white/30 text-white transition-colors"
-                            title="Close player"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
+        <div className="relative bg-black overflow-hidden">
+            {/* Header Bar - Minimal, shows on hover */}
+            <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/80 to-transparent p-3 flex items-center justify-between opacity-0 hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-2 text-white text-sm font-medium">
+                    {hasSavedProgress && !error && progress.percentage > 0 && (
+                        <span className="px-2 py-0.5 bg-blue-500/80 rounded text-xs">
+                            {Math.round(progress.percentage)}% watched
+                        </span>
+                    )}
+                </div>
+                <div className="flex items-center gap-2">
+                    <a
+                        href={resource.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg bg-white/20 hover:bg-white/30 text-white transition-colors"
+                        title="Open in new tab"
+                    >
+                        <ExternalLink className="h-4 w-4" />
+                    </a>
+                </div>
+            </div>
+
+            {/* Loading State */}
+            {loading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-slate-900 z-5">
+                    <div className="text-center">
+                        <Loader2 className="h-10 w-10 text-blue-500 animate-spin mx-auto mb-3" />
+                        <p className="text-white/80 text-sm">Loading...</p>
                     </div>
                 </div>
+            )}
 
-                {/* Loading State */}
-                {loading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-slate-900 z-5">
-                        <div className="text-center">
-                            <Loader2 className="h-10 w-10 text-blue-500 animate-spin mx-auto mb-3" />
-                            <p className="text-white/80 text-sm">Loading...</p>
-                        </div>
-                    </div>
-                )}
+            {/* Error State */}
+            {error && (
+                <div className="flex flex-col items-center justify-center bg-slate-900 p-8 min-h-[300px] sm:min-h-[400px]">
+                    <AlertCircle className="h-12 w-12 text-red-400 mb-4" />
+                    <h3 className="text-white font-semibold mb-2">Unable to Embed</h3>
+                    <p className="text-white/70 text-sm text-center mb-4 max-w-md">
+                        {error}
+                    </p>
+                    <a
+                        href={resource.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                    >
+                        <ExternalLink className="h-4 w-4" />
+                        Open in New Tab
+                    </a>
+                </div>
+            )}
 
-                {/* Error State */}
-                {error && (
-                    <div className="flex flex-col items-center justify-center bg-slate-900 p-8 min-h-[300px] sm:min-h-[400px]">
-                        <AlertCircle className="h-12 w-12 text-red-400 mb-4" />
-                        <h3 className="text-white font-semibold mb-2">Unable to Embed</h3>
-                        <p className="text-white/70 text-sm text-center mb-4 max-w-md">
-                            {error}
-                        </p>
-                        <a
-                            href={resource.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-                        >
-                            <ExternalLink className="h-4 w-4" />
-                            Open in New Tab
-                        </a>
-                    </div>
-                )}
+            {/* YouTube Player */}
+            {mediaType === 'youtube' && !error && (
+                <div className={`w-full ${theaterMode ? 'h-[70vh]' : 'aspect-video'}`}>
+                    <div id={`youtube-player-${resource._id}`} className="w-full h-full" />
+                </div>
+            )}
 
-                {/* YouTube Player */}
-                {mediaType === 'youtube' && !error && (
-                    <div className="aspect-video w-full">
-                        <div id={`youtube-player-${resource._id}`} className="w-full h-full" />
-                    </div>
-                )}
-
-                {/* Google Drive / PDF / Article iframe */}
-                {mediaType !== 'youtube' && !error && (
-                    <div className={`w-full ${mediaType === 'pdf' ? 'min-h-[500px] sm:min-h-[600px]' : 'aspect-video'}`}>
+            {/* Google Drive / PDF / Article iframe */}
+            {mediaType !== 'youtube' && !error && (
+                <div className="relative">
+                    <div className={`w-full ${theaterMode ? 'h-[70vh]' : mediaType === 'pdf' ? 'min-h-[500px] sm:min-h-[600px]' : 'aspect-video'}`}>
                         <iframe
                             src={getEmbedUrl()}
                             className="w-full h-full border-0"
@@ -313,8 +308,23 @@ export default function EmbeddedMediaPlayer({
                             sandbox={mediaType === 'article' ? 'allow-same-origin allow-scripts allow-popups allow-forms' : undefined}
                         />
                     </div>
-                )}
-            </div>
+                    {/* Link bar for non-YouTube content */}
+                    <div className="bg-slate-800 px-4 py-2 flex items-center justify-between">
+                        <span className="text-white/70 text-sm truncate flex-1 mr-4">
+                            {resource.url.length > 60 ? resource.url.substring(0, 60) + '...' : resource.url}
+                        </span>
+                        <a
+                            href={resource.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg font-medium transition-colors whitespace-nowrap"
+                        >
+                            <ExternalLink className="h-4 w-4" />
+                            Open Original
+                        </a>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
