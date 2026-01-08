@@ -170,6 +170,7 @@ export async function PUT(request, { params }) {
       "reminderEnabled",
       "customReminders",
       "notes",
+      "resourceNotes", // Per-resource notes stored as { resourceId: "note text" }
     ];
 
     const updateDoc = {};

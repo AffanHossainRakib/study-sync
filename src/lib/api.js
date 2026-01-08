@@ -134,6 +134,12 @@ export const deleteInstance = async (id, token) => {
   return apiRequest(`/api/instances/${id}`, "DELETE", token);
 };
 
+export const saveResourceNotes = async (instanceId, resourceNotes, token) => {
+  return apiRequest(`/api/instances/${instanceId}`, "PUT", token, {
+    resourceNotes,
+  });
+};
+
 // ==================== User Progress ====================
 
 export const getUserProgress = async (token) => {
