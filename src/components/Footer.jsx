@@ -38,6 +38,13 @@ const Footer = () => {
         { label: "Create Plan", href: "/create-plan" },
       ],
     },
+    more: {
+      title: "More from us",
+      links: [
+        { label: "Lab Buddy", href: "https://bracu-lab-buddy.pages.dev/" },
+        { label: "RoutineBuzz", href: "https://routinebuzz.vercel.app/" },
+      ],
+    },
     /*
     resources: {
       title: "Resources",
