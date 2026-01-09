@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2, Save } from 'lucide-react';
 import { updateInstance } from '@/lib/api';
-import toast from 'react-hot-toast';
+import { toast } from "sonner";
 
 export default function EditInstanceModal({ instance, isOpen, onClose, onUpdate, token }) {
     const [formData, setFormData] = useState({

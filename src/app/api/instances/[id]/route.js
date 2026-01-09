@@ -38,13 +38,22 @@ export async function GET(request, { params }) {
     }
 
     // Use snapshotResourceIds if available, otherwise fall back to plan.resourceIds (for backward compatibility)
-    const resourceIds = instance.snapshotResourceIds && instance.snapshotResourceIds.length > 0
-      ? instance.snapshotResourceIds
-      : plan.resourceIds || [];
+    const resourceIds =
+      instance.snapshotResourceIds && instance.snapshotResourceIds.length > 0
+        ? instance.snapshotResourceIds
+        : plan.resourceIds || [];
 
     const planResources = await resources
       .find({ _id: { $in: resourceIds } })
       .toArray();
+
+    // Sort resources to match the order in resourceIds array
+    const resourceMap = new Map(
+      planResources.map((r) => [r._id.toString(), r])
+    );
+    const sortedPlanResources = resourceIds
+      .map((id) => resourceMap.get(id.toString()))
+      .filter(Boolean); // Remove any undefined entries
 
     // Get user progress for resources (GLOBAL - not per instance)
     // If a resource is marked complete in any instance, it shows as complete everywhere
@@ -52,7 +61,7 @@ export async function GET(request, { params }) {
     const progressRecords = await userProgress
       .find({
         userId: auth.user._id,
-        resourceId: { $in: planResources.map((r) => r._id) },
+        resourceId: { $in: sortedPlanResources.map((r) => r._id) },
       })
       .toArray();
 
@@ -63,40 +72,49 @@ export async function GET(request, { params }) {
     });
 
     // Mark resources with completion status
-    const resourcesWithStatus = planResources.map((resource) => ({
+    const resourcesWithStatus = sortedPlanResources.map((resource) => ({
       ...resource,
       completed: progressMap.get(resource._id.toString()) || false,
-      completedAt: progressRecords.find(
-        (p) => p.resourceId.toString() === resource._id.toString() && p.completed
-      )?.completedAt || null,
+      completedAt:
+        progressRecords.find(
+          (p) =>
+            p.resourceId.toString() === resource._id.toString() && p.completed
+        )?.completedAt || null,
     }));
 
     const completedResources = resourcesWithStatus.filter((r) => r.completed);
 
-    const totalTime = planResources.reduce((sum, r) => {
+    const totalTime = sortedPlanResources.reduce((sum, r) => {
       if (r.type === "youtube-video") return sum + (r.metadata?.duration || 0);
       if (r.type === "pdf")
         return sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0);
-      if (r.type === "article" || r.type === "google-drive" || r.type === "custom-link")
+      if (
+        r.type === "article" ||
+        r.type === "google-drive" ||
+        r.type === "custom-link"
+      )
         return sum + (r.metadata?.estimatedMins || 0);
       return sum;
     }, 0);
 
     const completedTime = completedResources.reduce((sum, r) => {
-      if (r.type === "youtube-video")
-        return sum + (r.metadata?.duration || 0);
+      if (r.type === "youtube-video") return sum + (r.metadata?.duration || 0);
       if (r.type === "pdf")
-        return (
-          sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0)
-        );
-      if (r.type === "article" || r.type === "google-drive" || r.type === "custom-link")
+        return sum + (r.metadata?.pages || 0) * (r.metadata?.minsPerPage || 0);
+      if (
+        r.type === "article" ||
+        r.type === "google-drive" ||
+        r.type === "custom-link"
+      )
         return sum + (r.metadata?.estimatedMins || 0);
       return sum;
     }, 0);
 
     const resourcePercent =
-      planResources.length > 0
-        ? Math.round((completedResources.length / planResources.length) * 100)
+      sortedPlanResources.length > 0
+        ? Math.round(
+            (completedResources.length / sortedPlanResources.length) * 100
+          )
         : 0;
 
     const timePercent =
@@ -112,7 +130,7 @@ export async function GET(request, { params }) {
         fullDescription: plan.fullDescription,
       },
       resources: resourcesWithStatus,
-      totalResources: planResources.length,
+      totalResources: sortedPlanResources.length,
       completedResources: completedResources.length, // Count, not array
       totalTime,
       completedTime,
@@ -123,9 +141,9 @@ export async function GET(request, { params }) {
       deadline: instance.endDate,
       studyPlan: {
         ...plan,
-        resourceIds: planResources,
+        resourceIds: sortedPlanResources,
         totalTime,
-        resourceCount: planResources.length,
+        resourceCount: sortedPlanResources.length,
       },
     });
   } catch (error) {
@@ -171,6 +189,7 @@ export async function PUT(request, { params }) {
       "customReminders",
       "notes",
       "resourceNotes", // Per-resource notes stored as { resourceId: "note text" }
+      "customTitles",
     ];
 
     const updateDoc = {};
@@ -187,6 +206,13 @@ export async function PUT(request, { params }) {
         }
       }
     });
+
+    // Handle resourceIds (reordering/adding/removing) - stored as snapshotResourceIds
+    if (updates.resourceIds && Array.isArray(updates.resourceIds)) {
+      updateDoc.snapshotResourceIds = updates.resourceIds
+        .map((id) => toObjectId(id))
+        .filter(Boolean);
+    }
 
     updateDoc.updatedAt = new Date();
 

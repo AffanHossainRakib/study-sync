@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { getInstances, deleteInstance, formatTime } from "@/lib/api";
 import useAuth from "@/hooks/useAuth";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import EditInstanceModal from "@/components/EditInstanceModal";
 
 export default function MyInstancesPage() {
@@ -89,7 +89,7 @@ export default function MyInstancesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-purple-50/30 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
@@ -251,7 +251,9 @@ export default function MyInstancesPage() {
                     <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
                       <div className="flex items-center">
                         <CheckCircle2 className="h-4 w-4 mr-1 text-green-500" />
-                        <span className="font-medium">{Math.round(progressPercent)}%</span>
+                        <span className="font-medium">
+                          {Math.round(progressPercent)}%
+                        </span>
                       </div>
                       <div className="flex items-center">
                         <Clock className="h-4 w-4 mr-1 text-orange-500" />

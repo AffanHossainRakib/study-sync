@@ -87,10 +87,25 @@ export async function POST(request) {
     if (auth.error) return createErrorResponse(auth.message, auth.status);
 
     const body = await request.json();
-    const { type, title, url, pages, minsPerPage, estimatedMins } = body;
+    let { type, title, url, pages, minsPerPage, estimatedMins } = body;
 
-    if (!type || !url) {
-      return createErrorResponse("Type and URL are required", 400);
+    if (!url) {
+      return createErrorResponse("URL is required", 400);
+    }
+
+    // Infer type if not provided
+    if (!type) {
+      if (url.includes("youtube.com") || url.includes("youtu.be")) {
+        if (url.includes("list=")) {
+          type = "youtube-playlist";
+        } else {
+          type = "youtube-video";
+        }
+      } else if (url.toLowerCase().endsWith(".pdf")) {
+        type = "pdf";
+      } else {
+        type = "custom-link";
+      }
     }
 
     const { resources } = await getCollections();
