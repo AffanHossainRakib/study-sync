@@ -45,9 +45,15 @@ export const AuthProvider = ({ children }) => {
           if (res.ok) {
             const dbUser = await res.json();
             // Merge firebase user with db user
-            setUser({ ...firebaseUser, ...dbUser });
+            const mergedUser = { ...firebaseUser, ...dbUser };
+            setUser(mergedUser);
           } else {
-            console.error("Failed to fetch user profile");
+            const errorText = await res.text();
+            console.error(
+              "Failed to fetch user profile:",
+              res.status,
+              errorText
+            );
             setUser(firebaseUser);
           }
         } catch (error) {

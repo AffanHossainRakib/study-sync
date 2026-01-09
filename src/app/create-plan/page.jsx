@@ -14,7 +14,6 @@ import toast from "react-hot-toast";
 import BasicInfoForm from "./components/BasicInfoForm";
 import AddResourceForm from "./components/AddResourceForm";
 import ResourceList from "./components/ResourceList";
-import mixpanel from "@/lib/mixpanel";
 
 export default function CreateStudyPlanPage() {
   const router = useRouter();

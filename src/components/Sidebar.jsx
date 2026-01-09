@@ -77,7 +77,7 @@ const Sidebar = () => {
 
   // Admin link
   const adminLinks = [
-    { href: "/admin/reviews", label: "Admin Reviews", icon: Settings },
+    { href: "/admin/reviews", label: "View Reviews", icon: Settings },
   ];
 
   // Helper to determine if link is active
@@ -92,8 +92,9 @@ const Sidebar = () => {
     <>
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-16 bottom-0 z-40 bg-background border-r border-border transition-all duration-300 ease-in-out hidden lg:flex flex-col ${isCollapsed ? "w-16" : "w-60"
-          }`}
+        className={`fixed left-0 top-16 bottom-0 z-40 bg-background border-r border-border transition-all duration-300 ease-in-out hidden lg:flex flex-col ${
+          isCollapsed ? "w-16" : "w-60"
+        }`}
       >
         {/* Toggle Button */}
         <button
@@ -116,10 +117,11 @@ const Sidebar = () => {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${isActive(link.href)
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${
+                  isActive(link.href)
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
                 title={isCollapsed ? link.label : undefined}
               >
                 <Icon className="h-5 w-5 flex-shrink-0" />
@@ -145,8 +147,9 @@ const Sidebar = () => {
           {recentInstances.length > 0 && (
             <>
               <div
-                className={`my-3 mx-3 border-t border-border ${isCollapsed ? "mx-1" : ""
-                  }`}
+                className={`my-3 mx-3 border-t border-border ${
+                  isCollapsed ? "mx-1" : ""
+                }`}
               />
               {!isCollapsed && (
                 <div className="px-3 py-1 mb-1">
@@ -158,9 +161,15 @@ const Sidebar = () => {
               {recentInstances.map((instance) => {
                 // Determine title
                 const title = (() => {
-                  const courseCode = instance.studyPlan?.courseCode || "General";
-                  const displayTitle = instance.customTitle || instance.studyPlan?.title || "Untitled Instance";
-                  return courseCode !== "General" ? `${courseCode} - ${displayTitle}` : displayTitle;
+                  const courseCode =
+                    instance.studyPlan?.courseCode || "General";
+                  const displayTitle =
+                    instance.customTitle ||
+                    instance.studyPlan?.title ||
+                    "Untitled Instance";
+                  return courseCode !== "General"
+                    ? `${courseCode} - ${displayTitle}`
+                    : displayTitle;
                 })();
 
                 const href = `/instances/${instance._id}`;
@@ -169,20 +178,17 @@ const Sidebar = () => {
                   <Link
                     key={instance._id}
                     href={href}
-                    className={`flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-all duration-200 group relative ${isActive(href)
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                      }`}
+                    className={`flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-all duration-200 group relative ${
+                      isActive(href)
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    }`}
                     title={isCollapsed ? title : undefined}
                   >
                     <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded bg-primary/10 text-primary text-[10px] font-bold">
                       {title.substring(0, 2).toUpperCase()}
                     </div>
-                    {!isCollapsed && (
-                      <span className="truncate">
-                        {title}
-                      </span>
-                    )}
+                    {!isCollapsed && <span className="truncate">{title}</span>}
                     {/* Tooltip for collapsed state */}
                     {isCollapsed && (
                       <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-sm rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
@@ -199,8 +205,9 @@ const Sidebar = () => {
           {user?.role === "admin" && (
             <>
               <div
-                className={`my-3 mx-3 border-t border-border ${isCollapsed ? "mx-1" : ""
-                  }`}
+                className={`my-3 mx-3 border-t border-border ${
+                  isCollapsed ? "mx-1" : ""
+                }`}
               />
               {adminLinks.map((link) => {
                 const Icon = link.icon;
@@ -208,10 +215,11 @@ const Sidebar = () => {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${isActive(link.href)
-                      ? "bg-primary/10 text-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                      }`}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${
+                      isActive(link.href)
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    }`}
                     title={isCollapsed ? link.label : undefined}
                   >
                     <Icon className="h-5 w-5 flex-shrink-0" />
@@ -237,8 +245,9 @@ const Sidebar = () => {
         <div className="border-t border-border p-2">
           {/* User Info */}
           <div
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 ${isCollapsed ? "justify-center" : ""
-              }`}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 ${
+              isCollapsed ? "justify-center" : ""
+            }`}
           >
             {user?.photoURL ? (
               <img
@@ -252,8 +261,9 @@ const Sidebar = () => {
               />
             ) : null}
             <div
-              className={`w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 ${user?.photoURL ? "hidden" : ""
-                }`}
+              className={`w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 ${
+                user?.photoURL ? "hidden" : ""
+              }`}
             >
               <User className="h-4 w-4 text-primary-foreground" />
             </div>
@@ -272,8 +282,9 @@ const Sidebar = () => {
           {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors group relative ${isCollapsed ? "justify-center" : ""
-              }`}
+            className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors group relative ${
+              isCollapsed ? "justify-center" : ""
+            }`}
             title={isCollapsed ? "Sign Out" : undefined}
           >
             <LogOut className="h-5 w-5 flex-shrink-0" />
@@ -292,8 +303,9 @@ const Sidebar = () => {
 
       {/* Spacer for main content */}
       <div
-        className={`hidden lg:block flex-shrink-0 transition-all duration-300 ${isCollapsed ? "w-16" : "w-60"
-          }`}
+        className={`hidden lg:block flex-shrink-0 transition-all duration-300 ${
+          isCollapsed ? "w-16" : "w-60"
+        }`}
       />
     </>
   );

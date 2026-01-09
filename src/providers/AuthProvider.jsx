@@ -80,10 +80,29 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        setUser(currentUser);
         // Get ID token for API calls
         const idToken = await currentUser.getIdToken();
         setToken(idToken);
+
+        // Fetch user profile from MongoDB to get role and other data
+        try {
+          const res = await fetch("/api/auth/me", {
+            headers: { Authorization: `Bearer ${idToken}` },
+          });
+
+          if (res.ok) {
+            const dbUser = await res.json();
+            // Add MongoDB data to Firebase user object without losing Firebase methods
+            Object.assign(currentUser, dbUser);
+            setUser(currentUser);
+          } else {
+            console.error("Failed to fetch user profile from MongoDB");
+            setUser(currentUser);
+          }
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+          setUser(currentUser);
+        }
       } else {
         setUser(null);
         setToken(null);

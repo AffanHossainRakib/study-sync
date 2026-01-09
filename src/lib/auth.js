@@ -5,20 +5,16 @@ export async function authenticate(request) {
   try {
     const authHeader = request.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      console.log("❌ Auth failed: No token provided");
       return { error: true, status: 401, message: "No token provided" };
     }
 
     const token = authHeader.split("Bearer ")[1];
-    console.log("🔍 Verifying token...");
     const decodedToken = await admin.auth().verifyIdToken(token);
-    console.log("✅ Token verified for user:", decodedToken.uid);
 
     const { users } = await getCollections();
     let user = await users.findOne({ firebaseUid: decodedToken.uid });
 
     if (!user) {
-      console.log("📝 Creating new user:", decodedToken.uid);
       const newUser = schemas.user({
         firebaseUid: decodedToken.uid,
         email: decodedToken.email || "",
@@ -29,7 +25,11 @@ export async function authenticate(request) {
       const result = await users.insertOne(newUser);
       user = { ...newUser, _id: result.insertedId };
     } else {
-      console.log("✅ Found existing user:", user._id);
+      // Ensure role field exists (for users created before role was added)
+      if (!user.role) {
+        await users.updateOne({ _id: user._id }, { $set: { role: "user" } });
+        user.role = "user";
+      }
     }
 
     return { error: false, user, firebaseUser: decodedToken };
