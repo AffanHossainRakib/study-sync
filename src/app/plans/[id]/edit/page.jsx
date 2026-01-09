@@ -11,7 +11,7 @@ import {
   createOrGetResource,
   shareStudyPlan,
 } from "@/lib/api";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import BasicInfoForm from "@/app/create-plan/components/BasicInfoForm";
 import AddResourceForm from "@/app/create-plan/components/AddResourceForm";
 import ResourceList from "@/app/create-plan/components/ResourceList";

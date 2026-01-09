@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import LoginForm from "@/components/Auth/login-form";
-import { toast, Toaster } from "react-hot-toast";
+import { toast, Toaster } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import { useState, useEffect } from "react";
 

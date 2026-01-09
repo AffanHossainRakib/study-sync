@@ -30,7 +30,7 @@ import {
   removeSharedAccess,
 } from "@/lib/api";
 import useAuth from "@/hooks/useAuth";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import mixpanel from "@/lib/mixpanel";
 
 export default function StudyPlanDetailsPage() {
@@ -190,7 +190,7 @@ export default function StudyPlanDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
+      <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse">
             <div className="h-8 bg-slate-200 dark:bg-slate-800 rounded w-1/4 mb-8" />
@@ -209,15 +209,15 @@ export default function StudyPlanDetailsPage() {
 
   if (!plan) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
+      <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-16">
+          <div className="bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-16">
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
               Study Plan Not Found
             </h1>
             <Link
               href="/plans"
-              className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
+              className="inline-flex items-center justify-center rounded-xl bg-linear-to-r from-blue-600 to-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
             >
               Browse All Plans
             </Link>
@@ -228,7 +228,7 @@ export default function StudyPlanDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Button */}
         <Link
@@ -243,7 +243,7 @@ export default function StudyPlanDetailsPage() {
         <div className="bg-white dark:bg-slate-900 border-2 border-purple-200 dark:border-purple-900 rounded-2xl p-8 mb-6 shadow-lg">
           <div className="flex items-start justify-between mb-6">
             <div className="flex-1">
-              <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white mb-4 shadow-lg">
+              <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold bg-linear-to-r from-blue-500 to-purple-500 text-white mb-4 shadow-lg">
                 {plan.courseCode}
               </span>
               <h1 className="text-4xl font-bold text-black dark:text-white bg-clip-text mb-3">
@@ -273,7 +273,7 @@ export default function StudyPlanDetailsPage() {
 
           {/* Creator */}
           <div className="flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
+            <div className="w-8 h-8 rounded-full bg-linear-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
               {(plan.createdBy?.displayName || plan.createdBy?.email || "A")
                 .charAt(0)
                 .toUpperCase()}
@@ -504,7 +504,7 @@ export default function StudyPlanDetailsPage() {
         {/* Full Description */}
         {plan.fullDescription && (
           <div className="bg-white dark:bg-slate-900 border-2 border-blue-200 dark:border-blue-900 rounded-2xl p-6 mb-6 shadow-lg">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            <h2 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
               Description
             </h2>
             <p className="text-slate-600 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">
@@ -516,7 +516,7 @@ export default function StudyPlanDetailsPage() {
         {/* Resources List */}
         <div className="bg-white dark:bg-slate-900 border-2 border-purple-200 dark:border-purple-900 rounded-2xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Resources ({plan.resourceIds?.length || 0})
             </h2>
 
@@ -563,10 +563,10 @@ export default function StudyPlanDetailsPage() {
                       <div
                         className={`p-2.5 rounded-xl shadow-md ${
                           resource.type === "youtube-video"
-                            ? "bg-gradient-to-br from-red-500 to-red-600"
+                            ? "bg-linear-to-br from-red-500 to-red-600"
                             : resource.type === "pdf"
-                            ? "bg-gradient-to-br from-blue-500 to-blue-600"
-                            : "bg-gradient-to-br from-green-500 to-green-600"
+                            ? "bg-linear-to-br from-blue-500 to-blue-600"
+                            : "bg-linear-to-br from-green-500 to-green-600"
                         }`}
                       >
                         <Icon className="h-5 w-5 text-white" />
@@ -637,7 +637,7 @@ export default function StudyPlanDetailsPage() {
           <div className="bg-white dark:bg-slate-900 border-2 border-purple-200 dark:border-purple-900 rounded-2xl w-full max-w-md shadow-2xl">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h3 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Start Study Plan
                 </h3>
                 <button
@@ -679,7 +679,7 @@ export default function StudyPlanDetailsPage() {
                 <button
                   onClick={handleConfirmStart}
                   disabled={creatingInstance || !endDate}
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg hover:shadow-xl"
+                  className="flex-1 px-4 py-3 bg-linear-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg hover:shadow-xl"
                 >
                   {creatingInstance ? (
                     <span className="flex items-center justify-center gap-2">

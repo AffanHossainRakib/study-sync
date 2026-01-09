@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { getInstances, getStudyPlans, formatTime } from "@/lib/api";
 import useAuth from "@/hooks/useAuth";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -127,7 +127,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-purple-50/30 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -160,7 +160,9 @@ export default function DashboardPage() {
             <div className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
               {stats.activeInstances}
             </div>
-            <h3 className="text-slate-600 dark:text-slate-400 font-medium">Active Plans</h3>
+            <h3 className="text-slate-600 dark:text-slate-400 font-medium">
+              Active Plans
+            </h3>
           </div>
 
           {/* Overall Completion */}
@@ -171,7 +173,9 @@ export default function DashboardPage() {
             <div className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
               {Math.round(stats.totalCompletion)}%
             </div>
-            <h3 className="text-slate-600 dark:text-slate-400 font-medium">Overall Progress</h3>
+            <h3 className="text-slate-600 dark:text-slate-400 font-medium">
+              Overall Progress
+            </h3>
           </div>
 
           {/* Resources Completed */}
@@ -182,7 +186,9 @@ export default function DashboardPage() {
             <div className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
               {stats.completedResources}/{stats.totalResources}
             </div>
-            <h3 className="text-slate-600 dark:text-slate-400 font-medium">Resources Done</h3>
+            <h3 className="text-slate-600 dark:text-slate-400 font-medium">
+              Resources Done
+            </h3>
           </div>
 
           {/* Study Plans Created */}
@@ -190,8 +196,12 @@ export default function DashboardPage() {
             <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
               <TrendingUp className="w-8 h-8 text-primary" />
             </div>
-            <div className="text-4xl font-bold text-slate-900 dark:text-white mb-2">{myPlans.length}</div>
-            <h3 className="text-slate-600 dark:text-slate-400 font-medium">Plans Created</h3>
+            <div className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+              {myPlans.length}
+            </div>
+            <h3 className="text-slate-600 dark:text-slate-400 font-medium">
+              Plans Created
+            </h3>
           </div>
         </div>
 
@@ -222,18 +232,19 @@ export default function DashboardPage() {
                         {displayTitle}
                       </h3>
                       <div
-                        className={`px-2 py-1 rounded-full text-xs font-bold whitespace-nowrap ${instance.daysUntil <= 2
+                        className={`px-2 py-1 rounded-full text-xs font-bold whitespace-nowrap ${
+                          instance.daysUntil <= 2
                             ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200"
                             : instance.daysUntil <= 7
-                              ? "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200"
-                              : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
-                          }`}
+                            ? "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200"
+                            : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+                        }`}
                       >
                         {instance.daysUntil === 0
                           ? "Today"
                           : instance.daysUntil === 1
-                            ? "Tomorrow"
-                            : `${instance.daysUntil}d`}
+                          ? "Tomorrow"
+                          : `${instance.daysUntil}d`}
                       </div>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
@@ -311,7 +322,8 @@ export default function DashboardPage() {
                     <div className="p-6">
                       <div className="mb-4">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                          {instance.studyPlanId?.courseCode && `${instance.studyPlanId.courseCode} - `}
+                          {instance.studyPlanId?.courseCode &&
+                            `${instance.studyPlanId.courseCode} - `}
                           {instance.customTitle || instance.studyPlanId?.title}
                         </h3>
                       </div>

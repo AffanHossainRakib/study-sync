@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { getStudyPlans, deleteStudyPlan, formatTime } from "@/lib/api";
 import useAuth from "@/hooks/useAuth";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 export default function MyStudyPlansPage() {
   const router = useRouter();
@@ -121,7 +121,7 @@ export default function MyStudyPlansPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-12">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-purple-50/30 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
@@ -418,7 +418,9 @@ export default function MyStudyPlansPage() {
               <div className="bg-primary/10 rounded-xl p-3 w-fit mb-4">
                 <BookOpen className="w-6 h-6 text-primary" />
               </div>
-              <div className="text-4xl font-bold text-slate-900 dark:text-white mb-1">{plans.length}</div>
+              <div className="text-4xl font-bold text-slate-900 dark:text-white mb-1">
+                {plans.length}
+              </div>
               <div className="text-slate-600 dark:text-slate-400 font-medium">
                 Total Study Plans
               </div>
@@ -439,8 +441,7 @@ export default function MyStudyPlansPage() {
                         ? p.createdBy.firebaseUid
                         : null;
                     return (
-                      (creatorFirebaseUid &&
-                        creatorFirebaseUid === user.uid) ||
+                      (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
                       (creatorId &&
                         user._id &&
                         creatorId.toString() === user._id.toString())
@@ -468,8 +469,7 @@ export default function MyStudyPlansPage() {
                         ? p.createdBy.firebaseUid
                         : null;
                     const isCreator =
-                      (creatorFirebaseUid &&
-                        creatorFirebaseUid === user.uid) ||
+                      (creatorFirebaseUid && creatorFirebaseUid === user.uid) ||
                       (creatorId &&
                         user._id &&
                         creatorId.toString() === user._id.toString());

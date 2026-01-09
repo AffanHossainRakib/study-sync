@@ -5,7 +5,7 @@ import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
