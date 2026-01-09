@@ -14,15 +14,31 @@ import {
   Play,
   Star,
   Settings,
+  GraduationCap,
 } from "lucide-react";
+import { getInstances } from "@/lib/api";
 
 const Sidebar = () => {
-  const { user, loading, logOut } = useAuth();
+  const { user, loading, logOut, token } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   // Initialize collapsed state from localStorage or default to false
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [recentInstances, setRecentInstances] = useState([]);
+
+  // Load instances
+  useEffect(() => {
+    if (user && token) {
+      getInstances(token)
+        .then((data) => {
+          if (data && data.instances) {
+            setRecentInstances(data.instances.slice(0, 5));
+          }
+        })
+        .catch((err) => console.error("Failed to load instances", err));
+    }
+  }, [user, token, pathname]); // Re-fetch on navigation changes to keep order updated
 
   // Load collapsed state from localStorage on mount
   useEffect(() => {
@@ -53,6 +69,7 @@ const Sidebar = () => {
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/my-plans", label: "My Plans", icon: FolderOpen },
     { href: "/instances", label: "My Instances", icon: Play },
+    { href: "/plans", label: "All Public Plans", icon: GraduationCap },
     { href: "/reviews", label: "Add Review", icon: Star },
   ];
 
@@ -73,9 +90,8 @@ const Sidebar = () => {
     <>
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-16 bottom-0 z-40 bg-background border-r border-border transition-all duration-300 ease-in-out hidden lg:flex flex-col ${
-          isCollapsed ? "w-16" : "w-60"
-        }`}
+        className={`fixed left-0 top-16 bottom-0 z-40 bg-background border-r border-border transition-all duration-300 ease-in-out hidden lg:flex flex-col ${isCollapsed ? "w-16" : "w-60"
+          }`}
       >
         {/* Toggle Button */}
         <button
@@ -98,11 +114,10 @@ const Sidebar = () => {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${
-                  isActive(link.href)
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${isActive(link.href)
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
                 title={isCollapsed ? link.label : undefined}
               >
                 <Icon className="h-5 w-5 flex-shrink-0" />
@@ -124,13 +139,64 @@ const Sidebar = () => {
             );
           })}
 
+          {/* Quick Access / Recent Instances */}
+          {recentInstances.length > 0 && (
+            <>
+              <div
+                className={`my-3 mx-3 border-t border-border ${isCollapsed ? "mx-1" : ""
+                  }`}
+              />
+              {!isCollapsed && (
+                <div className="px-3 py-1 mb-1">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Recent
+                  </p>
+                </div>
+              )}
+              {recentInstances.map((instance) => {
+                // Determine title
+                const title = instance.customTitle ||
+                  (instance.studyPlan?.courseCode ? `${instance.studyPlan.courseCode} - ${instance.studyPlan.title}` : instance.studyPlan?.title) ||
+                  "Untitled Instance";
+
+                const href = `/instances/${instance._id}`;
+
+                return (
+                  <Link
+                    key={instance._id}
+                    href={href}
+                    className={`flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-all duration-200 group relative ${isActive(href)
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      }`}
+                    title={isCollapsed ? title : undefined}
+                  >
+                    <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded bg-primary/10 text-primary text-[10px] font-bold">
+                      {title.substring(0, 2).toUpperCase()}
+                    </div>
+                    {!isCollapsed && (
+                      <span className="truncate">
+                        {title}
+                      </span>
+                    )}
+                    {/* Tooltip for collapsed state */}
+                    {isCollapsed && (
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-sm rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
+                        {title}
+                      </div>
+                    )}
+                  </Link>
+                );
+              })}
+            </>
+          )}
+
           {/* Admin Links */}
           {user?.role === "admin" && (
             <>
               <div
-                className={`my-3 mx-3 border-t border-border ${
-                  isCollapsed ? "mx-1" : ""
-                }`}
+                className={`my-3 mx-3 border-t border-border ${isCollapsed ? "mx-1" : ""
+                  }`}
               />
               {adminLinks.map((link) => {
                 const Icon = link.icon;
@@ -138,11 +204,10 @@ const Sidebar = () => {
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${
-                      isActive(link.href)
-                        ? "bg-primary/10 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                    }`}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative ${isActive(link.href)
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      }`}
                     title={isCollapsed ? link.label : undefined}
                   >
                     <Icon className="h-5 w-5 flex-shrink-0" />
@@ -168,9 +233,8 @@ const Sidebar = () => {
         <div className="border-t border-border p-2">
           {/* User Info */}
           <div
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 ${
-              isCollapsed ? "justify-center" : ""
-            }`}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 ${isCollapsed ? "justify-center" : ""
+              }`}
           >
             {user?.photoURL ? (
               <img
@@ -184,9 +248,8 @@ const Sidebar = () => {
               />
             ) : null}
             <div
-              className={`w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 ${
-                user?.photoURL ? "hidden" : ""
-              }`}
+              className={`w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 ${user?.photoURL ? "hidden" : ""
+                }`}
             >
               <User className="h-4 w-4 text-primary-foreground" />
             </div>
@@ -205,9 +268,8 @@ const Sidebar = () => {
           {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors group relative ${
-              isCollapsed ? "justify-center" : ""
-            }`}
+            className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors group relative ${isCollapsed ? "justify-center" : ""
+              }`}
             title={isCollapsed ? "Sign Out" : undefined}
           >
             <LogOut className="h-5 w-5 flex-shrink-0" />
@@ -226,9 +288,8 @@ const Sidebar = () => {
 
       {/* Spacer for main content */}
       <div
-        className={`hidden lg:block flex-shrink-0 transition-all duration-300 ${
-          isCollapsed ? "w-16" : "w-60"
-        }`}
+        className={`hidden lg:block flex-shrink-0 transition-all duration-300 ${isCollapsed ? "w-16" : "w-60"
+          }`}
       />
     </>
   );

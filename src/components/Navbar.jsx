@@ -54,6 +54,7 @@ const Navbar = () => {
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/my-plans", label: "My Plans", icon: FolderOpen },
     { href: "/instances", label: "My Instances", icon: Play },
+    { href: "/plans", label: "All Plans", icon: GraduationCap },
     { href: "/reviews", label: "Add Review", icon: Star },
   ];
 
@@ -94,23 +95,25 @@ const Navbar = () => {
           </div>
 
           {/* Center Navigation - Desktop */}
-          <div className="hidden lg:flex lg:items-center lg:gap-1 lg:flex-1 lg:justify-center lg:px-8">
-            {centerLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg whitespace-nowrap ${isActive(link.href)
-                  ? "text-primary bg-primary/10"
-                  : "text-foreground hover:text-primary hover:bg-muted"
-                  }`}
-              >
-                {link.label}
-                {isActive(link.href) && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-0.5 bg-primary rounded-full"></span>
-                )}
-              </Link>
-            ))}
-          </div>
+          {!user && (
+            <div className="hidden lg:flex lg:items-center lg:gap-1 lg:flex-1 lg:justify-center lg:px-8">
+              {centerLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg whitespace-nowrap ${isActive(link.href)
+                    ? "text-primary bg-primary/10"
+                    : "text-foreground hover:text-primary hover:bg-muted"
+                    }`}
+                >
+                  {link.label}
+                  {isActive(link.href) && (
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-0.5 bg-primary rounded-full"></span>
+                  )}
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* Right Side - Auth Buttons - Desktop */}
           <div className="hidden lg:flex items-center gap-3">
@@ -156,7 +159,7 @@ const Navbar = () => {
           <div className="max-h-[calc(100vh-4rem)] overflow-y-auto">
             <div className="space-y-1 px-4 py-4">
               {/* Center navigation links */}
-              {centerLinks.map((link) => (
+              {!user && centerLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}

@@ -29,7 +29,7 @@ export async function GET(request) {
 
     const userInstances = await instances
       .find(query)
-      .sort({ createdAt: -1 })
+      .sort({ lastAccessedAt: -1, updatedAt: -1, createdAt: -1 })
       .toArray();
 
     const { userProgress } = await getCollections();

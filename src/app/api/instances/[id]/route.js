@@ -29,6 +29,12 @@ export async function GET(request, { params }) {
       );
     }
 
+    // Update lastAccessedAt (fire and forget)
+    instances.updateOne(
+      { _id: instanceId },
+      { $set: { lastAccessedAt: new Date() } }
+    ).catch(err => console.error("Error updating lastAccessedAt:", err));
+
     const plan = await studyPlans.findOne({ _id: instance.studyPlanId });
     if (!plan) {
       return createSuccessResponse({
@@ -113,8 +119,8 @@ export async function GET(request, { params }) {
     const resourcePercent =
       sortedPlanResources.length > 0
         ? Math.round(
-            (completedResources.length / sortedPlanResources.length) * 100
-          )
+          (completedResources.length / sortedPlanResources.length) * 100
+        )
         : 0;
 
     const timePercent =
