@@ -11,7 +11,6 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import mixpanel from "@/lib/mixpanel";
 
 const AuthContext = createContext(null);
 
@@ -41,7 +40,7 @@ export const AuthProvider = ({ children }) => {
         // Fetch user profile from MongoDB to get role
         try {
           const res = await fetch("/api/auth/me", {
-            headers: { Authorization: `Bearer ${idToken}` }
+            headers: { Authorization: `Bearer ${idToken}` },
           });
           if (res.ok) {
             const dbUser = await res.json();
@@ -55,21 +54,11 @@ export const AuthProvider = ({ children }) => {
           console.error("Error fetching user profile:", error);
           setUser(firebaseUser);
         }
-
-        // Identify user in Mixpanel
-        mixpanel.identify(firebaseUser.uid);
-        mixpanel.people.set({
-          $name: firebaseUser.displayName || firebaseUser.email,
-          $email: firebaseUser.email,
-          signup_method: firebaseUser.providerData[0]?.providerId || "email",
-        });
       } else {
         setUser(null);
         setToken(null);
         // Clear auth cookie
         document.cookie = "auth-token=; path=/; max-age=0";
-        // Reset Mixpanel on logout
-        mixpanel.reset();
       }
       setLoading(false);
     });
@@ -91,13 +80,6 @@ export const AuthProvider = ({ children }) => {
         await updateProfile(userCredential.user, { displayName });
       }
 
-      // Track Sign Up event
-      mixpanel.track("Sign Up", {
-        user_id: userCredential.user.uid,
-        email: userCredential.user.email,
-        signup_method: "email",
-      });
-
       return { user: userCredential.user, error: null };
     } catch (error) {
       console.error("Registration error:", error);
@@ -114,13 +96,6 @@ export const AuthProvider = ({ children }) => {
         password
       );
 
-      // Track Sign In event
-      mixpanel.track("Sign In", {
-        user_id: userCredential.user.uid,
-        login_method: "email",
-        success: true,
-      });
-
       return { user: userCredential.user, error: null };
     } catch (error) {
       console.error("Sign in error:", error);
@@ -133,13 +108,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const provider = new GoogleAuthProvider();
       const userCredential = await signInWithPopup(auth, provider);
-
-      // Track Sign In event
-      mixpanel.track("Sign In", {
-        user_id: userCredential.user.uid,
-        login_method: "google",
-        success: true,
-      });
 
       return { user: userCredential.user, error: null };
     } catch (error) {

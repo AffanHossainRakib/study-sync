@@ -205,12 +205,6 @@ export default function CreateStudyPlanPage() {
         await updateStudyPlan(planId, { resourceIds }, token);
       }
 
-      // Track conversion event
-      mixpanel.track("Conversion", {
-        "Conversion Type": "Study Plan Created",
-        "Conversion Value": resources.length,
-      });
-
       toast.success("Study plan created successfully!");
       router.push(`/plans/${planId}`);
     } catch (error) {
