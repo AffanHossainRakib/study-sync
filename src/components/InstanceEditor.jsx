@@ -2,7 +2,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+// Note: This component is deprecated and no longer used in the app
+// Editing is now handled inline in the instance page with @dnd-kit
 import {
   updateInstance,
   createOrGetResource,
@@ -84,62 +85,44 @@ const InstanceEditor = ({ instance, token, onUpdate }) => {
           </button>
         </div>
       </div>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="resources">
-          {(provided) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              className="space-y-2"
-            >
-              {resources.map((res, index) => (
-                <Draggable key={res._id} draggableId={res._id} index={index}>
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      className={`flex items-center p-2 bg-white dark:bg-slate-800 rounded-md shadow-sm ${
-                        snapshot.isDragging ? "bg-blue-50" : ""
-                      }`}
-                    >
-                      <div className="flex-1 min-w-0">
-                        <input
-                          type="text"
-                          value={customTitles[res._id] ?? res.title}
-                          onChange={(e) =>
-                            handleTitleChange(res._id, e.target.value)
-                          }
-                          className="w-full bg-transparent focus:outline-none text-sm"
-                        />
-                        <div className="text-xs text-slate-500">
-                          {getResourceTypeInfo(res.type).label} •{" "}
-                          {formatTime(
-                            res.type === "youtube-video"
-                              ? res.metadata?.duration
-                              : res.type === "pdf"
-                              ? (res.metadata?.pages || 0) *
-                                (res.metadata?.minsPerPage || 0)
-                              : res.metadata?.estimatedMins || 0
-                          )}
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => handleDelete(res._id)}
-                        className="p-1 text-red-600 hover:bg-red-100 rounded"
-                        title="Delete"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
+      {/* Drag and drop functionality removed - component is deprecated */}
+      <div className="space-y-2">
+        {resources.map((res, index) => (
+          <div
+            key={res._id}
+            className="flex items-center gap-3 p-3 bg-background border rounded-md"
+          >
+            <div className="flex-1 min-w-0">
+              <input
+                type="text"
+                value={customTitles[res._id] ?? res.title}
+                onChange={(e) =>
+                  handleTitleChange(res._id, e.target.value)
+                }
+                className="w-full bg-transparent focus:outline-none text-sm"
+              />
+              <div className="text-xs text-slate-slate-500">
+                {getResourceTypeInfo(res.type).label} •{" "}
+                {formatTime(
+                  res.type === "youtube-video"
+                    ? res.metadata?.duration
+                    : res.type === "pdf"
+                    ? (res.metadata?.pages || 0) *
+                      (res.metadata?.minsPerPage || 0)
+                    : res.metadata?.estimatedMins || 0
+                )}
+              </div>
             </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+            <button
+              onClick={() => handleDelete(res._id)}
+              className="p-1 text-red-600 hover:bg-red-100 rounded"
+              title="Delete"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
