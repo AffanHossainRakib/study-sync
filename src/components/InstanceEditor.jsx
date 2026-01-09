@@ -96,9 +96,7 @@ const InstanceEditor = ({ instance, token, onUpdate }) => {
               <input
                 type="text"
                 value={customTitles[res._id] ?? res.title}
-                onChange={(e) =>
-                  handleTitleChange(res._id, e.target.value)
-                }
+                onChange={(e) => handleTitleChange(res._id, e.target.value)}
                 className="w-full bg-transparent focus:outline-none text-sm"
               />
               <div className="text-xs text-slate-slate-500">
