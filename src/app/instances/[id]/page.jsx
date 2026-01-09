@@ -585,6 +585,7 @@ export default function InstanceDetailsPage() {
                 </>
               ) : (
                 <>
+                  <span className="text-xs text-slate-500">Click Edit to edit the instance</span>
                   <button
                     onClick={handleToggleEditMode}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -823,6 +824,10 @@ export default function InstanceDetailsPage() {
                             <Trash2 className="h-3 w-3" />
                             <span>Remove unneeded items</span>
                           </div>
+                          <div className="flex items-center gap-2">
+                            <Plus className="h-3 w-3" />
+                            <span>Click Add to add new items</span>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -832,7 +837,7 @@ export default function InstanceDetailsPage() {
                         className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                         title="Add resource"
                       >
-                        <Plus className="h-4 w-4" />
+                        <Plus className="h-6 w-6" />
                         Add
                       </button>
                     )}
