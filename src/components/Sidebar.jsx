@@ -155,9 +155,11 @@ const Sidebar = () => {
               )}
               {recentInstances.map((instance) => {
                 // Determine title
-                const title = instance.customTitle ||
-                  (instance.studyPlan?.courseCode ? `${instance.studyPlan.courseCode} - ${instance.studyPlan.title}` : instance.studyPlan?.title) ||
-                  "Untitled Instance";
+                const title = (() => {
+                  const courseCode = instance.studyPlan?.courseCode || "General";
+                  const displayTitle = instance.customTitle || instance.studyPlan?.title || "Untitled Instance";
+                  return courseCode !== "General" ? `${courseCode} - ${displayTitle}` : displayTitle;
+                })();
 
                 const href = `/instances/${instance._id}`;
 

@@ -165,12 +165,11 @@ export default function MyInstancesPage() {
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                          {instance.customTitle
-                            ? instance.customTitle
-                            : instance.studyPlan?.courseCode &&
-                              instance.studyPlan?.title
-                            ? `${instance.studyPlan.courseCode} - ${instance.studyPlan.title}`
-                            : instance.studyPlan?.title || "Untitled Instance"}
+                          {(() => {
+                            const courseCode = instance.studyPlan?.courseCode || "General";
+                            const title = instance.customTitle || instance.studyPlan?.title || "Untitled Instance";
+                            return courseCode !== "General" ? `${courseCode} - ${title}` : title;
+                          })()}
                         </h3>
                       </div>
                       <div className="flex items-center gap-2">
