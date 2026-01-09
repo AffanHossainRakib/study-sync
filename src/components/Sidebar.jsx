@@ -15,6 +15,7 @@ import {
   Star,
   Settings,
   GraduationCap,
+  Plus,
 } from "lucide-react";
 import { getInstances } from "@/lib/api";
 
@@ -70,6 +71,7 @@ const Sidebar = () => {
     { href: "/my-plans", label: "My Plans", icon: FolderOpen },
     { href: "/instances", label: "My Instances", icon: Play },
     { href: "/plans", label: "All Public Plans", icon: GraduationCap },
+    { href: "/create-plan", label: "Create New Plan", icon: Plus },
     { href: "/reviews", label: "Add Review", icon: Star },
   ];
 

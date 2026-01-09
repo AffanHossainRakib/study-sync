@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 const Footer = () => {
+  /*
   const [email, setEmail] = useState("");
   const [subscribeStatus, setSubscribeStatus] = useState("");
 
@@ -25,6 +26,7 @@ const Footer = () => {
       setTimeout(() => setSubscribeStatus(""), 3000);
     }
   };
+  */
 
   const footerSections = {
     product: {
@@ -36,6 +38,7 @@ const Footer = () => {
         { label: "Create Plan", href: "/create-plan" },
       ],
     },
+    /*
     resources: {
       title: "Resources",
       links: [
@@ -63,6 +66,7 @@ const Footer = () => {
         { label: "Terms of Service", href: "#" },
       ],
     },
+    */
   };
 
   const socialLinks = [
@@ -76,9 +80,9 @@ const Footer = () => {
     <footer className="bg-card border-t border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12">
+        <div className="flex flex-col lg:flex-row lg:justify-between gap-8 lg:gap-12 mb-8 sm:mb-12">
           {/* Brand Column */}
-          <div className="lg:col-span-2">
+          <div className="lg:max-w-sm">
             <Link href="/" className="inline-flex items-center gap-2 mb-4">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center shadow-md">
                 <BookOpen className="h-6 w-6 text-white" />
@@ -94,7 +98,7 @@ const Footer = () => {
             </p>
 
             {/* Social Links */}
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               {socialLinks.map((social) => {
                 const Icon = social.icon;
                 return (
@@ -110,33 +114,35 @@ const Footer = () => {
                   </a>
                 );
               })}
-            </div>
+            </div> */}
           </div>
 
           {/* Links Columns */}
-          {Object.values(footerSections).map((section) => (
-            <div key={section.title}>
-              <h3 className="text-sm font-semibold text-foreground mb-4">
-                {section.title}
-              </h3>
-              <ul className="space-y-3">
-                {section.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="flex gap-8 sm:gap-12 flex-wrap">
+            {Object.values(footerSections).map((section) => (
+              <div key={section.title} className="min-w-[140px]">
+                <h3 className="text-sm font-semibold text-foreground mb-4">
+                  {section.title}
+                </h3>
+                <ul className="space-y-3">
+                  {section.links.map((link) => (
+                    <li key={link.label}>
+                      <Link
+                        href={link.href}
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Newsletter Section */}
-        <div className="border-t border-border pt-6 sm:pt-8 mb-6 sm:mb-8">
+        {/* <div className="border-t border-border pt-6 sm:pt-8 mb-6 sm:mb-8">
           <div className="max-w-md">
             <h3 className="text-sm sm:text-base font-semibold text-foreground mb-1 sm:mb-2">
               Subscribe to our newsletter
@@ -169,14 +175,14 @@ const Footer = () => {
               </p>
             )}
           </div>
-        </div>
+        </div> */}
 
         {/* Bottom Bar */}
         <div className="border-t border-border pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4">
           <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
             © {new Date().getFullYear()} The Study Sync. All rights reserved.
           </p>
-          <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
+          {/* <div className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
             <Link href="#" className="hover:text-primary transition-colors">
               Privacy
             </Link>
@@ -186,7 +192,7 @@ const Footer = () => {
             <Link href="#" className="hover:text-primary transition-colors">
               Cookies
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>
