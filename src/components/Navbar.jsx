@@ -14,6 +14,7 @@ import {
   FolderOpen,
   Play,
   Star,
+  Monitor,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -47,6 +48,7 @@ const Navbar = () => {
     { href: "/#features", label: "Features" },
     { href: "/#popular-plans", label: "Popular Plans" },
     { href: "/plans", label: "All Plans" },
+    { href: "/lab-finder", label: "Lab Finder" },
   ];
 
   // Mobile-only user navigation links
@@ -55,6 +57,7 @@ const Navbar = () => {
     { href: "/my-plans", label: "My Plans", icon: FolderOpen },
     { href: "/instances", label: "My Instances", icon: Play },
     { href: "/plans", label: "All Plans", icon: GraduationCap },
+    { href: "/lab-finder", label: "Lab Finder", icon: Monitor },
     { href: "/reviews", label: "Add Review", icon: Star },
   ];
 

@@ -16,6 +16,8 @@ import {
   Settings,
   GraduationCap,
   Plus,
+  Monitor,
+  ExternalLink,
 } from "lucide-react";
 import { getInstances } from "@/lib/api";
 
@@ -71,6 +73,7 @@ const Sidebar = () => {
     { href: "/my-plans", label: "My Plans", icon: FolderOpen },
     { href: "/instances", label: "My Instances", icon: Play },
     { href: "/plans", label: "All Public Plans", icon: GraduationCap },
+    { href: "/lab-finder", label: "Lab Finder", icon: Monitor },
     { href: "/create-plan", label: "Create New Plan", icon: Plus },
     { href: "/reviews", label: "Add Review", icon: Star },
   ];
@@ -142,6 +145,37 @@ const Sidebar = () => {
               </Link>
             );
           })}
+
+          {/* External Tools */}
+          <div
+            className={`my-3 mx-3 border-t border-border ${
+              isCollapsed ? "mx-1" : ""
+            }`}
+          />
+          {!isCollapsed && (
+            <div className="px-3 py-1 mb-1">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                External Tools
+              </p>
+            </div>
+          )}
+          <a
+            href="https://routinebuzz.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative text-muted-foreground hover:text-foreground hover:bg-muted"
+            title={isCollapsed ? "RoutineBuzz" : undefined}
+          >
+            <ExternalLink className="h-5 w-5 flex-shrink-0" />
+            {!isCollapsed && (
+              <span className="font-medium text-sm truncate">RoutineBuzz</span>
+            )}
+            {isCollapsed && (
+              <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-sm rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
+                RoutineBuzz
+              </div>
+            )}
+          </a>
 
           {/* Quick Access / Recent Instances */}
           {recentInstances.length > 0 && (
