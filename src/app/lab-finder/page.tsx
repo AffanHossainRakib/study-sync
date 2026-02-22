@@ -17,7 +17,7 @@ export default function LabFinderPage() {
           Find an empty CSE lab room at BRAC University instantly
         </p>
         <p className="mt-1 text-sm text-muted-foreground/70">
-          Last update:  Fall 2025
+          Last update: Spring 2026
         </p>
       </section>
       <div className="px-4 pb-16">
