@@ -9,7 +9,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
-  onAuthStateChanged,
+  onIdTokenChanged,
   updateProfile,
   sendPasswordResetEmail,
 } from "firebase/auth";
@@ -78,11 +78,13 @@ export const AuthProvider = ({ children }) => {
 
   // Monitor auth state
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onIdTokenChanged(auth, async (currentUser) => {
       if (currentUser) {
         // Get ID token for API calls
         const idToken = await currentUser.getIdToken();
         setToken(idToken);
+        // Keep middleware/session checks in sync with token refreshes
+        document.cookie = `auth-token=${idToken}; path=/; max-age=3600; SameSite=Lax`;
 
         // Fetch user profile from MongoDB to get role and other data
         try {
@@ -106,6 +108,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         setUser(null);
         setToken(null);
+        document.cookie = "auth-token=; path=/; max-age=0";
       }
       setLoading(false);
     });
