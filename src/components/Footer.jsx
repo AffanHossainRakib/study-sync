@@ -34,7 +34,7 @@ const Footer = () => {
       links: [
         { label: "Features", href: "/#features" },
         { label: "How It Works", href: "/#how-it-works" },
-        { label: "All Plans", href: "/plans" },
+        { label: "Public Plans", href: "/plans" },
         { label: "Create Plan", href: "/create-plan" },
       ],
     },

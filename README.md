@@ -167,7 +167,7 @@ study-sync/
 │   │   ├── plans/                # Study plan pages
 │   │   │   ├── [id]/            # Plan details
 │   │   │   │   └── edit/        # Edit plan
-│   │   │   └── page.jsx         # Browse all plans
+│   │   │   └── page.jsx         # Browse Public Plans
 │   │   ├── my-plans/             # User's study plans
 │   │   ├── instances/            # Study instances
 │   │   │   └── [id]/            # Instance details

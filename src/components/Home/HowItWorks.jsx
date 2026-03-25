@@ -25,7 +25,7 @@ const HowItWorks = () => {
       icon: BarChart3,
       title: "Track Progress",
       description:
-        "Mark resources as complete. Your progress is tracked globally, so completed resources stay marked across all plans.",
+        "Mark resources as complete. Your progress is tracked globally, so completed resources stay marked across Public Plans.",
     },
   ];
 

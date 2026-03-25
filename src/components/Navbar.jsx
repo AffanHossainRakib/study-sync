@@ -47,16 +47,16 @@ const Navbar = () => {
     { href: "/#how-it-works", label: "How It Works" },
     { href: "/#features", label: "Features" },
     { href: "/#popular-plans", label: "Popular Plans" },
-    { href: "/plans", label: "All Plans" },
+    { href: "/plans", label: "Public Plans" },
     { href: "/lab-finder", label: "Lab Finder" },
   ];
 
   // Mobile-only user navigation links
   const mobileUserLinks = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/my-plans", label: "My Plans", icon: FolderOpen },
     { href: "/instances", label: "My Instances", icon: Play },
-    { href: "/plans", label: "All Plans", icon: GraduationCap },
+    { href: "/my-plans", label: "My Plans", icon: FolderOpen },
+    { href: "/plans", label: "Public Plans", icon: GraduationCap },
     { href: "/lab-finder", label: "Lab Finder", icon: Monitor },
     { href: "/reviews", label: "Add Review", icon: Star },
   ];

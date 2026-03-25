@@ -56,7 +56,7 @@ export default function StudyPlanDetailsPage() {
         "Fetching plan with ID:",
         params.id,
         "Length:",
-        params.id?.length
+        params.id?.length,
       );
       const data = await getStudyPlanById(params.id, token, sortBy);
       setPlan(data);
@@ -112,7 +112,7 @@ export default function StudyPlanDetailsPage() {
           startDate: today,
           endDate,
         },
-        token
+        token,
       );
 
       toast.success("Instance created successfully!");
@@ -205,7 +205,7 @@ export default function StudyPlanDetailsPage() {
               href="/plans"
               className="inline-flex items-center justify-center rounded-xl bg-linear-to-r from-blue-600 to-purple-600 px-6 py-3 text-base font-medium text-white shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105"
             >
-              Browse All Plans
+              Browse Public Plans
             </Link>
           </div>
         </div>
@@ -222,7 +222,7 @@ export default function StudyPlanDetailsPage() {
           className="inline-flex items-center text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
-          Back to All Plans
+          Back to Public Plans
         </Link>
 
         {/* Header */}
@@ -301,7 +301,7 @@ export default function StudyPlanDetailsPage() {
                 onClick={(e) => {
                   console.log(
                     "Edit link clicked, navigating to:",
-                    `/plans/${params.id}/edit`
+                    `/plans/${params.id}/edit`,
                   );
                 }}
               >
@@ -532,13 +532,13 @@ export default function StudyPlanDetailsPage() {
                   resource.type === "youtube-video"
                     ? resource.metadata?.duration
                     : resource.type === "pdf"
-                    ? (resource.metadata?.pages || 0) *
-                      (resource.metadata?.minsPerPage || 0)
-                    : resource.type === "article" ||
-                      resource.type === "google-drive" ||
-                      resource.type === "custom-link"
-                    ? resource.metadata?.estimatedMins || 0
-                    : 0;
+                      ? (resource.metadata?.pages || 0) *
+                        (resource.metadata?.minsPerPage || 0)
+                      : resource.type === "article" ||
+                          resource.type === "google-drive" ||
+                          resource.type === "custom-link"
+                        ? resource.metadata?.estimatedMins || 0
+                        : 0;
 
                 return (
                   <div
@@ -551,8 +551,8 @@ export default function StudyPlanDetailsPage() {
                           resource.type === "youtube-video"
                             ? "bg-linear-to-br from-red-500 to-red-600"
                             : resource.type === "pdf"
-                            ? "bg-linear-to-br from-blue-500 to-blue-600"
-                            : "bg-linear-to-br from-green-500 to-green-600"
+                              ? "bg-linear-to-br from-blue-500 to-blue-600"
+                              : "bg-linear-to-br from-green-500 to-green-600"
                         }`}
                       >
                         <Icon className="h-5 w-5 text-white" />
@@ -571,8 +571,8 @@ export default function StudyPlanDetailsPage() {
                                 resource.type === "youtube-video"
                                   ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
                                   : resource.type === "pdf"
-                                  ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                                  : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                                    ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                                    : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
                               }`}
                             >
                               {typeInfo.label}

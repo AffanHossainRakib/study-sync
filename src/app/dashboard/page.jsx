@@ -58,7 +58,7 @@ export default function DashboardPage() {
       .map((inst) => ({
         ...inst,
         daysUntil: Math.ceil(
-          (new Date(inst.deadline) - new Date()) / (1000 * 60 * 60 * 24)
+          (new Date(inst.deadline) - new Date()) / (1000 * 60 * 60 * 24),
         ),
       }))
       .filter((inst) => inst.daysUntil >= 0)
@@ -159,7 +159,10 @@ export default function DashboardPage() {
                         {lastAccessedInstance.lastAccessedAt && (
                           <span className="text-xs text-slate-500 flex items-center gap-1">
                             <Clock className="w-3 h-3" />
-                            {formatDistanceToNow(new Date(lastAccessedInstance.lastAccessedAt), { addSuffix: true })}
+                            {formatDistanceToNow(
+                              new Date(lastAccessedInstance.lastAccessedAt),
+                              { addSuffix: true },
+                            )}
                           </span>
                         )}
                       </div>
@@ -176,13 +179,17 @@ export default function DashboardPage() {
                         <div className="flex items-center gap-2">
                           <BookOpen className="w-4 h-4 text-slate-400" />
                           <span className="font-medium text-slate-700 dark:text-slate-300">
-                            {lastAccessedInstance.completedResources}/{lastAccessedInstance.totalResources} Resources
+                            {lastAccessedInstance.completedResources}/
+                            {lastAccessedInstance.totalResources} Resources
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Clock className="w-4 h-4 text-slate-400" />
                           <span className="font-medium text-slate-700 dark:text-slate-300">
-                            {Math.round((lastAccessedInstance.completedTime || 0) / 60)}h spent
+                            {Math.round(
+                              (lastAccessedInstance.completedTime || 0) / 60,
+                            )}
+                            h spent
                           </span>
                         </div>
                       </div>
@@ -190,13 +197,22 @@ export default function DashboardPage() {
 
                     <div className="sm:w-48 flex flex-col justify-center">
                       <div className="mb-2 flex justify-between text-sm font-medium">
-                        <span className="text-slate-700 dark:text-slate-300">Progress</span>
-                        <span className="text-primary">{Math.round(lastAccessedInstance.resourcePercent || 0)}%</span>
+                        <span className="text-slate-700 dark:text-slate-300">
+                          Progress
+                        </span>
+                        <span className="text-primary">
+                          {Math.round(
+                            lastAccessedInstance.resourcePercent || 0,
+                          )}
+                          %
+                        </span>
                       </div>
                       <div className="w-full h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mb-4">
                         <div
                           className="h-full bg-primary transition-all duration-500"
-                          style={{ width: `${lastAccessedInstance.resourcePercent || 0}%` }}
+                          style={{
+                            width: `${lastAccessedInstance.resourcePercent || 0}%`,
+                          }}
                         />
                       </div>
                       <button className="w-full py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
@@ -227,11 +243,16 @@ export default function DashboardPage() {
                           <h4 className="font-semibold text-slate-900 dark:text-white line-clamp-1 group-hover:text-primary transition-colors pr-2">
                             {getDisplayTitle(instance)}
                           </h4>
-                          <span className={`text-xs font-bold px-2 py-1 rounded-full whitespace-nowrap ${instance.daysUntil <= 2
-                            ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200"
-                            : "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200"
-                            }`}>
-                            {instance.daysUntil === 0 ? "Today" : `${instance.daysUntil} days`}
+                          <span
+                            className={`text-xs font-bold px-2 py-1 rounded-full whitespace-nowrap ${
+                              instance.daysUntil <= 2
+                                ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200"
+                                : "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200"
+                            }`}
+                          >
+                            {instance.daysUntil === 0
+                              ? "Today"
+                              : `${instance.daysUntil} days`}
                           </span>
                         </div>
                         <div className="text-xs text-slate-500">
@@ -243,7 +264,9 @@ export default function DashboardPage() {
                 ) : (
                   <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center h-full flex flex-col items-center justify-center">
                     <CheckCircle2 className="w-8 h-8 text-green-500 mx-auto mb-2 opacity-50" />
-                    <p className="text-slate-500 text-sm">No upcoming deadlines</p>
+                    <p className="text-slate-500 text-sm">
+                      No upcoming deadlines
+                    </p>
                   </div>
                 )}
               </div>
@@ -257,7 +280,10 @@ export default function DashboardPage() {
                     <Target className="w-5 h-5 text-indigo-500" />
                     Your Courses
                   </h2>
-                  <Link href="/instances" className="text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1">
+                  <Link
+                    href="/instances"
+                    className="text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors flex items-center gap-1"
+                  >
                     View All <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -276,15 +302,22 @@ export default function DashboardPage() {
                             {getDisplayTitle(instance)}
                           </h3>
                           <div className="flex items-center justify-between text-xs text-slate-500">
-                            <span>{instance.completedResources}/{instance.totalResources} Resources</span>
-                            <span>{Math.round(instance.resourcePercent || 0)}%</span>
+                            <span>
+                              {instance.completedResources}/
+                              {instance.totalResources} Resources
+                            </span>
+                            <span>
+                              {Math.round(instance.resourcePercent || 0)}%
+                            </span>
                           </div>
                         </div>
 
                         <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-slate-900 dark:bg-slate-100 group-hover:bg-indigo-500 transition-all duration-300"
-                            style={{ width: `${instance.resourcePercent || 0}%` }}
+                            style={{
+                              width: `${instance.resourcePercent || 0}%`,
+                            }}
                           />
                         </div>
                       </div>
@@ -296,12 +329,20 @@ export default function DashboardPage() {
 
             {/* Quick Actions (Compact) */}
             <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
-              <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-4 uppercase tracking-wider">Quick Actions</h3>
+              <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-4 uppercase tracking-wider">
+                Quick Actions
+              </h3>
               <div className="flex flex-wrap gap-4">
-                <Link href="/plans" className="px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
-                  Browse All Plans
+                <Link
+                  href="/plans"
+                  className="px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+                >
+                  Browse Public Plans
                 </Link>
-                <Link href="/my-plans" className="px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+                <Link
+                  href="/my-plans"
+                  className="px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+                >
                   My Created Plans
                 </Link>
               </div>

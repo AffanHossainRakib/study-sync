@@ -16,7 +16,7 @@ export async function GET(request) {
 
     const { studyPlans } = await getCollections();
 
-    // Find all plans that have sharedWith data
+    // Find Public Plans that have sharedWith data
     const plansWithSharing = await studyPlans
       .find({ sharedWith: { $exists: true, $ne: [] } })
       .toArray();
