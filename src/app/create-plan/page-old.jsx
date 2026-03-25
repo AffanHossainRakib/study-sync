@@ -421,7 +421,7 @@ export default function CreateStudyPlanPage() {
                     className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg"
                   >
                     <div
-                      className={`flex-shrink-0 p-2 rounded-md ${
+                      className={`shrink-0 p-2 rounded-md ${
                         resource.type === "youtube-video"
                           ? "bg-red-100 dark:bg-red-900/20"
                           : resource.type === "pdf"
@@ -453,7 +453,7 @@ export default function CreateStudyPlanPage() {
                     <button
                       type="button"
                       onClick={() => handleRemoveResource(index)}
-                      className="flex-shrink-0 text-destructive hover:text-destructive/80 transition-colors"
+                      className="shrink-0 text-destructive hover:text-destructive/80 transition-colors"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

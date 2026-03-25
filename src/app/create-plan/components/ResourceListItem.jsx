@@ -96,12 +96,12 @@ export default function ResourceListItem({
           type="checkbox"
           checked={isSelected}
           onChange={onToggleSelect}
-          className="h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-primary flex-shrink-0"
+          className="h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-primary shrink-0"
         />
       )}
 
       {/* Order number */}
-      <div className="flex-shrink-0 w-6 text-center">
+      <div className="shrink-0 w-6 text-center">
         <span className="text-xs font-medium text-muted-foreground">
           {index + 1}
         </span>
@@ -110,7 +110,7 @@ export default function ResourceListItem({
       {/* Drag handle */}
       <button
         type="button"
-        className="flex-shrink-0 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors"
+        className="shrink-0 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground transition-colors"
         {...attributes}
         {...listeners}
       >
@@ -118,7 +118,7 @@ export default function ResourceListItem({
       </button>
 
       {/* Icon */}
-      <div className={`flex-shrink-0 p-2 rounded-md ${iconConfig.bg}`}>
+      <div className={`shrink-0 p-2 rounded-md ${iconConfig.bg}`}>
         <Icon className={`h-4 w-4 ${iconConfig.color}`} />
       </div>
 
@@ -135,7 +135,7 @@ export default function ResourceListItem({
         <button
           type="button"
           onClick={onRemove}
-          className="flex-shrink-0 text-destructive hover:text-destructive/80 transition-colors"
+          className="shrink-0 text-destructive hover:text-destructive/80 transition-colors"
         >
           <Trash2 className="h-4 w-4" />
         </button>

@@ -66,15 +66,16 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-        ? "bg-background/80 backdrop-blur-xl shadow-lg border-b border-border"
-        : "bg-background/60 backdrop-blur-md border-b border-border/50"
-        }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-background/80 backdrop-blur-xl shadow-lg border-b border-border"
+          : "bg-background/60 backdrop-blur-md border-b border-border/50"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo - Left */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <Link
               href="/#hero"
               className="flex items-center gap-2.5 group"
@@ -104,10 +105,11 @@ const Navbar = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg whitespace-nowrap ${isActive(link.href)
-                    ? "text-primary bg-primary/10"
-                    : "text-foreground hover:text-primary hover:bg-muted"
-                    }`}
+                  className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg whitespace-nowrap ${
+                    isActive(link.href)
+                      ? "text-primary bg-primary/10"
+                      : "text-foreground hover:text-primary hover:bg-muted"
+                  }`}
                 >
                   {link.label}
                   {isActive(link.href) && (
@@ -162,19 +164,21 @@ const Navbar = () => {
           <div className="max-h-[calc(100vh-4rem)] overflow-y-auto">
             <div className="space-y-1 px-4 py-4">
               {/* Center navigation links */}
-              {!user && centerLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block rounded-lg px-4 py-3 text-base font-medium transition-all ${isActive(link.href)
-                    ? "bg-primary/10 text-primary"
-                    : "text-foreground hover:bg-muted hover:text-primary"
+              {!user &&
+                centerLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`block rounded-lg px-4 py-3 text-base font-medium transition-all ${
+                      isActive(link.href)
+                        ? "bg-primary/10 text-primary"
+                        : "text-foreground hover:bg-muted hover:text-primary"
                     }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
 
               {/* User navigation links (mobile only) */}
               {user && (
@@ -187,10 +191,11 @@ const Navbar = () => {
                         key={link.href}
                         href={link.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-all ${isActive(link.href)
-                          ? "bg-primary/10 text-primary"
-                          : "text-foreground hover:bg-muted hover:text-primary"
-                          }`}
+                        className={`flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-all ${
+                          isActive(link.href)
+                            ? "bg-primary/10 text-primary"
+                            : "text-foreground hover:bg-muted hover:text-primary"
+                        }`}
                       >
                         <Icon className="h-5 w-5" />
                         {link.label}

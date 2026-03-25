@@ -85,17 +85,18 @@ export default function InstanceDetailsPage() {
         ? resource.metadata?.duration
         : resource.type === "pdf"
           ? (resource.metadata?.pages || 0) *
-          (resource.metadata?.minsPerPage || 0)
+            (resource.metadata?.minsPerPage || 0)
           : resource.metadata?.estimatedMins || 0;
 
     return (
       <div
         ref={setNodeRef}
         style={style}
-        className={`flex items-center gap-2 p-3 border-b border-slate-100 dark:border-slate-800 ${isDragging
-          ? "bg-blue-50 dark:bg-blue-900/20 shadow-lg z-50"
-          : "bg-white dark:bg-slate-900"
-          }`}
+        className={`flex items-center gap-2 p-3 border-b border-slate-100 dark:border-slate-800 ${
+          isDragging
+            ? "bg-blue-50 dark:bg-blue-900/20 shadow-lg z-50"
+            : "bg-white dark:bg-slate-900"
+        }`}
       >
         {/* Drag Handle */}
         <div
@@ -108,20 +109,22 @@ export default function InstanceDetailsPage() {
 
         {/* Icon */}
         <div
-          className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${resource.type === "youtube-video"
-            ? "bg-red-100 dark:bg-red-900/30"
-            : resource.type === "pdf"
-              ? "bg-blue-100 dark:bg-blue-900/30"
-              : "bg-green-100 dark:bg-green-900/30"
-            }`}
+          className={`w-8 h-8 rounded flex items-center justify-center shrink-0 ${
+            resource.type === "youtube-video"
+              ? "bg-red-100 dark:bg-red-900/30"
+              : resource.type === "pdf"
+                ? "bg-blue-100 dark:bg-blue-900/30"
+                : "bg-green-100 dark:bg-green-900/30"
+          }`}
         >
           <Icon
-            className={`h-4 w-4 ${resource.type === "youtube-video"
-              ? "text-red-600"
-              : resource.type === "pdf"
-                ? "text-blue-600"
-                : "text-green-600"
-              }`}
+            className={`h-4 w-4 ${
+              resource.type === "youtube-video"
+                ? "text-red-600"
+                : resource.type === "pdf"
+                  ? "text-blue-600"
+                  : "text-green-600"
+            }`}
           />
         </div>
 
@@ -188,7 +191,7 @@ export default function InstanceDetailsPage() {
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   // Check if first time viewing this page (for feature hints)
@@ -245,7 +248,7 @@ export default function InstanceDetailsPage() {
         }
       }, 1000);
     },
-    [resourceNotes, instance?._id, token]
+    [resourceNotes, instance?._id, token],
   );
 
   // Handle playing next resource
@@ -253,7 +256,7 @@ export default function InstanceDetailsPage() {
     if (!instance?.resources || !selectedResourceId) return;
 
     const currentIndex = instance.resources.findIndex(
-      (r) => r._id === selectedResourceId
+      (r) => r._id === selectedResourceId,
     );
     if (currentIndex < instance.resources.length - 1) {
       setSelectedResourceId(instance.resources[currentIndex + 1]._id);
@@ -261,6 +264,18 @@ export default function InstanceDetailsPage() {
   }, [instance?.resources, selectedResourceId]);
 
   useEffect(() => {
+    const fetchInstanceDetails = async () => {
+      try {
+        setLoading(true);
+        const data = await getInstanceById(params.id, token);
+        setInstance(data);
+      } catch (error) {
+        console.error("Error fetching instance:", error);
+        toast.error("Failed to load instance");
+      } finally {
+        setLoading(false);
+      }
+    };
     if (authLoading) return;
     if (!user) {
       router.push("/login");
@@ -269,20 +284,7 @@ export default function InstanceDetailsPage() {
     if (params.id) {
       fetchInstanceDetails();
     }
-  }, [params.id, user, token, authLoading]);
-
-  const fetchInstanceDetails = async () => {
-    try {
-      setLoading(true);
-      const data = await getInstanceById(params.id, token);
-      setInstance(data);
-    } catch (error) {
-      console.error("Error fetching instance:", error);
-      toast.error("Failed to load instance");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [params.id, user, token, authLoading, router]);
 
   const handleToggleComplete = async (resourceId, currentStatus) => {
     try {
@@ -293,22 +295,22 @@ export default function InstanceDetailsPage() {
         instance._id,
         resourceId,
         newStatus,
-        token
+        token,
       );
 
       setInstance((prevInstance) => {
         const updatedResources = prevInstance.resources.map((res) =>
           res._id === resourceId
             ? {
-              ...res,
-              completed: newStatus,
-              completedAt: newStatus ? new Date().toISOString() : null,
-            }
-            : res
+                ...res,
+                completed: newStatus,
+                completedAt: newStatus ? new Date().toISOString() : null,
+              }
+            : res,
         );
 
         const completedCount = updatedResources.filter(
-          (r) => r.completed
+          (r) => r.completed,
         ).length;
         const totalCount = updatedResources.length;
         const resourcePercent =
@@ -341,7 +343,7 @@ export default function InstanceDetailsPage() {
       });
 
       toast.success(
-        currentStatus ? "Marked as incomplete" : "Marked as complete!"
+        currentStatus ? "Marked as incomplete" : "Marked as complete!",
       );
     } catch (error) {
       console.error("Error toggling completion:", error);
@@ -428,7 +430,7 @@ export default function InstanceDetailsPage() {
 
       // Check if resource already exists in this instance
       const alreadyExists = editedResources.some(
-        (r) => r._id === newResource._id || r.url === newResource.url
+        (r) => r._id === newResource._id || r.url === newResource.url,
       );
 
       if (alreadyExists) {
@@ -501,7 +503,7 @@ export default function InstanceDetailsPage() {
 
   // Get selected resource
   const selectedResource = instance?.resources?.find(
-    (r) => r._id === selectedResourceId
+    (r) => r._id === selectedResourceId,
   );
   const selectedIndex =
     instance?.resources?.findIndex((r) => r._id === selectedResourceId) ?? -1;
@@ -540,7 +542,7 @@ export default function InstanceDetailsPage() {
             <div className="flex items-center gap-3 min-w-0">
               <Link
                 href="/instances"
-                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex-shrink-0"
+                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
               >
                 <ArrowLeft className="h-5 w-5 text-slate-600 dark:text-slate-400" />
               </Link>
@@ -585,7 +587,9 @@ export default function InstanceDetailsPage() {
                 </>
               ) : (
                 <>
-                  <span className="text-xs text-slate-500">Click Edit to edit the instance</span>
+                  <span className="text-xs text-slate-500">
+                    Click Edit to edit the instance
+                  </span>
                   <button
                     onClick={handleToggleEditMode}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -628,15 +632,16 @@ export default function InstanceDetailsPage() {
               <>
                 {/* Video Player */}
                 <div
-                  className={`bg-black rounded-xl overflow-hidden shadow-2xl ${theaterMode ? "min-h-[70vh]" : ""
-                    }`}
+                  className={`bg-black rounded-xl overflow-hidden shadow-2xl ${
+                    theaterMode ? "min-h-[70vh]" : ""
+                  }`}
                 >
                   <EmbeddedMediaPlayer
                     resource={selectedResource}
                     instanceId={instance._id}
                     isExpanded={true}
                     theaterMode={theaterMode}
-                    onClose={() => { }}
+                    onClose={() => {}}
                     onComplete={() => {
                       if (!selectedResource.completed) {
                         handleToggleComplete(selectedResource._id, false);
@@ -678,12 +683,13 @@ export default function InstanceDetailsPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="flex flex-wrap items-center gap-3 text-sm">
                       <span
-                        className={`inline-flex items-center px-2.5 py-1 rounded-full font-medium ${selectedResource.type === "youtube-video"
-                          ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
-                          : selectedResource.type === "pdf"
-                            ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-                            : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                          }`}
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full font-medium ${
+                          selectedResource.type === "youtube-video"
+                            ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                            : selectedResource.type === "pdf"
+                              ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                              : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                        }`}
                       >
                         {getResourceTypeInfo(selectedResource.type).label}
                       </span>
@@ -694,8 +700,8 @@ export default function InstanceDetailsPage() {
                             ? selectedResource.metadata?.duration
                             : selectedResource.type === "pdf"
                               ? (selectedResource.metadata?.pages || 0) *
-                              (selectedResource.metadata?.minsPerPage || 0)
-                              : selectedResource.metadata?.estimatedMins || 0
+                                (selectedResource.metadata?.minsPerPage || 0)
+                              : selectedResource.metadata?.estimatedMins || 0,
                         )}
                       </span>
                       {selectedResource.completed && (
@@ -707,13 +713,16 @@ export default function InstanceDetailsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1 group relative">
-                        <span className="hidden md:block text-xs text-slate-500 font-medium">Take Notes</span>
+                        <span className="hidden md:block text-xs text-slate-500 font-medium">
+                          Take Notes
+                        </span>
                         <button
                           onClick={() => setShowNotes(!showNotes)}
-                          className={`p-2 rounded-lg transition-all ${showNotes || resourceNotes[selectedResource._id]
-                            ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200"
-                            }`}
+                          className={`p-2 rounded-lg transition-all ${
+                            showNotes || resourceNotes[selectedResource._id]
+                              ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200"
+                          }`}
                           title="Toggle notes"
                         >
                           <StickyNote className="h-5 w-5" />
@@ -724,14 +733,15 @@ export default function InstanceDetailsPage() {
                         onClick={() =>
                           handleToggleComplete(
                             selectedResource._id,
-                            selectedResource.completed
+                            selectedResource.completed,
                           )
                         }
                         disabled={togglingResource === selectedResource._id}
-                        className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedResource.completed
-                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
-                          : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                          }`}
+                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                          selectedResource.completed
+                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        }`}
                       >
                         {selectedResource.completed
                           ? "✓ Completed"
@@ -786,7 +796,7 @@ export default function InstanceDetailsPage() {
 
           {/* Right: Playlist Sidebar */}
           {!theaterMode && (
-            <div className="w-full lg:w-96 flex-shrink-0">
+            <div className="w-full lg:w-96 shrink-0">
               <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden sticky top-36">
                 {/* Playlist Header */}
                 <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
@@ -877,20 +887,21 @@ export default function InstanceDetailsPage() {
                           ? resource.metadata?.duration
                           : resource.type === "pdf"
                             ? (resource.metadata?.pages || 0) *
-                            (resource.metadata?.minsPerPage || 0)
+                              (resource.metadata?.minsPerPage || 0)
                             : resource.metadata?.estimatedMins || 0;
 
                       return (
                         <button
                           key={resource._id}
                           onClick={() => setSelectedResourceId(resource._id)}
-                          className={`w-full flex items-start gap-3 p-3 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 ${isSelected
-                            ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
-                            : "border-l-4 border-transparent"
-                            }`}
+                          className={`w-full flex items-start gap-3 p-3 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 ${
+                            isSelected
+                              ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                              : "border-l-4 border-transparent"
+                          }`}
                         >
                           {/* Playing indicator or index */}
-                          <div className="w-6 flex-shrink-0 flex items-center justify-center">
+                          <div className="w-6 shrink-0 flex items-center justify-center">
                             {isSelected ? (
                               <Play className="h-4 w-4 text-blue-600 dark:text-blue-400 fill-current" />
                             ) : (
@@ -902,30 +913,33 @@ export default function InstanceDetailsPage() {
 
                           {/* Thumbnail/Icon */}
                           <div
-                            className={`w-10 h-10 rounded-lg flex-shrink-0 flex items-center justify-center ${resource.type === "youtube-video"
-                              ? "bg-red-100 dark:bg-red-900/30"
-                              : resource.type === "pdf"
-                                ? "bg-blue-100 dark:bg-blue-900/30"
-                                : "bg-green-100 dark:bg-green-900/30"
-                              }`}
+                            className={`w-10 h-10 rounded-lg shrink-0 flex items-center justify-center ${
+                              resource.type === "youtube-video"
+                                ? "bg-red-100 dark:bg-red-900/30"
+                                : resource.type === "pdf"
+                                  ? "bg-blue-100 dark:bg-blue-900/30"
+                                  : "bg-green-100 dark:bg-green-900/30"
+                            }`}
                           >
                             <Icon
-                              className={`h-5 w-5 ${resource.type === "youtube-video"
-                                ? "text-red-600 dark:text-red-400"
-                                : resource.type === "pdf"
-                                  ? "text-blue-600 dark:text-blue-400"
-                                  : "text-green-600 dark:text-green-400"
-                                }`}
+                              className={`h-5 w-5 ${
+                                resource.type === "youtube-video"
+                                  ? "text-red-600 dark:text-red-400"
+                                  : resource.type === "pdf"
+                                    ? "text-blue-600 dark:text-blue-400"
+                                    : "text-green-600 dark:text-green-400"
+                              }`}
                             />
                           </div>
 
                           {/* Info */}
                           <div className="flex-1 min-w-0">
                             <h4
-                              className={`text-sm font-medium truncate ${isCompleted
-                                ? "text-slate-400 line-through"
-                                : "text-slate-900 dark:text-white"
-                                }`}
+                              className={`text-sm font-medium truncate ${
+                                isCompleted
+                                  ? "text-slate-400 line-through"
+                                  : "text-slate-900 dark:text-white"
+                              }`}
                             >
                               {resource.title}
                             </h4>
@@ -938,7 +952,7 @@ export default function InstanceDetailsPage() {
                           </div>
 
                           {/* Completion Status */}
-                          <div className="flex-shrink-0">
+                          <div className="shrink-0">
                             {isCompleted ? (
                               <CheckCircle2 className="h-5 w-5 text-green-500" />
                             ) : (
@@ -979,17 +993,18 @@ export default function InstanceDetailsPage() {
                         ? resource.metadata?.duration
                         : resource.type === "pdf"
                           ? (resource.metadata?.pages || 0) *
-                          (resource.metadata?.minsPerPage || 0)
+                            (resource.metadata?.minsPerPage || 0)
                           : resource.metadata?.estimatedMins || 0;
 
                     return (
                       <button
                         key={resource._id}
                         onClick={() => setSelectedResourceId(resource._id)}
-                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 last:border-b-0 ${isSelected
-                          ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500"
-                          : "border-l-4 border-l-transparent"
-                          }`}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 last:border-b-0 ${
+                          isSelected
+                            ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500"
+                            : "border-l-4 border-l-transparent"
+                        }`}
                       >
                         <span className="w-6 text-center text-xs text-slate-400 font-medium">
                           {isSelected ? (
@@ -999,24 +1014,27 @@ export default function InstanceDetailsPage() {
                           )}
                         </span>
                         <div
-                          className={`w-8 h-8 rounded flex items-center justify-center flex-shrink-0 ${resource.type === "youtube-video"
-                            ? "bg-red-100 dark:bg-red-900/30"
-                            : "bg-blue-100 dark:bg-blue-900/30"
-                            }`}
+                          className={`w-8 h-8 rounded flex items-center justify-center shrink-0 ${
+                            resource.type === "youtube-video"
+                              ? "bg-red-100 dark:bg-red-900/30"
+                              : "bg-blue-100 dark:bg-blue-900/30"
+                          }`}
                         >
                           <Icon
-                            className={`h-4 w-4 ${resource.type === "youtube-video"
-                              ? "text-red-600"
-                              : "text-blue-600"
-                              }`}
+                            className={`h-4 w-4 ${
+                              resource.type === "youtube-video"
+                                ? "text-red-600"
+                                : "text-blue-600"
+                            }`}
                           />
                         </div>
                         <div className="flex-1 min-w-0">
                           <span
-                            className={`text-sm font-medium truncate block ${isCompleted
-                              ? "text-slate-400 line-through"
-                              : "text-slate-700 dark:text-slate-300"
-                              }`}
+                            className={`text-sm font-medium truncate block ${
+                              isCompleted
+                                ? "text-slate-400 line-through"
+                                : "text-slate-700 dark:text-slate-300"
+                            }`}
                           >
                             {resource.title}
                           </span>
@@ -1025,7 +1043,7 @@ export default function InstanceDetailsPage() {
                           </span>
                         </div>
                         {isCompleted && (
-                          <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+                          <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
                         )}
                       </button>
                     );
@@ -1116,22 +1134,22 @@ export default function InstanceDetailsPage() {
                 </div>
 
                 {["pdf", "article", "google-drive", "custom-link"].includes(
-                  resourceForm.type
+                  resourceForm.type,
                 ) && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        Title {resourceForm.type === "custom-link" && "*"}
-                      </label>
-                      <input
-                        type="text"
-                        name="title"
-                        value={resourceForm.title}
-                        onChange={handleResourceFormChange}
-                        placeholder="Resource title"
-                        className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
-                      />
-                    </div>
-                  )}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Title {resourceForm.type === "custom-link" && "*"}
+                    </label>
+                    <input
+                      type="text"
+                      name="title"
+                      value={resourceForm.title}
+                      onChange={handleResourceFormChange}
+                      placeholder="Resource title"
+                      className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                    />
+                  </div>
+                )}
 
                 {resourceForm.type === "pdf" && (
                   <div className="grid grid-cols-2 gap-4">
@@ -1169,21 +1187,21 @@ export default function InstanceDetailsPage() {
                 {(resourceForm.type === "article" ||
                   resourceForm.type === "google-drive" ||
                   resourceForm.type === "custom-link") && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        Estimated Time (minutes)
-                      </label>
-                      <input
-                        type="number"
-                        name="estimatedMins"
-                        value={resourceForm.estimatedMins}
-                        onChange={handleResourceFormChange}
-                        placeholder="10"
-                        min="1"
-                        className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
-                      />
-                    </div>
-                  )}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Estimated Time (minutes)
+                    </label>
+                    <input
+                      type="number"
+                      name="estimatedMins"
+                      value={resourceForm.estimatedMins}
+                      onChange={handleResourceFormChange}
+                      placeholder="10"
+                      min="1"
+                      className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-3 mt-6">

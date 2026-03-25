@@ -127,7 +127,7 @@ const Sidebar = () => {
                 }`}
                 title={isCollapsed ? link.label : undefined}
               >
-                <Icon className="h-5 w-5 flex-shrink-0" />
+                <Icon className="h-5 w-5 shrink-0" />
                 {!isCollapsed && (
                   <span className="font-medium text-sm truncate">
                     {link.label}
@@ -166,7 +166,7 @@ const Sidebar = () => {
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative text-muted-foreground hover:text-foreground hover:bg-muted"
             title={isCollapsed ? "RoutineBuzz" : undefined}
           >
-            <ExternalLink className="h-5 w-5 flex-shrink-0" />
+            <ExternalLink className="h-5 w-5 shrink-0" />
             {!isCollapsed && (
               <span className="font-medium text-sm truncate">RoutineBuzz</span>
             )}
@@ -219,7 +219,7 @@ const Sidebar = () => {
                     }`}
                     title={isCollapsed ? title : undefined}
                   >
-                    <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded bg-primary/10 text-primary text-[10px] font-bold">
+                    <div className="shrink-0 w-5 h-5 flex items-center justify-center rounded bg-primary/10 text-primary text-[10px] font-bold">
                       {title.substring(0, 2).toUpperCase()}
                     </div>
                     {!isCollapsed && <span className="truncate">{title}</span>}
@@ -256,7 +256,7 @@ const Sidebar = () => {
                     }`}
                     title={isCollapsed ? link.label : undefined}
                   >
-                    <Icon className="h-5 w-5 flex-shrink-0" />
+                    <Icon className="h-5 w-5 shrink-0" />
                     {!isCollapsed && (
                       <span className="font-medium text-sm truncate">
                         {link.label}
@@ -287,7 +287,7 @@ const Sidebar = () => {
               <img
                 src={user.photoURL}
                 alt={user?.displayName || "User"}
-                className="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20 flex-shrink-0"
+                className="w-8 h-8 rounded-full object-cover ring-2 ring-primary/20 shrink-0"
                 onError={(e) => {
                   e.target.style.display = "none";
                   e.target.nextElementSibling.style.display = "flex";
@@ -295,7 +295,7 @@ const Sidebar = () => {
               />
             ) : null}
             <div
-              className={`w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 ${
+              className={`w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 ${
                 user?.photoURL ? "hidden" : ""
               }`}
             >
@@ -321,7 +321,7 @@ const Sidebar = () => {
             }`}
             title={isCollapsed ? "Sign Out" : undefined}
           >
-            <LogOut className="h-5 w-5 flex-shrink-0" />
+            <LogOut className="h-5 w-5 shrink-0" />
             {!isCollapsed && (
               <span className="font-medium text-sm">Sign Out</span>
             )}
@@ -337,7 +337,7 @@ const Sidebar = () => {
 
       {/* Spacer for main content */}
       <div
-        className={`hidden lg:block flex-shrink-0 transition-all duration-300 ${
+        className={`hidden lg:block shrink-0 transition-all duration-300 ${
           isCollapsed ? "w-16" : "w-60"
         }`}
       />

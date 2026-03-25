@@ -634,9 +634,9 @@ const ProfilePage = () => {
                     }`}
                   >
                     {settingsMessage.type === "success" ? (
-                      <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                      <Check className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
                     ) : (
-                      <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                      <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
                     )}
                     <p
                       className={`text-sm ${
@@ -666,10 +666,10 @@ const ProfilePage = () => {
                     onClick={() =>
                       handleNotificationChange(
                         "emailReminders",
-                        !notificationSettings.emailReminders
+                        !notificationSettings.emailReminders,
                       )
                     }
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
                       notificationSettings.emailReminders
                         ? "bg-primary"
                         : "bg-muted"
@@ -699,7 +699,7 @@ const ProfilePage = () => {
                         onChange={(e) =>
                           handleNotificationChange(
                             "reminderTime",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className="w-full sm:w-auto px-4 py-2.5 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -740,7 +740,7 @@ const ProfilePage = () => {
                               onChange={(e) =>
                                 handleNotificationChange(
                                   "reminderFrequency",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                               className="h-4 w-4 text-primary border-border focus:ring-2 focus:ring-primary cursor-pointer"
@@ -815,11 +815,11 @@ const ProfilePage = () => {
                                 onClick={() => {
                                   const newReminders =
                                     notificationSettings.customReminders.filter(
-                                      (_, i) => i !== index
+                                      (_, i) => i !== index,
                                     );
                                   handleNotificationChange(
                                     "customReminders",
-                                    newReminders
+                                    newReminders,
                                   );
                                 }}
                                 className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
@@ -827,7 +827,7 @@ const ProfilePage = () => {
                                 <X className="h-3 w-3" />
                               </button>
                             </div>
-                          )
+                          ),
                         )}
                       </div>
 
@@ -910,10 +910,10 @@ const ProfilePage = () => {
                     onClick={() =>
                       handleNotificationChange(
                         "deadlineWarnings",
-                        !notificationSettings.deadlineWarnings
+                        !notificationSettings.deadlineWarnings,
                       )
                     }
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
                       notificationSettings.deadlineWarnings
                         ? "bg-primary"
                         : "bg-muted"
@@ -945,10 +945,10 @@ const ProfilePage = () => {
                     onClick={() =>
                       handleNotificationChange(
                         "weeklyDigest",
-                        !notificationSettings.weeklyDigest
+                        !notificationSettings.weeklyDigest,
                       )
                     }
-                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
                       notificationSettings.weeklyDigest
                         ? "bg-primary"
                         : "bg-muted"
