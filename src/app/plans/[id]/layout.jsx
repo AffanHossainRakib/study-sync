@@ -24,7 +24,8 @@ async function getPlanPreviewData(id) {
 }
 
 export async function generateMetadata({ params }) {
-  const id = params?.id;
+  const resolvedParams = await params;
+  const id = resolvedParams?.id;
   const canonicalPath = id ? `/plans/${id}` : "/plans";
 
   if (!id) {
